@@ -1,0 +1,19 @@
+node_modules
+bower_components
+
+coverage
+.nyc_output
+
+!.empty_directory
+
+# JetBrains IDEs (IntelliJ/WebStorm)
+/.idea
+
+# VS Code
+/.vscode
+
+npm-debug.log
+
+# Build outputs
+/dist
+/test

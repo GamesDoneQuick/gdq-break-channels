@@ -1,0 +1,27 @@
+{
+	"root": true,
+	"extends": ["xo", "xo-typescript", "prettier", "prettier/@typescript-eslint"],
+	"rules": {
+		"new-cap": [
+			2,
+			{
+				"capIsNewExceptions": [
+					"Polymer",
+					"nodecg.Replicant",
+					"Polymer.SCDataBindingHelpers",
+					"Polymer.MutableData"
+				]
+			}
+		],
+		"@typescript-eslint/camelcase": false,
+		"@typescript-eslint/no-require-imports": false,
+		"capitalized-comments": 0,
+		"@typescript-eslint/no-unnecessary-type-assertion": 0,
+		"@typescript-eslint/explicit-function-return-type": 0,
+		"@typescript-eslint/member-ordering": 0
+	},
+	"env": {
+		"browser": true,
+		"node": false
+	}
+}

@@ -1,0 +1,19 @@
+@font-face {
+	font-family: gdqpixel;
+	src: url('fonts/gdqpixel.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: osd;
+	src: url('fonts/UAV-OSD-Sans-Mono.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: monkeyisland;
+	src: url('fonts/MonkeyIsland-1990.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: oregontrail;
+	src: url('fonts/OregonTrail-Shaston320.ttf') format('truetype');
+}

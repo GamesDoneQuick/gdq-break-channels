@@ -1,0 +1,37 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Explicitly declare text files you want to always be normalized and converted
+# to native line endings on checkout.
+*.css text eol=lf
+*.html text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+
+# Force images/fonts to be handled as binaries
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.png binary
+*.t3x binary
+*.t3d binary
+*.exe binary
+*.data binary
+*.ttf binary
+*.eof binary
+*.eot binary
+*.woff binary
+*.woff2 binary
+*.swf binary
+*.mov binary
+*.mp4 binary
+*.mp3 binary
+*.ogg binary
+*.flv binary
+*.webm binary
+*.ico binary
