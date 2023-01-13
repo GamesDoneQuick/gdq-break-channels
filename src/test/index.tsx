@@ -4,9 +4,10 @@ import '@/assets/fonts.css';
 import ReactDOM from 'react-dom';
 import { BreakChannels } from './preview';
 
-import { Button } from '@mui/material';
+import { Button, MenuItem, Select } from '@mui/material';
 import { FormattedDonation, Total } from '@/types/tracker';
 import { channels } from '..';
+import { usePreloadedReplicant } from '@/lib/hooks/usePreloadedReplicant';
 
 const totalRep = nodecg.Replicant<Total>('total', {
 	defaultValue: {
@@ -20,10 +21,19 @@ const breakChannel = nodecg.Replicant<number>('break-channel', {
 });
 
 function App() {
+	const [breakChannel, setBreakChannel] = usePreloadedReplicant<number>('break-channel', 0);
+
 	return (
 		<>
 			<BreakChannels />
 			<div>
+				<Select value={breakChannel} onChange={(e) => setBreakChannel(e.target.value as number)}>
+					{channels.map((channel, idx) => (
+						<MenuItem key={idx} value={idx}>
+							{channel.name}
+						</MenuItem>
+					))}
+				</Select>
 				<Button
 					onClick={() => {
 						const amount = Math.floor(Math.random() * 20000) / 100;
@@ -46,16 +56,10 @@ function App() {
 				</Button>
 				<Button
 					variant="contained"
-					onClick={() => {
-						breakChannel.value = (breakChannel.value! + channels.length - 1) % channels.length;
-					}}>
+					onClick={() => setBreakChannel((breakChannel + channels.length - 1) % channels.length)}>
 					Previous
 				</Button>
-				<Button
-					variant="contained"
-					onClick={() => {
-						breakChannel.value = (breakChannel.value! + 1) % channels.length;
-					}}>
+				<Button variant="contained" onClick={() => setBreakChannel((breakChannel! + 1) % channels.length)}>
 					Next
 				</Button>
 			</div>
