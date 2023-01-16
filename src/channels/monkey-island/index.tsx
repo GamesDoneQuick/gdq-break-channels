@@ -1,3 +1,8 @@
+/**
+ * @author Chris Hanel <chrishanel@gmail.com>
+ * @author Dillon Pentz <dillon@vodbox.io>
+ */
+
 import { ChannelProps, registerChannel } from '..';
 import type { FormattedDonation, Total } from '@/types/tracker';
 

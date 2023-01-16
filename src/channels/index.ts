@@ -6,5 +6,6 @@ import './monkey-island';
 import './oregon-trail';
 import './tetris';
 import './spyro';
+import './template';
 
 export * from './channels';

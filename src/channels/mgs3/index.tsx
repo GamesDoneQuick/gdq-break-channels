@@ -1,3 +1,7 @@
+/**
+ * @author Dillon Pentz <dillon@vodbox.io>
+ */
+
 import type { FormattedDonation, Total } from '@/types/tracker';
 import type { ChannelProps } from '..';
 
