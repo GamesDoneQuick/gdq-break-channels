@@ -23,7 +23,7 @@ const hardLock = nodecg.Replicant<boolean>('break-screen-lock', {
 
 let dialogLock = true;
 
-function MonkeyIsland(props: ChannelProps) {
+export function MonkeyIsland(props: ChannelProps) {
 	const [total] = useReplicant<Total | null>('total', null);
 	const guyRef = useRef<HTMLSpanElement>(null);
 	const stanRef = useRef<HTMLSpanElement>(null);
@@ -67,7 +67,7 @@ function MonkeyIsland(props: ChannelProps) {
 			el.style.transform = `translate(${posX - 182 * sx}px, ${sy * -43}px)`;
 			el.style.clipPath = `inset(${sy * 43}px ${(1 - sx) * 182}px ${(3 - sy) * 43}px ${sx * 182}px)`;
 
-			idx++;
+			idx += 1;
 			if (idx === 8) {
 				starsRef.current.removeChild(el);
 				return;

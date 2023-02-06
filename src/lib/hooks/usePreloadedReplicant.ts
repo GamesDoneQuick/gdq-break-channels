@@ -1,4 +1,4 @@
-import { useReplicant } from "use-nodecg";
+import { useReplicant } from 'use-nodecg';
 
 export function usePreloadedReplicant<T>(name: string, initialValue?: T): [T, (newValue: T) => void] {
 	const replicant = nodecg.Replicant(name);

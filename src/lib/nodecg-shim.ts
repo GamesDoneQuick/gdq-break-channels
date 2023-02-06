@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { NodeCGBrowser, NodeCGStaticBrowser, ReplicantBrowser, ReplicantOptions } from '@/types/nodecg';
+import type { NodeCGBrowser, NodeCGStaticBrowser, ReplicantBrowser, ReplicantOptions } from '@/types/nodecg';
 import { EventEmitter } from 'events';
 import clone from 'clone';
 
@@ -189,24 +189,6 @@ function assertSingleOwner<V>(replicant: Replicant<V>, value: V) {
 				)}`,
 		);
 	}
-}
-
-function pathStrToPathArr(path: string) {
-	let retPath = path
-		.substr(1)
-		.split('/')
-		.map((part) => {
-			// De-tokenize '/' characters in path name
-			return part.replace(/~1/g, '/');
-		});
-
-	// For some reason, path arrays whose only item is an empty string cause errors.
-	// In this case, we replace the path with an empty array, which seems to be fine.
-	if (retPath.length === 1 && retPath[0] === '') {
-		retPath = [];
-	}
-
-	return retPath;
 }
 
 const deleteTrap = function <V>(target: Replicant<V>, prop: keyof Replicant<V>) {
@@ -452,7 +434,7 @@ window.NodeCG =
 				let declaredReplicants = 0;
 				replicants.forEach((replicant) => {
 					replicant.once('change', () => {
-						declaredReplicants++;
+						declaredReplicants += 1;
 						if (declaredReplicants >= numReplicants) {
 							resolve();
 						}

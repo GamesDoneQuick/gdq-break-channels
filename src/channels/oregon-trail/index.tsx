@@ -55,7 +55,7 @@ const wagons = [wagon, wagon2, wagon3];
 let wagonTimer: ReturnType<typeof setInterval> | undefined = undefined;
 let animationTimer: ReturnType<typeof setTimeout> | undefined = undefined;
 
-function OregonTrail(_: ChannelProps) {
+export function OregonTrail(_: ChannelProps) {
 	const [total] = usePreloadedReplicant<Total | null>('total', null);
 	const [donations, setDonations] = useState<DonationPopup[]>([]);
 	const [receivedCount, incrementReceivedCount] = useReducer((x) => x + 1, 0);
@@ -65,7 +65,7 @@ function OregonTrail(_: ChannelProps) {
 	const totalRaw = total ? total.raw : 0;
 	const [goalProgress, setGoalProgress] = useState(totalRaw);
 
-	let start = -800,
+	const start = -800,
 		end = 600,
 		goalTarget = (Math.floor(goalProgress / 10000) + 1) * 10000;
 	let riverPos = (end - start) * ((totalRaw - goalTarget + 10000) / 10000) + start;
@@ -86,7 +86,7 @@ function OregonTrail(_: ChannelProps) {
 		if (wagonTimer) clearInterval(wagonTimer);
 		wagonTimer = setInterval(() => {
 			setWagonFrame((frame) => {
-				let nextFrame = frame + 1;
+				const nextFrame = frame + 1;
 				return nextFrame >= wagons.length ? 0 : nextFrame;
 			});
 		}, 1000 / 15);

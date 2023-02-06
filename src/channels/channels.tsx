@@ -9,12 +9,21 @@ export function registerChannel(
 	el: (props: ChannelProps) => JSX.Element,
 	credit?: Credit,
 ) {
-	channels.push({
+	const channel = {
 		name,
 		number: channelNumber,
 		el,
 		credit,
-	});
+	};
+
+	const existing = channels.find((channel) => channel.name === name);
+
+	if (existing) {
+		Object.assign(existing, channel);
+		return;
+	}
+
+	channels.push(channel);
 }
 
 export const channels: Channel[] = [];

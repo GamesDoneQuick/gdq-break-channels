@@ -12,11 +12,9 @@ export default defineConfig({
 	plugins: [
 		react({
 			babel: {
-				plugins: [
-					'babel-plugin-macros',
-					"@emotion/babel-plugin",
-				],
+				plugins: ['babel-plugin-macros', '@emotion/babel-plugin'],
 			},
+			jsxImportSource: '@emotion/react',
 		}),
 	],
 	build: {

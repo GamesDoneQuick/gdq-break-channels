@@ -14,7 +14,7 @@ import { useListenForFn } from '@/lib/hooks/useListenForFn';
 import mgs3Video from './SnakeLoop.webm';
 import staticNoise from '@/assets/static.gif';
 
-registerChannel('Metal Gear Solid 3', 64, MGS3);
+registerChannel('Metal Gear Solid 3', 64, Mgs3);
 
 const vid = document.createElement('video');
 vid.src = mgs3Video;
@@ -23,7 +23,7 @@ const climbRep = nodecg.Replicant<number>('snake-climbed', {
 	defaultValue: 0,
 });
 
-let climb = {
+const climb = {
 	value: 0,
 };
 
@@ -34,7 +34,7 @@ climbRep.on('change', (value) => {
 const layoutQuery = new URLSearchParams(window.location.search);
 const has = layoutQuery.has('layout');
 
-function MGS3(_: ChannelProps) {
+export function Mgs3(_: ChannelProps) {
 	const [climbed] = usePreloadedReplicant<number>('snake-climbed', 0);
 	const [total] = useReplicant<Total | null>('total', null);
 

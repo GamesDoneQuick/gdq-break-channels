@@ -1,3 +1,4 @@
+/* eslint-disable no-var */
 declare global {
 	var nodecg: NodeCGBrowser;
 	var NodeCG: NodeCGStaticBrowser;

@@ -218,16 +218,16 @@ export function DesertBus(_: ChannelProps) {
 		objects.current.sandPits.mask = objects.current.sandPitsMask as PIXI.Graphics;
 		objects.current.meridian.mask = objects.current.meridianMask as PIXI.Graphics;
 
-		app.stage.addChild(container);
+		app.current?.stage.addChild(container);
 
 		container.setTransform(0, 0, 2, 2);
 
 		return () => {
-			for (let key in objects.current) {
+			for (const key in objects.current) {
 				const obj = objects.current[key];
 				if (!obj.destroyed) obj.destroy(true);
 			}
-			for (let key in textures.current) {
+			for (const key in textures.current) {
 				const tex = textures.current[key];
 				tex.destroy(true);
 			}

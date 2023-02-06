@@ -1,4 +1,4 @@
-import gsap from 'gsap'
+import gsap from 'gsap';
 import { useEffect, useState } from 'react';
 
 export const useIncrementNumber = (newValue: number) => {
