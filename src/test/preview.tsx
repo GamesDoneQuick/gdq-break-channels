@@ -54,7 +54,7 @@ const Container = styled.div`
 	position: relative;
 	width: 1092px;
 	height: 332px;
-	background: red;
+	background: black;
 `;
 
 const ChannelNumber = styled.span`

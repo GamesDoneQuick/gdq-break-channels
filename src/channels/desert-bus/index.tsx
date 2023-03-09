@@ -1,5 +1,5 @@
 import type { FormattedDonation, Total } from '@/types/tracker';
-import { ChannelProps, registerChannel } from '..';
+import { ChannelProps, registerChannel } from '../channels';
 
 import { useEffect, useRef } from 'react';
 import { useRafLoop } from 'react-use';
@@ -74,7 +74,7 @@ export function DesertBus(_: ChannelProps) {
 
 	firstBus.value = true;
 
-	const [app, canvasRef] = usePIXICanvas(1092, 332, () => {
+	const [app, canvasRef] = usePIXICanvas({ width: 1092, height: 332 }, () => {
 		if (!objects.current) return;
 
 		frame.current = (frame.current + 1) % 3;

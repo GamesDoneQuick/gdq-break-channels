@@ -1,7 +1,14 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as PIXI from 'pixi.js';
 
-export function usePIXICanvas(width: number, height: number, raf: (ts?: number) => void) {
+export function usePIXICanvas(
+	{ width, height, transparent }: { width: number; height: number; transparent?: boolean } = {
+		width: 1092,
+		height: 332,
+		transparent: false,
+	},
+	raf: (ts?: number) => void,
+) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const rafRef = useRef((_ts?: number) => {});
 	const appRef = useRef<PIXI.Application>();
@@ -17,6 +24,7 @@ export function usePIXICanvas(width: number, height: number, raf: (ts?: number) 
 			view: canvasRef.current,
 			width,
 			height,
+			backgroundAlpha: transparent ? 0 : undefined,
 		});
 
 		appRef.current = app;

@@ -5,10 +5,11 @@ import { useIncrementNumber } from '../hooks/useIncrementNumber';
 interface Props {
 	prefix?: ReactNode;
 	value?: number;
+	fps?: number;
 }
 
 const TweenNumber: FC<Props> = (props) => {
-	const number = useIncrementNumber(props.value ?? 0);
+	const number = useIncrementNumber(props.value ?? 0, props.fps);
 
 	return (
 		<>

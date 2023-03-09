@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Tetris AI</title>
+    <link href="style/main.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="fb-root"></div>
+<div class="container">
+    <h1 class="header">Tetris AI</h1>
+
+    <div class="game-container">
+        <canvas width="200px" height="400px" id="grid-canvas" class="grid"></canvas>
+        <div class="controls-container">
+            <div id="score-container" class="score-container">0</div>
+            <div id="next-container" class="next-container">
+                <canvas id="next-canvas" class="next-canvas" width="80px" height="80px"></canvas>
+            </div>
+            <a id="ai-button" class="start-ai-button">Run AI</a>
+            <a id="reset-button" class="reset-button">Reset</a>
+        </div>
+    </div>
+    <hr>
+    <div class="footer">
+        <p>Created by <a href="http://leeyiyuan.info" target="#">Yiyuan Lee</a>. Source code available <a href="https://github.com/LeeYiyuan/tetrisai" target="#">here</a>. Read more about the AI <a href="http://codemyroad.wordpress.com/2013/04/14/tetris-ai-the-near-perfect-player/" target="#">here</a>.</p>
+    </div>
+</div>
+
+<script src="js/polyfill.js"></script>
+<script src="js/grid.js"></script>
+<script src="js/piece.js"></script>
+<script src="js/timer.js"></script>
+<script src="js/stopwatch.js"></script>
+<script src="js/game_manager.js"></script>
+<script src="js/random_piece_generator.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/tuner.js"></script>
+<script>
+    var manager = new GameManager();
+</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-68147157-4', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
