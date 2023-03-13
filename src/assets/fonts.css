@@ -23,3 +23,28 @@
 	font-weight: 700;
 	src: url('fonts/Dosis-Bold.ttf') format('truetype');
 }
+
+@font-face {
+	font-family: DeterminationSans;
+	src: url('fonts/DeterminationMono.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: DotumChe;
+	src: url('fonts/dotumche.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: PapyrusUndertale;
+	src: url('fonts/PapyrusUndertale.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: ComicSansUndertale;
+	src: url('fonts/ComicSansUndertale.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: CryptOfTomorrow;
+	src: url('fonts/CryptOfTomorrow.ttf') format('truetype');
+}
