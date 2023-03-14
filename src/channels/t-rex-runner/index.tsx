@@ -9,7 +9,6 @@ import * as PIXI from 'pixi.js';
 import spriteSheetImage from './trex.png';
 
 import { useCallback, useEffect, useRef } from 'react';
-import { useRafLoop } from 'react-use';
 import { useIncrementNumber } from '@/lib/hooks/useIncrementNumber';
 
 const OBSTACLE_TYPES = ['CactusSmall', 'CactusLarge', 'Pterodactyl'] as const;
@@ -273,6 +272,120 @@ export function TRexRunner(props: ChannelProps) {
 	const [app, canvasRef] = usePIXICanvas({ width: 1092, height: 332 }, () => {
 		if (!objects.current || !spritesheet.current) return;
 
+		const increment = TREX_CONSTS.SPEED;
+
+		// Update horizon line
+		const line1 = horizonXPos.current[0] <= 0 ? 0 : 1;
+		const line2 = line1 === 0 ? 1 : 0;
+
+		horizonXPos.current[line1] -= increment;
+		horizonXPos.current[line2] = horizonXPos.current[line1] + 600;
+
+		if (horizonXPos.current[line1] <= -600) {
+			horizonXPos.current[line1] += 1200;
+			horizonXPos.current[line2] = horizonXPos.current[line1] - 600;
+			activeHorizonTypes.current[line1] = Math.random() > TREX_CONSTS.HORIZON_BUMP_THRESHOLD ? 1 : 0;
+
+			const nextSprite =
+				spritesheet.current.textures[activeHorizonTypes.current[line1] === 0 ? 'HorizonA' : 'HorizonB'];
+
+			if (line1 === 0) {
+				(objects.current.horizonLine1 as PIXI.Sprite).texture = nextSprite;
+			} else {
+				(objects.current.horizonLine2 as PIXI.Sprite).texture = nextSprite;
+			}
+		}
+
+		// Update clouds
+		if (clouds.current.length > 0) {
+			const cloudContainer = objects.current.clouds as PIXI.Container;
+			const cloudCopies = [...clouds.current];
+			for (const [index, cloud] of cloudCopies.entries()) {
+				const cloudIsVisible = cloud.x + 46 > 0;
+
+				if (cloudIsVisible) {
+					cloud.x -= TREX_CONSTS.BG_CLOUD_SPEED;
+				} else {
+					// Destroy this cloud
+					cloudContainer.removeChild(cloud.sprite);
+
+					clouds.current.splice(index, 1);
+				}
+			}
+
+			const lastCloud = cloudCopies[cloudCopies.length - 1];
+
+			// Possibly spawn another cloud
+			if (
+				cloudCopies.length < TREX_CONSTS.MAX_CLOUDS &&
+				600 - lastCloud.x > lastCloud.cloudGap &&
+				TREX_CONSTS.CLOUD_FREQUENCY > Math.random()
+			) {
+				addCloud();
+			}
+		} else {
+			addCloud();
+		}
+
+		// Update obstacles
+		if (obstacles.current.length > 0) {
+			const obstacleContainer = objects.current.obstacles as PIXI.Container;
+			const obstacleCopies = [...obstacles.current];
+
+			for (const [index, obstacle] of obstacleCopies.entries()) {
+				const obstacleIsVisible = obstacle.x + getObstacleWidth(obstacle) > 0;
+
+				if (obstacleIsVisible) {
+					obstacle.x -= TREX_CONSTS.SPEED;
+				} else {
+					// Destroy this obstacle
+					obstacleContainer.removeChild(obstacle.sprite);
+
+					obstacles.current.splice(index, 1);
+				}
+			}
+		}
+
+		if (pendingObstacles.current > 0) addObstacle();
+
+		// Dodge if necessary
+		if (obstacles.current.length > 0) {
+			const firstObstacle = obstacles.current[0];
+
+			if (firstObstacle.x <= TREX_CONSTS.DODGE_X_POS && firstObstacle.x >= TREX_CONSTS.DINO_X_POS - 10) {
+				if (firstObstacle.type === 'Pterodactyl') {
+					trexState.current = 'duck';
+				} else if (!trexIsJumping.current) {
+					trexState.current = 'jump';
+					trexJumpVelocity.current = TREX_CONSTS.INITIAL_JUMP_VELOCITY;
+					trexIsJumping.current = true;
+				}
+			} else {
+				if (!trexIsJumping.current) trexState.current = 'walk';
+			}
+		}
+
+		// Apply jump velocity
+		if (trexIsJumping.current) {
+			trexJumpYOffset.current += Math.round(trexJumpVelocity.current);
+
+			trexJumpVelocity.current += TREX_CONSTS.GRAVITY;
+
+			if (
+				trexJumpYOffset.current < -TREX_CONSTS.MAX_JUMP_HEIGHT &&
+				trexJumpVelocity.current < TREX_CONSTS.DROP_VELOCITY
+			) {
+				trexJumpVelocity.current = TREX_CONSTS.DROP_VELOCITY;
+			}
+
+			if (trexJumpYOffset.current > 0) {
+				trexJumpVelocity.current = 0;
+				trexJumpYOffset.current = 0;
+				trexIsJumping.current = false;
+				trexState.current = 'walk';
+			}
+		}
+
 		const background = objects.current.background as PIXI.Graphics;
 		background.clear();
 
@@ -419,123 +532,6 @@ export function TRexRunner(props: ChannelProps) {
 			if (!container.destroyed) container.destroy(true);
 		};
 	}, [app]);
-
-	useRafLoop(() => {
-		if (!spritesheet.current || !objects.current) return;
-		const increment = TREX_CONSTS.SPEED;
-
-		// Update horizon line
-		const line1 = horizonXPos.current[0] <= 0 ? 0 : 1;
-		const line2 = line1 === 0 ? 1 : 0;
-
-		horizonXPos.current[line1] -= increment;
-		horizonXPos.current[line2] = horizonXPos.current[line1] + 600;
-
-		if (horizonXPos.current[line1] <= -600) {
-			horizonXPos.current[line1] += 1200;
-			horizonXPos.current[line2] = horizonXPos.current[line1] - 600;
-			activeHorizonTypes.current[line1] = Math.random() > TREX_CONSTS.HORIZON_BUMP_THRESHOLD ? 1 : 0;
-
-			const nextSprite =
-				spritesheet.current.textures[activeHorizonTypes.current[line1] === 0 ? 'HorizonA' : 'HorizonB'];
-
-			if (line1 === 0) {
-				(objects.current.horizonLine1 as PIXI.Sprite).texture = nextSprite;
-			} else {
-				(objects.current.horizonLine2 as PIXI.Sprite).texture = nextSprite;
-			}
-		}
-
-		// Update clouds
-		if (clouds.current.length > 0) {
-			const cloudContainer = objects.current.clouds as PIXI.Container;
-			const cloudCopies = [...clouds.current];
-			for (const [index, cloud] of cloudCopies.entries()) {
-				const cloudIsVisible = cloud.x + 46 > 0;
-
-				if (cloudIsVisible) {
-					cloud.x -= TREX_CONSTS.BG_CLOUD_SPEED;
-				} else {
-					// Destroy this cloud
-					cloudContainer.removeChild(cloud.sprite);
-
-					clouds.current.splice(index, 1);
-				}
-			}
-
-			const lastCloud = cloudCopies[cloudCopies.length - 1];
-
-			// Possibly spawn another cloud
-			if (
-				cloudCopies.length < TREX_CONSTS.MAX_CLOUDS &&
-				600 - lastCloud.x > lastCloud.cloudGap &&
-				TREX_CONSTS.CLOUD_FREQUENCY > Math.random()
-			) {
-				addCloud();
-			}
-		} else {
-			addCloud();
-		}
-
-		// Update obstacles
-		if (obstacles.current.length > 0) {
-			const obstacleContainer = objects.current.obstacles as PIXI.Container;
-			const obstacleCopies = [...obstacles.current];
-
-			for (const [index, obstacle] of obstacleCopies.entries()) {
-				const obstacleIsVisible = obstacle.x + getObstacleWidth(obstacle) > 0;
-
-				if (obstacleIsVisible) {
-					obstacle.x -= TREX_CONSTS.SPEED;
-				} else {
-					// Destroy this obstacle
-					obstacleContainer.removeChild(obstacle.sprite);
-
-					obstacles.current.splice(index, 1);
-				}
-			}
-		}
-
-		if (pendingObstacles.current > 0) addObstacle();
-
-		// Dodge if necessary
-		if (obstacles.current.length > 0) {
-			const firstObstacle = obstacles.current[0];
-
-			if (firstObstacle.x <= TREX_CONSTS.DODGE_X_POS && firstObstacle.x >= TREX_CONSTS.DINO_X_POS - 10) {
-				if (firstObstacle.type === 'Pterodactyl') {
-					trexState.current = 'duck';
-				} else if (!trexIsJumping.current) {
-					trexState.current = 'jump';
-					trexJumpVelocity.current = TREX_CONSTS.INITIAL_JUMP_VELOCITY;
-					trexIsJumping.current = true;
-				}
-			} else {
-				if (!trexIsJumping.current) trexState.current = 'walk';
-			}
-		}
-
-		// Apply jump velocity
-		if (trexIsJumping.current) {
-			trexJumpYOffset.current += Math.round(trexJumpVelocity.current);
-
-			trexJumpVelocity.current += TREX_CONSTS.GRAVITY;
-
-			if (
-				trexJumpYOffset.current < -TREX_CONSTS.MAX_JUMP_HEIGHT &&
-				trexJumpVelocity.current < TREX_CONSTS.DROP_VELOCITY
-			) {
-				trexJumpVelocity.current = TREX_CONSTS.DROP_VELOCITY;
-			}
-
-			if (trexJumpYOffset.current > 0) {
-				trexJumpVelocity.current = 0;
-				trexJumpYOffset.current = 0;
-				trexIsJumping.current = false;
-				trexState.current = 'walk';
-			}
-		}
-	});
 
 	useListenFor('donation', (donation: FormattedDonation) => {
 		pendingObstacles.current += 1;
