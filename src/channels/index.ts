@@ -7,5 +7,6 @@ import './oregon-trail';
 import './tetris';
 import './spyro';
 import './t-rex-runner';
+import './template';
 
 export * from './channels';

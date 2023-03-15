@@ -65,7 +65,7 @@ const ChannelNumber = styled.span`
 	font-family: osd;
 
 	color: #e4e4e4;
-	z-index: 2;
+	z-index: 202;
 
 	&:before {
 		content: attr(data-title);
@@ -80,4 +80,5 @@ const StaticImg = styled.img`
 	position: absolute;
 	width: 100%;
 	height: 100%;
+	z-index: 200;
 `;
