@@ -23,6 +23,6 @@ export interface TwitchSubscription {
 	context: string;
 	sub_message: {
 		message: string;
-		emotes: any[];
+		emotes: any[] | null;
 	};
 }
