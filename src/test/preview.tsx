@@ -1,8 +1,10 @@
-import { channels } from '@/channels';
+import { Credit, channels } from '@/channels';
 import { usePreloadedReplicant } from '@/lib/hooks/usePreloadedReplicant';
 import styled from '@emotion/styled';
 import { useEffect, useRef, useState } from 'react';
 import staticImg from '../assets/static.gif';
+import GitHubLogo from '../assets/GitHub-Mark-32px.png';
+import TwitchLogo from '../assets/TwitchGlitchPurple.png';
 
 export function BreakChannels() {
 	const [channelKey] = usePreloadedReplicant<number>('break-channel', 0);
@@ -41,11 +43,18 @@ export function BreakChannels() {
 	return (
 		<Container>
 			<channel.el lock={() => setTempLock(true)} unlock={() => setTempLock(false)} />
+			{channel.credit && (
+				<CreditEl position={channel.credit.position}>
+					{channel.credit.site && (
+						<CreditIcon src={channel.credit.site === 'GitHub' ? GitHubLogo : TwitchLogo} />
+					)}
+					<CreditName>{channel.credit.handle}</CreditName>
+				</CreditEl>
+			)}
 			<StaticImg src={staticImg} ref={staticRef} />
 			<ChannelNumber data-title={channel.number} ref={numberRef}>
 				{channel.number}
 			</ChannelNumber>
-			{/*<H1>{tempLock ? 'Locked' : 'Unlocked'}</H1>*/}
 		</Container>
 	);
 }
@@ -81,4 +90,57 @@ const StaticImg = styled.img`
 	width: 100%;
 	height: 100%;
 	z-index: 200;
+`;
+
+const CreditEl = styled.div<Pick<Credit, 'position'>>`
+	position: absolute;
+	display: flex;
+	height: 27px;
+	z-index: 199;
+
+	${(p) => {
+		switch (p.position) {
+			case 'topLeft':
+				return `
+					top: 0;
+					left: 0;
+				`;
+			case 'topRight':
+				return `
+					top: 0;
+					right: 0;
+				`;
+			case 'bottomLeft':
+				return `
+					bottom: 0;
+					left: 0;
+				`;
+			case 'bottomRight':
+				return `
+					bottom: 0;
+					right: 0;
+				`;
+		}
+	}}
+`;
+
+const CreditIcon = styled.img`
+	background: white;
+	width: 27px;
+	height: 27px;
+	margin: 0;
+	padding: 4px;
+	box-sizing: border-box;
+	object-fit: contain;
+`;
+
+const CreditName = styled.span`
+	background: black;
+	color: white;
+	font-family: 'Dosis', sans-serif;
+	font-weight: 700;
+	font-size: 20px;
+	line-height: 27px;
+	padding: 0 9px;
+	text-transform: uppercase;
 `;

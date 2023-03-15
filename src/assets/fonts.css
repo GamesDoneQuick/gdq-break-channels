@@ -17,3 +17,9 @@
 	font-family: oregontrail;
 	src: url('fonts/OregonTrail-Shaston320.ttf') format('truetype');
 }
+
+@font-face {
+	font-family: Dosis;
+	font-weight: 700;
+	src: url('fonts/Dosis-Bold.ttf') format('truetype');
+}
