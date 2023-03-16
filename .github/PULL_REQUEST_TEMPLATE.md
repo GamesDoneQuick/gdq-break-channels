@@ -8,7 +8,7 @@
 
 ### Checklist:
 <!--- Add an `x` to the boxes once you've confirmed them. -->
-- [ ] I have read and followed the requirements in the [**Contributing** document](https://github.com/GamesDoneQuick/gdq-break-channels/CONTRIBUTING.md).
+- [ ] I have read and followed the requirements in the [**Contributing** document](https://github.com/GamesDoneQuick/gdq-break-channels/blob/main/CONTRIBUTING.md).
 - [ ] My code has been tested.
 - [ ] My commit title follows [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) formatting.
 - [ ] All the code is my own, or is code I have the rights to, and is being made available under the [Apache License Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
