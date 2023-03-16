@@ -40,7 +40,7 @@ const TREX_CONSTS = {
 	GROUND_Y_POS: 93,
 	DINO_X_POS: 50,
 	DODGE_X_POS: 120,
-	DONATION_DIGITS_DISPLAYED: 8,
+	DONATION_DIGITS_DISPLAYED: 9,
 };
 
 const SPRITE_DEFINITIONS = {
@@ -133,6 +133,14 @@ const SPRITE_DEFINITIONS = {
 	Numeral9: {
 		frame: { x: 745, y: 2, w: 10, h: 13 },
 		sourceSize: { w: 10, h: 13 },
+	},
+	Numeral$: {
+		frame: { x: 775, y: 2, w: 10, h: 13 },
+		sourceSize: { w: 10, h: 13 },
+	},
+	'Numeral,': {
+		frame: { x: 785, y: 2, w: 4, h: 13 },
+		sourceSize: { w: 4, h: 13 },
 	},
 } as const;
 
@@ -421,20 +429,31 @@ export function TRexRunner(props: ChannelProps) {
 		const donationContainer = objects.current.donationTotal as PIXI.Container;
 
 		// Update donation total
-		donationContainer.position.set(546 - 11 * TREX_CONSTS.DONATION_DIGITS_DISPLAYED - 4, 4);
+		donationContainer.position.set(536 - (11 * TREX_CONSTS.DONATION_DIGITS_DISPLAYED - 4) * 2, 4);
 
-		const digits = Math.floor(displayedTotal).toString().split('');
+		const digits = `$${Math.floor(displayedTotal).toLocaleString()}`.split('');
 		const digitOffset = TREX_CONSTS.DONATION_DIGITS_DISPLAYED - digits.length - 1;
+
+		// Set base adjustment to account for commas
+		let offsetX = digits.filter((digit) => digit === ',').length * 6;
 
 		for (let i = 0; i < TREX_CONSTS.DONATION_DIGITS_DISPLAYED; i += 1) {
 			const numeralDisplay = donationContainer.children[i];
 
 			numeralDisplay.visible = i >= digitOffset;
 
+			let offset = 11;
+
 			if (numeralDisplay.visible) {
-				(numeralDisplay as PIXI.Sprite).texture =
-					spritesheet.current.textures[`Numeral${digits[i - digitOffset - 1]}`];
+				const digit = digits[i - digitOffset - 1];
+				(numeralDisplay as PIXI.Sprite).texture = spritesheet.current.textures[`Numeral${digit}`];
+
+				if (digit === ',') offset = 5;
 			}
+
+			numeralDisplay.position.set(offsetX, 0);
+
+			offsetX += offset;
 		}
 	});
 
@@ -464,6 +483,8 @@ export function TRexRunner(props: ChannelProps) {
 			sprite.position.set(i * 11, 0);
 			donationTotal.addChild(sprite);
 		}
+
+		donationTotal.setTransform(0, 0, 2, 2);
 
 		const trexJump = new PIXI.AnimatedSprite(spritesheet.current.animations.TRexJump);
 		const trexWalk = new PIXI.AnimatedSprite(spritesheet.current.animations.TRexWalk);
