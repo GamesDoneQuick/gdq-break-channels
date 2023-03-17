@@ -124,7 +124,7 @@ export const GenericDonationMessages: UndertaleDialogue[] = [
 	{ textBox: ['(The thought of $1 in<br>donations fills you with<br>determination.)'] },
 	// { textBox: ['(Knowing someone gave $1...', 'it fills you with determination.)'] },
 	{ textBox: ['(Knowing the host has $1<br>more in donations to read...', 'it fills you with determination.)'] },
-	{ textBox: ['($1 in donations for<br>Doctors Without Borders...', 'it fills you with determination.)'] },
+	{ textBox: ['($1 in donations for<br>$2...', 'it fills you with determination.)'] },
 	{ textBox: ['(The thought of personal bests<br>and $1 in donations fills you<br>with determination.)'] },
 	{ textBox: ['(You see $1 in donations.', 'It fills you with determination.)'] },
 	// { textBox: ['(Partaking in speedruns fills you with determination.)'] },

@@ -152,7 +152,12 @@ export function Undertale(props: ChannelProps) {
 						lastDialogueIndex.current,
 					);
 
-					selectedMessage = applyDialogueReplacements(messageSet, `$${donationsTotal}`);
+					// todo: get charity dynamically
+					selectedMessage = applyDialogueReplacements(
+						messageSet,
+						`$${donationsTotal}`,
+						'Doctors Without Borders',
+					);
 					lastDialogueIndex.current = selectedIndex;
 				}
 			} else {
