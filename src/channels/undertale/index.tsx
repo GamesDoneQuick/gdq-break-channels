@@ -1,4 +1,4 @@
-import type { FormattedDonation, Total } from '@/types/tracker';
+import type { Event, FormattedDonation, Total } from '@/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
 
 import { useListenFor, useReplicant } from 'use-nodecg';
@@ -17,6 +17,7 @@ import mercyIcon from './assets/mercy-icon.png';
 import { useRafLoop } from 'react-use';
 import { GenericDonationMessages, getRandomEnemy, UndertaleDialogue, UndertaleEnemy } from './undertaleDialogue';
 import TweenNumber from '@/lib/components/TweenNumber';
+import { usePreloadedReplicant } from '@/lib/hooks/usePreloadedReplicant';
 
 const DISABLE_GENERIC_MESSAGES = false;
 
@@ -114,6 +115,7 @@ function useTypewriterText(defaultText: string[] = []): [string[], (value: strin
 type ChannelEvent = { type: 'donation'; value: number };
 
 export function Undertale(props: ChannelProps) {
+	const [event] = usePreloadedReplicant<Event>('currentEvent');
 	const [total] = useReplicant<Total | null>('total', null);
 	const activeEnemy = useRef<UndertaleEnemy>(getRandomEnemy());
 	const lastDialogueIndex = useRef<number | null>(null);
@@ -153,11 +155,7 @@ export function Undertale(props: ChannelProps) {
 					);
 
 					// todo: get charity dynamically
-					selectedMessage = applyDialogueReplacements(
-						messageSet,
-						`$${donationsTotal}`,
-						'Doctors Without Borders',
-					);
+					selectedMessage = applyDialogueReplacements(messageSet, `$${donationsTotal}`, event.beneficiary);
 					lastDialogueIndex.current = selectedIndex;
 				}
 			} else {
