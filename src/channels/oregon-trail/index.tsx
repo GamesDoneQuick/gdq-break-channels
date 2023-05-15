@@ -19,6 +19,7 @@ import wagon from './wagon1.png';
 import wagon2 from './wagon2.png';
 import wagon3 from './wagon3.png';
 import river from './river.png';
+import { useListenForFn } from '@/lib/hooks/useListenForFn';
 
 registerChannel('Oregon Trail', 85, OregonTrail);
 
@@ -122,7 +123,7 @@ export function OregonTrail(_: ChannelProps) {
 		incrementReceivedCount();
 	};
 
-	useListenFor('donation', onDonationReceived);
+	useListenForFn('donation', onDonationReceived);
 
 	const formatCurrency = (val: number) =>
 		val.toLocaleString('en-US', {
