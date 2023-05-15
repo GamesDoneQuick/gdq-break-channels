@@ -160,7 +160,7 @@ export function OregonTrail(_: ChannelProps) {
 			)}
 			<FerryView
 				show={viewFerry}
-				text={`AGDQ2023 has raised ${CurrencyToAbbreviation({
+				text={`${event.shortname} has raised ${CurrencyToAbbreviation({
 					inputNumber: totalRaw,
 					decimalPlacesToRound: totalRaw > 1010000 ? 2 : 0,
 				})}!`}
