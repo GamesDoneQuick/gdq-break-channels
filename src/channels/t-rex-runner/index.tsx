@@ -1,15 +1,15 @@
-import type { FormattedDonation, Total } from '@/types/tracker';
+import type { FormattedDonation, Total } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
 
 import { useListenFor, useReplicant } from 'use-nodecg';
 import styled from '@emotion/styled';
-import { usePIXICanvas } from '@/lib/hooks/usePIXICanvas';
+import { usePIXICanvas } from '@gdq/lib/hooks/usePIXICanvas';
 import * as PIXI from 'pixi.js';
 
 import spriteSheetImage from './trex.png';
 
 import { useCallback, useEffect, useRef } from 'react';
-import { useIncrementNumber } from '@/lib/hooks/useIncrementNumber';
+import { useIncrementNumber } from '@gdq/lib/hooks/useIncrementNumber';
 
 const OBSTACLE_TYPES = ['CactusSmall', 'CactusLarge', 'Pterodactyl'] as const;
 

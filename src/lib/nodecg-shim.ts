@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import type { NodeCGBrowser, NodeCGStaticBrowser, ReplicantBrowser, ReplicantOptions } from '@/types/nodecg';
+import type { NodeCGBrowser, NodeCGStaticBrowser, ReplicantBrowser, ReplicantOptions } from '@gdq/types/nodecg';
 import { EventEmitter } from 'events';
 import clone from 'clone';
 

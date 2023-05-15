@@ -1,9 +1,9 @@
-import type { FormattedDonation, Total } from '@/types/tracker';
+import type { FormattedDonation, Total } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
 
 import { useListenFor, useReplicant } from 'use-nodecg';
 import styled from '@emotion/styled';
-import TweenNumber from '@/lib/components/TweenNumber';
+import TweenNumber from '@gdq/lib/components/TweenNumber';
 
 import loopVideo from './video.webm';
 import gem from './gem.gif';

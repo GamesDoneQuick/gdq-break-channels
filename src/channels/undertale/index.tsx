@@ -1,4 +1,4 @@
-import type { Event, FormattedDonation, Total } from '@/types/tracker';
+import type { Event, FormattedDonation, Total } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
 
 import { useListenFor, useReplicant } from 'use-nodecg';
@@ -16,8 +16,8 @@ import mercyIcon from './assets/mercy-icon.png';
 
 import { useRafLoop } from 'react-use';
 import { GenericDonationMessages, getRandomEnemy, UndertaleDialogue, UndertaleEnemy } from './undertaleDialogue';
-import TweenNumber from '@/lib/components/TweenNumber';
-import { usePreloadedReplicant } from '@/lib/hooks/usePreloadedReplicant';
+import TweenNumber from '@gdq/lib/components/TweenNumber';
+import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
 
 const DISABLE_GENERIC_MESSAGES = false;
 

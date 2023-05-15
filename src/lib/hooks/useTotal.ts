@@ -1,4 +1,4 @@
-import type { Total } from '@/types/tracker';
+import type { Total } from '@gdq/types/tracker';
 import { usePreloadedReplicant } from './usePreloadedReplicant';
 
 export function useTotal() {

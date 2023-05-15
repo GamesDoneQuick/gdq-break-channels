@@ -4,6 +4,11 @@
   "description": "Donation Total Channels for GDQ Broadcasts",
   "author": "",
   "license": "Apache-2.0",
+  "files": [
+    "src/",
+    "tsconfig.json"
+  ],
+  "main": "src/index.ts",
   "scripts": {
     "build": "tsc",
     "build:test": "vite build",

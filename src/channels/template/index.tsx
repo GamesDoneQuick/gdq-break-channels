@@ -1,9 +1,9 @@
-import type { FormattedDonation, Total } from '@/types/tracker';
+import type { FormattedDonation, Total } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
 
 import { useListenFor, useReplicant } from 'use-nodecg';
 import styled from '@emotion/styled';
-import TweenNumber from '@/lib/components/TweenNumber';
+import TweenNumber from '@gdq/lib/components/TweenNumber';
 
 registerChannel('Template', 99, Template, {
 	position: 'bottomLeft',
@@ -22,9 +22,9 @@ function Template(props: ChannelProps) {
 
 	return (
 		<Container>
-			<Total>
+			<TotalEl>
 				$<TweenNumber value={total?.raw} />
-			</Total>
+			</TotalEl>
 		</Container>
 	);
 }
@@ -37,7 +37,7 @@ const Container = styled.div`
 	margin: 0;
 `;
 
-const Total = styled.div`
+const TotalEl = styled.div`
 	font-family: gdqpixel;
 	font-size: 46px;
 	color: white;

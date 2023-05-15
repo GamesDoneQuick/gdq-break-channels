@@ -13,8 +13,9 @@
 		"allowSyntheticDefaultImports": true,
 		"skipLibCheck": true,
 		"paths": {
-			"@/*": ["src/*"]
-		}
+			"@gdq/*": ["src/*"]
+		},
+		"declaration": true
 	},
 	"include": ["src/**/*.ts", "src/**/*.tsx", "index.tsx"]
 }

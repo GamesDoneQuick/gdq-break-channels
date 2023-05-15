@@ -1,4 +1,4 @@
-import type { FormattedDonation, Total } from '@/types/tracker';
+import type { FormattedDonation, Total } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
 
 import { useEffect, useRef } from 'react';
@@ -6,8 +6,8 @@ import * as PIXI from 'pixi.js';
 import { TextMetrics } from 'pixi.js';
 import { useListenFor, useReplicant } from 'use-nodecg';
 import styled from '@emotion/styled';
-import { useIncrementNumber } from '@/lib/hooks/useIncrementNumber';
-import { usePIXICanvas } from '@/lib/hooks/usePIXICanvas';
+import { useIncrementNumber } from '@gdq/lib/hooks/useIncrementNumber';
+import { usePIXICanvas } from '@gdq/lib/hooks/usePIXICanvas';
 import { useGameManager } from './hook';
 
 import { BevelFilter } from '@pixi/filter-bevel';

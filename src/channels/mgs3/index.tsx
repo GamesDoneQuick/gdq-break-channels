@@ -2,21 +2,21 @@
  * @author Dillon Pentz <dillon@vodbox.io>
  */
 
-import type { FormattedDonation, Total } from '@/types/tracker';
+import type { FormattedDonation, Total } from '@gdq/types/tracker';
 import type { ChannelProps } from '..';
 
 import { useEffect, useRef, useState } from 'react';
 import { useHarmonicIntervalFn } from 'react-use';
 import styled from '@emotion/styled';
 import { useReplicant } from 'use-nodecg';
-import TweenNumber from '@/lib/components/TweenNumber';
+import TweenNumber from '@gdq/lib/components/TweenNumber';
 import { registerChannel } from '..';
-import { wait } from '@/lib/util/wait';
-import { usePreloadedReplicant } from '@/lib/hooks/usePreloadedReplicant';
-import { useListenForFn } from '@/lib/hooks/useListenForFn';
+import { wait } from '@gdq/lib/util/wait';
+import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
+import { useListenForFn } from '@gdq/lib/hooks/useListenForFn';
 
 import mgs3Video from './SnakeLoop.webm';
-import staticNoise from '@/assets/static.gif';
+import staticNoise from '@gdq/assets/static.gif';
 
 registerChannel('Metal Gear Solid 3', 64, Mgs3);
 

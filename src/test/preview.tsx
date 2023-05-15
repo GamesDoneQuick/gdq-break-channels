@@ -1,5 +1,5 @@
-import { Credit, channels } from '@/channels';
-import { usePreloadedReplicant } from '@/lib/hooks/usePreloadedReplicant';
+import { Credit, channels } from '@gdq/channels';
+import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
 import styled from '@emotion/styled';
 import { useEffect, useRef, useState } from 'react';
 import staticImg from '../assets/static.gif';

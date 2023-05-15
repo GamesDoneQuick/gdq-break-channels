@@ -3,15 +3,15 @@
  * @author Dillon Pentz <dillon@vodbox.io>
  */
 
-import type { Event, FormattedDonation, Total } from '@/types/tracker';
+import type { Event, FormattedDonation, Total } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '..';
 
 import styled from '@emotion/styled';
 import { useEffect, useState, useReducer } from 'react';
 import { useListenFor } from 'use-nodecg';
-import { usePreloadedReplicant } from '@/lib/hooks/usePreloadedReplicant';
+import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
 import { FerryView } from './ferry';
-import TweenNumber from '@/lib/components/TweenNumber';
+import TweenNumber from '@gdq/lib/components/TweenNumber';
 import { CurrencyToAbbreviation } from 'currency-to-abbreviation';
 
 import hills from './hills.png';
@@ -19,7 +19,7 @@ import wagon from './wagon1.png';
 import wagon2 from './wagon2.png';
 import wagon3 from './wagon3.png';
 import river from './river.png';
-import { useListenForFn } from '@/lib/hooks/useListenForFn';
+import { useListenForFn } from '@gdq/lib/hooks/useListenForFn';
 
 registerChannel('Oregon Trail', 85, OregonTrail);
 

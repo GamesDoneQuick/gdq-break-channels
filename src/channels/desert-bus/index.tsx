@@ -2,14 +2,14 @@
  * @author Dillon Pentz <dillon@vodbox.io>
  */
 
-import type { FormattedDonation, Total } from '@/types/tracker';
+import type { FormattedDonation, Total } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
 
 import { useEffect, useRef } from 'react';
 import { useRafLoop } from 'react-use';
 import styled from '@emotion/styled';
 import { useListenFor, useReplicant } from 'use-nodecg';
-import { usePIXICanvas } from '@/lib/hooks/usePIXICanvas';
+import { usePIXICanvas } from '@gdq/lib/hooks/usePIXICanvas';
 import * as PIXI from 'pixi.js';
 import { TilingSprite2d } from 'pixi-projection';
 
@@ -34,7 +34,7 @@ import mask from './images/sand_banks_mask.png';
 
 import bug from './images/bug.png';
 import splat from './images/splat.png';
-import TweenNumber from '@/lib/components/TweenNumber';
+import TweenNumber from '@gdq/lib/components/TweenNumber';
 
 registerChannel('Desert Bus', 16, DesertBus);
 

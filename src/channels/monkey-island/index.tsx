@@ -4,12 +4,12 @@
  */
 
 import { ChannelProps, registerChannel } from '..';
-import type { FormattedDonation, Total } from '@/types/tracker';
+import type { FormattedDonation, Total } from '@gdq/types/tracker';
 
 import styled from '@emotion/styled';
 import { useEffect, useRef } from 'react';
 import { useListenFor, useReplicant } from 'use-nodecg';
-import TweenNumber from '@/lib/components/TweenNumber';
+import TweenNumber from '@gdq/lib/components/TweenNumber';
 
 import background from './background.png';
 import stanAndGuybrush from './stan_and_guybrush.gif';

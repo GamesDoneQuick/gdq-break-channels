@@ -1,8 +1,8 @@
-import '@/lib/nodecg-shim';
-import '@/assets/fonts.css';
+import '@gdq/lib/nodecg-shim';
+import '@gdq/assets/fonts.css';
 
 import ReactDOM from 'react-dom';
-import { Total, Event } from '@/types/tracker';
+import { Total, Event } from '@gdq/types/tracker';
 import { App } from './app';
 
 const totalRep = nodecg.Replicant<Total>('total', {

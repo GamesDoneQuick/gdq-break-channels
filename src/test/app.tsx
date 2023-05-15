@@ -1,5 +1,5 @@
-import { usePreloadedReplicant } from '@/lib/hooks/usePreloadedReplicant';
-import { FormattedDonation, Total, TwitchSubscription } from '@/types/tracker';
+import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
+import { FormattedDonation, Total, TwitchSubscription } from '@gdq/types/tracker';
 import { Button, MenuItem, Select } from '@mui/material';
 import { channels } from '..';
 import { BreakChannels } from './preview';
