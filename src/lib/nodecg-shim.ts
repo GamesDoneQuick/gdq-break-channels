@@ -90,13 +90,14 @@ export class Replicant<V> extends EventEmitter implements ReplicantBrowser<V> {
 			}
 		});
 
-		setTimeout(() => {
-			this.value = this.opts.defaultValue;
-			this.emit('change', this.value, undefined);
-		}, 1000);
-
 		const thisProxy = new Proxy(this, REPLICANT_HANDLER);
 		declaredReplicants[namespace][name] = thisProxy;
+
+		setTimeout(() => {
+			thisProxy.value = this.opts.defaultValue;
+			this.emit('change', this.value, undefined);
+		}, 500);
+
 		return thisProxy;
 	}
 

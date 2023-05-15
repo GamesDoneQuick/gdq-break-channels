@@ -114,6 +114,13 @@ the behavior of NodeCG locally in a browser page.
 The graphics themselves are built using React with hooks. Use of
 [use-nodecg](https://npmjs.com/package/use-nodecg) hooks is recommended.
 
+On top of the `useReplicant` hook provided by use-nodecg, we have an
+additional `usePreloadedReplicant` hook that will return the current
+replicant value if it's already been defined. The only replicants that
+are guaranteed to be already defined are the `break-channel`, `total`
+and `currentEvent` replicants, so this hook should only be used with
+those.
+
 ### Locking
 
 Your component will be provided props that contain two functions: a
@@ -145,7 +152,25 @@ totalRep.value;
 /*
  * use-nodecg
  */
-const [total] = useReplicant<Total | null>('total', null);
+const [total] = usePreloadedReplicant<Total | null>('total', null);
+```
+
+Information about the current event (which includes information about
+the charity or cause an event is supporting) is stored in the
+"currentEvent" Replicant which contains an `Event` object (as defined in
+src/types/tracker.d.ts).
+
+```TypeScript
+/*
+ * NodeCG
+ */
+const currentEventRep = nodecg.Replicant<Event>('currentEvent');
+currentEventRep.value;
+
+/*
+ * use-nodecg
+ */
+const [currentEvent] = usePreloadedReplicant<Event>('currentEvent');
 ```
 
 Donations are received through the "donation" message which sends a

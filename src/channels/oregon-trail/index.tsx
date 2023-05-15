@@ -3,7 +3,7 @@
  * @author Dillon Pentz <dillon@vodbox.io>
  */
 
-import type { FormattedDonation, Total } from '@/types/tracker';
+import type { Event, FormattedDonation, Total } from '@/types/tracker';
 import { ChannelProps, registerChannel } from '..';
 
 import styled from '@emotion/styled';
@@ -56,6 +56,7 @@ let wagonTimer: ReturnType<typeof setInterval> | undefined = undefined;
 let animationTimer: ReturnType<typeof setTimeout> | undefined = undefined;
 
 export function OregonTrail(_: ChannelProps) {
+	const [event] = usePreloadedReplicant<Event>('currentEvent');
 	const [total] = usePreloadedReplicant<Total | null>('total', null);
 	const [donations, setDonations] = useState<DonationPopup[]>([]);
 	const [receivedCount, incrementReceivedCount] = useReducer((x) => x + 1, 0);
@@ -138,7 +139,7 @@ export function OregonTrail(_: ChannelProps) {
 						$<TweenNumber value={total?.raw} />
 					</TotalText>
 					<DonationText>raised for</DonationText>
-					<DonationTextBigger>The Prevent Cancer Foundation</DonationTextBigger>
+					<DonationTextBigger>{event.beneficiary}</DonationTextBigger>
 					<Hills />
 					<Wagon style={{ backgroundImage: `url(${wagons[wagonFrame]})` }} />
 					<River style={{ left: riverPos }} />
@@ -150,7 +151,7 @@ export function OregonTrail(_: ChannelProps) {
 					<>
 						{donations.map((d, idx) => (
 							<DonationRectangle key={idx} style={{ left: d.left, top: d.top }}>
-								{`PCF received ${formatCurrency(d.rawAmount)}.`}
+								{`${event.beneficiaryShort} received ${formatCurrency(d.rawAmount)}.`}
 							</DonationRectangle>
 						))}
 					</>

@@ -1,3 +1,14 @@
+export interface Event {
+	id: number;
+	name: string;
+	shortname: string;
+	locked: boolean;
+	allowDonations: boolean;
+	beneficiary: string;
+	beneficiaryShort: string;
+	hashtag: string;
+}
+
 export interface FormattedDonation {
 	amount: string;
 	rawAmount: number;
