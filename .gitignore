@@ -3,6 +3,7 @@ bower_components
 
 coverage
 .nyc_output
+.DS_Store
 
 !.empty_directory
 
