@@ -4,6 +4,8 @@ import { Button, MenuItem, Select } from '@mui/material';
 import { channels } from '..';
 import { BreakChannels } from './preview';
 import styled from '@emotion/styled';
+import tw, { css } from 'twin.macro';
+import { Global } from '@emotion/react';
 
 const totalRep = nodecg.Replicant<Total>('total', {
 	defaultValue: {
@@ -17,6 +19,13 @@ export function App() {
 
 	return (
 		<>
+			<Global
+				styles={css`
+					body {
+						${tw`leading-none text-white`}
+					}
+				`}
+			/>
 			<BreakChannels />
 			<Row>
 				<Select value={breakChannel} onChange={(e) => setBreakChannel(e.target.value as number)}>

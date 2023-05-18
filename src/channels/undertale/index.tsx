@@ -351,6 +351,7 @@ const SpeechBubble = styled.div<{ font?: string }>`
 	font-family: ${({ font }) => font || 'DotumChe'};
 	padding: 12px 8px 12px 40px;
 	box-sizing: border-box;
+	color: black;
 `;
 
 const PlayerHeart = styled.div`
