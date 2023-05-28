@@ -26,7 +26,11 @@ const TEXT_DISPLAY_DURATION_MS = 5000;
 const TIME_BEFORE_EVENT_MS = 1000;
 const TIME_BEFORE_IDLE_MS = 5000;
 
-registerChannel('Undertale', 66, Undertale);
+registerChannel('Undertale', 66, Undertale, {
+	site: 'Twitch',
+	position: 'bottomLeft',
+	handle: 'Corvimae',
+});
 
 function selectRandomMessage(
 	list: UndertaleDialogue[],

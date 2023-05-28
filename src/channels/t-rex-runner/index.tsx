@@ -182,7 +182,11 @@ interface ObstacleData {
 	type: ObstacleType;
 }
 
-registerChannel('T-Rex Runner', 404, TRexRunner);
+registerChannel('T-Rex Runner', 404, TRexRunner, {
+	site: 'Twitch',
+	position: 'bottomLeft',
+	handle: 'Corvimae',
+});
 
 export function TRexRunner(props: ChannelProps) {
 	const [total] = useReplicant<Total | null>('total', null);
