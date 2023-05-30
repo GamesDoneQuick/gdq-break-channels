@@ -26,8 +26,8 @@ const CONSTS = {
 	COLUMN_PAD: 3,
 	DOUBLE_RARITY: 4,
 	TARGET_BPM: 100,
-	QUARTER_SPACING: 70,	// pixel distance between quarter notes
-	HIT_FADE_MILLIS: 1000,	// how long hit/combo messages appear
+	QUARTER_SPACING: 70, // pixel distance between quarter notes
+	HIT_FADE_MILLIS: 1000, // how long hit/combo messages appear
 	DONO_HIT_MESSAGES: [
 		['GREAT!', 0x38ff2e],
 		['GREAT!', 0x38ff2e],
@@ -47,7 +47,7 @@ const CONSTS = {
 	COMBO_MESSAGE: ' COMBO',
 	COMBO_COLOR: 0xffa826,
 	COMBO_SIZE: 32,
-	COMBO_MIN_ALPHA: .9,
+	COMBO_MIN_ALPHA: 0.9,
 	COMBO_X: 450,
 	COMBO_Y: 155,
 };
@@ -63,13 +63,7 @@ const SPRITES = {
 			'LeftReceptorFlash2',
 			'LeftReceptor',
 		],
-		UpReceptor: [
-			'UpReceptor',
-			'UpReceptorFlash1',
-			'UpReceptorFlash1',
-			'UpReceptorFlash2',
-			'UpReceptor',
-		],
+		UpReceptor: ['UpReceptor', 'UpReceptorFlash1', 'UpReceptorFlash1', 'UpReceptorFlash2', 'UpReceptor'],
 		DownReceptor: [
 			'DownReceptor',
 			'DownReceptorFlash1',
@@ -87,7 +81,7 @@ const SPRITES = {
 	},
 	frames: {
 		LeftReceptor: {
-			frame: { x: 0, y: 0, w: 64, h: 64},
+			frame: { x: 0, y: 0, w: 64, h: 64 },
 			sourceSize: { w: 64, h: 64 },
 		},
 		DownReceptor: {
@@ -103,7 +97,7 @@ const SPRITES = {
 			sourceSize: { w: 64, h: 64 },
 		},
 		LeftReceptorFlash1: {
-			frame: { x: 0, y: 64, w: 64, h: 64},
+			frame: { x: 0, y: 64, w: 64, h: 64 },
 			sourceSize: { w: 64, h: 64 },
 		},
 		DownReceptorFlash1: {
@@ -119,7 +113,7 @@ const SPRITES = {
 			sourceSize: { w: 64, h: 64 },
 		},
 		LeftReceptorFlash2: {
-			frame: { x: 0, y: 128, w: 64, h: 64},
+			frame: { x: 0, y: 128, w: 64, h: 64 },
 			sourceSize: { w: 64, h: 64 },
 		},
 		DownReceptorFlash2: {
@@ -258,34 +252,28 @@ function Dance(props: ChannelProps) {
 	const notes = useRef<Note[]>([]);
 
 	const addNote = useCallback((beat: Beat) => {
-		if (
-			!app.current ||
-			!notes.current ||
-			!spritesheet.current ||
-			!noteContainer.current
-		)
-			return;
+		if (!app.current || !notes.current || !spritesheet.current || !noteContainer.current) return;
 
 		const arrows = [];
 
 		let arrowCount = 1;
 		if (getRandomInt(CONSTS.DOUBLE_RARITY) == 0) arrowCount += 1;
 
-		const dirs = [Direction.Left, Direction.Up, Direction.Down, Direction.Right]
+		const dirs = [Direction.Left, Direction.Up, Direction.Down, Direction.Right];
 
 		for (let i = 0; i < arrowCount; i++) {
 			const dir = dirs.splice(getRandomInt(dirs.length), 1)[0];
-			var texture = Direction[dir]
-			switch(beat) {
+			let texture = Direction[dir];
+			switch (beat) {
 				case Beat.Quarter:
-					texture += "Quarter"
+					texture += 'Quarter';
 					break;
 				case Beat.Eighth:
-					texture += "Eighth"
+					texture += 'Eighth';
 					break;
 				case Beat.FirstSixteenth:
 				case Beat.SecondSixteenth:
-					texture += "Sixteenth"
+					texture += 'Sixteenth';
 					break;
 			}
 			arrows.push({
@@ -295,8 +283,9 @@ function Dance(props: ChannelProps) {
 		}
 
 		const note = {
-			y: timeToScroll(nextBeat.current) +
-				beat * .25 * CONSTS.QUARTER_SPACING +
+			y:
+				timeToScroll(nextBeat.current) +
+				beat * 0.25 * CONSTS.QUARTER_SPACING +
 				(332 / CONSTS.QUARTER_SPACING + 2) * CONSTS.QUARTER_SPACING,
 			hasDonation: false,
 			arrows: arrows,
@@ -304,7 +293,7 @@ function Dance(props: ChannelProps) {
 
 		notes.current.push(note);
 		note.arrows.forEach((arrow) => {
-			noteContainer.current.addChildAt(arrow.sprite, 0);
+			noteContainer.current?.addChildAt(arrow.sprite, 0);
 		});
 	}, []);
 
@@ -322,8 +311,8 @@ function Dance(props: ChannelProps) {
 		const delta = app.current.ticker.deltaMS;
 		const scroll = timeToScroll(delta);
 
-		var doNoteHit = false;
-		var doDonation = false;
+		let doNoteHit = false;
+		let doDonation = false;
 
 		// scroll notes, check for hits/hits with donos
 		for (const [index, note] of notes.current.entries()) {
@@ -387,7 +376,10 @@ function Dance(props: ChannelProps) {
 		} else {
 			noteHitRemaining.current = Math.max(noteHitRemaining.current - delta, 0);
 			if (comboCount.current >= CONSTS.COMBO_THRESHOLD) {
-				combo.current.alpha = Math.max(noteHitRemaining.current / CONSTS.HIT_FADE_MILLIS, CONSTS.COMBO_MIN_ALPHA);
+				combo.current.alpha = Math.max(
+					noteHitRemaining.current / CONSTS.HIT_FADE_MILLIS,
+					CONSTS.COMBO_MIN_ALPHA,
+				);
 			}
 		}
 		noteHit.current.alpha = noteHitRemaining.current / CONSTS.HIT_FADE_MILLIS;
@@ -437,7 +429,7 @@ function Dance(props: ChannelProps) {
 
 		noteHit.current = new PIXI.Text('', {
 			fontFamily: 'gdqpixel',
-		})
+		});
 		noteHit.current.alpha = 0;
 		noteHit.current.position.set(CONSTS.HIT_X, CONSTS.HIT_Y);
 
@@ -445,7 +437,7 @@ function Dance(props: ChannelProps) {
 			fontFamily: 'gdqpixel',
 			fontSize: CONSTS.COMBO_SIZE,
 			fill: CONSTS.COMBO_COLOR,
-		})
+		});
 		combo.current.alpha = 0;
 		combo.current.position.set(CONSTS.COMBO_X, CONSTS.COMBO_Y);
 
@@ -466,7 +458,7 @@ function Dance(props: ChannelProps) {
 				});
 			});
 			notes.current = [];
-			if (!noteContainer.current?.destroyed) noteContainer.current?.destroy()
+			if (!noteContainer.current?.destroyed) noteContainer.current?.destroy();
 			noteContainer.current = null;
 
 			receptors.current?.forEach((receptor) => {
