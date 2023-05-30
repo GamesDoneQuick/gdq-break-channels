@@ -38,11 +38,11 @@ registerChannel('Cave Story', 290, CaveStory, {
 function CaveStory(props: ChannelProps) {
 	const [total] = useReplicant<Total | null>('total', null);
 
-	const flyingDonationsHolder = useRef<HTMLDivElement>(null);
+	const flyingDonationsHolder = useRef<FlyingDonationsHolder>(null);
 
-	var curDeck = [];
-	var nextDeck = [];
-	function putIntoBackHalfOfDeck(item){
+	var curDeck: Array<string> = [];
+	var nextDeck: Array<string> = [];
+	function putIntoBackHalfOfDeck(item:string){
 		const startHalfLength = Math.ceil(nextDeck.length/2);
 		const remainingHalfLength = nextDeck.length-startHalfLength;
 		const finalIndex = startHalfLength + Math.floor(Math.random()*(remainingHalfLength+1));
@@ -56,7 +56,7 @@ function CaveStory(props: ChannelProps) {
 	curDeck = nextDeck;
 	nextDeck = [];
 	function getRandomCharacter(){
-		var result = curDeck.shift();
+		var result:string = curDeck.shift()!;
 		putIntoBackHalfOfDeck(result);
 		if (curDeck.length == 0) {
 			curDeck = nextDeck;
@@ -87,7 +87,7 @@ function CaveStory(props: ChannelProps) {
 			character = "Bat";
 		}
 		
-		const newDonation = {id:performance.now(),moneyString:donation.amount,character:character};
+		const newDonation:DonationFlyerData = {id:performance.now()+"",moneyString:donation.amount,character:character};
 		
 		const stateRefAdding = flyingDonationsHolder.current.state;
 		stateRefAdding.data.add(newDonation);
@@ -135,16 +135,22 @@ function CaveStory(props: ChannelProps) {
 
 
 
-class FlyingDonationsHolder extends React.Component {
-	constructor(props) {
+type DonationFlyerData = {
+	id:string,
+	moneyString:string,
+	character:string
+}
+
+class FlyingDonationsHolder extends React.Component<{}, {data:Set<DonationFlyerData>}> {
+	constructor(props:{}) {
 		super(props);
-		this.state = {data:new Set()};
+		this.state = {data:new Set<DonationFlyerData>()};
 	}
 	render() {
 		return(
 			<FlyingDonationsStyler>
 				{
-					[...this.state.data].map((item) => (
+					[...this.state.data].map((item:DonationFlyerData) => (
 						<SidewaysMover key={item.id}>
 							<VerticalMover>
 								<DonationLabel>{item.moneyString}</DonationLabel>
@@ -158,7 +164,7 @@ class FlyingDonationsHolder extends React.Component {
 	}
 }
 
-class FlyingCharacter extends React.Component {
+class FlyingCharacter extends React.Component<{ character: string },{}> {
 	render() {
 		switch(this.props.character){
 			case "Misery":
