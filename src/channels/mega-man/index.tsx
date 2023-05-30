@@ -107,7 +107,7 @@ function MegaMan(props: ChannelProps) {
 		}
 
 		if (objects.current.building.x <= -64) {
-			objects.current.building.x += (Math.floor(Math.random() * 4) + 4) * 16 + 288;
+			objects.current.building.x += (Math.floor(Math.random() * 32) + 32) * 16 + 288;
 		}
 		objects.current.building.x -= MEGA_MAN_CONSTS.MOVE_SPEED_BUILDING;
 
