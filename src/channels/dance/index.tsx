@@ -78,6 +78,28 @@ const SPRITES = {
 			'RightReceptorFlash2',
 			'RightReceptor',
 		],
+		LeftReceptorPulse: [
+			'Transparent',
+			'LeftReceptorPulse',
+			'LeftReceptorPulse',
+			'LeftReceptorPulse',
+			'Transparent',
+		],
+		DownReceptorPulse: [
+			'Transparent',
+			'DownReceptorPulse',
+			'DownReceptorPulse',
+			'DownReceptorPulse',
+			'Transparent',
+		],
+		UpReceptorPulse: ['Transparent', 'UpReceptorPulse', 'UpReceptorPulse', 'UpReceptorPulse', 'Transparent'],
+		RightReceptorPulse: [
+			'Transparent',
+			'RightReceptorPulse',
+			'RightReceptorPulse',
+			'RightReceptorPulse',
+			'Transparent',
+		],
 	},
 	frames: {
 		LeftReceptor: {
@@ -128,6 +150,22 @@ const SPRITES = {
 			frame: { x: 192, y: 128, w: 64, h: 64 },
 			sourceSize: { w: 64, h: 64 },
 		},
+		LeftReceptorPulse: {
+			frame: { x: 0, y: 384, w: 64, h: 64 },
+			sourceSize: { w: 64, h: 64 },
+		},
+		DownReceptorPulse: {
+			frame: { x: 64, y: 384, w: 64, h: 64 },
+			sourceSize: { w: 64, h: 64 },
+		},
+		UpReceptorPulse: {
+			frame: { x: 128, y: 384, w: 64, h: 64 },
+			sourceSize: { w: 64, h: 64 },
+		},
+		RightReceptorPulse: {
+			frame: { x: 192, y: 384, w: 64, h: 64 },
+			sourceSize: { w: 64, h: 64 },
+		},
 		LeftQuarter: {
 			frame: { x: 0, y: 192, w: 64, h: 64 },
 			sourceSize: { w: 64, h: 64 },
@@ -176,6 +214,10 @@ const SPRITES = {
 			frame: { x: 192, y: 320, w: 64, h: 64 },
 			sourceSize: { w: 64, h: 64 },
 		},
+		Transparent: {
+			frame: { x: 0, y: 448, w: 64, h: 64 },
+			sourceSize: { w: 64, h: 64 },
+		},
 	},
 	meta: {
 		scale: '1',
@@ -203,6 +245,7 @@ interface Arrow {
 
 interface Note {
 	y: number;
+	beat: Beat;
 	hasDonation: Boolean;
 	arrows: Arrow[];
 }
@@ -211,6 +254,7 @@ interface Receptor {
 	direction: Direction;
 	noteReceived: Boolean;
 	sprite: PIXI.AnimatedSprite;
+	pulseSprite: PIXI.AnimatedSprite;
 }
 
 interface World {
@@ -304,7 +348,8 @@ function Dance(props: ChannelProps) {
 			y:
 				timeToScroll(world.nextBeat) +
 				beat * 0.25 * CONSTS.QUARTER_SPACING +
-				(332 / CONSTS.QUARTER_SPACING + 2) * CONSTS.QUARTER_SPACING,
+				(Math.floor(332 / CONSTS.QUARTER_SPACING) + 2) * CONSTS.QUARTER_SPACING,
+			beat: beat,
 			hasDonation: false,
 			arrows: arrows,
 		};
@@ -331,33 +376,15 @@ function Dance(props: ChannelProps) {
 		const delta = app.current.ticker.deltaMS;
 		const scroll = timeToScroll(delta);
 
-		let doNoteHit = false;
+		let doBeat = false;
 		let doDonation = false;
-
-		// scroll notes, check for hits/hits with donos
-		for (const [index, note] of world.notes.entries()) {
-			note.y = note.y - scroll;
-
-			if (!note.hasDonation && world.pendingDonations > 0) {
-				note.hasDonation = true;
-				world.pendingDonations -= 1;
-			}
-
-			if (note.y < 5) {
-				doNoteHit = true;
-				if (note.hasDonation) doDonation = true;
-
-				for (const arrow of note.arrows) {
-					noteContainer.current.removeChild(arrow.sprite);
-					world.receptors[arrow.direction].noteReceived = true;
-				}
-				world.notes.splice(index, 1);
-			}
-		}
+		let doNoteHit = false;
 
 		// update nextBeat and add notes if needed
 		world.nextBeat = world.nextBeat - delta;
 		if (world.nextBeat < 0) {
+			doBeat = true;
+
 			if (world.pendingDonations == 0) {
 				// emit notes every other beat by default
 				if (world.emittedNoteLastBeat) {
@@ -379,6 +406,30 @@ function Dance(props: ChannelProps) {
 				addNote(Beat.SecondSixteenth);
 				world.emittedNoteLastBeat = true;
 			}
+		}
+
+		// scroll notes, check for hits/hits with donos
+		for (const [index, note] of world.notes.entries()) {
+			note.y = note.y - scroll;
+
+			if (!note.hasDonation && world.pendingDonations > 0) {
+				note.hasDonation = true;
+				world.pendingDonations -= 1;
+			}
+
+			if (note.y < 8 && ((note.beat == Beat.Quarter && doBeat) || note.beat != Beat.Quarter)) {
+				doNoteHit = true;
+				if (note.hasDonation) doDonation = true;
+
+				for (const arrow of note.arrows) {
+					noteContainer.current.removeChild(arrow.sprite);
+					world.receptors[arrow.direction].noteReceived = true;
+				}
+				world.notes.splice(index, 1);
+			}
+		}
+
+		if (doBeat) {
 			world.nextBeat = world.nextBeat + 1 / BEATS_PER_MILLIS;
 		}
 
@@ -422,6 +473,9 @@ function Dance(props: ChannelProps) {
 				receptor.noteReceived = false;
 				receptor.sprite.gotoAndPlay(0);
 			}
+			if (doBeat) {
+				receptor.pulseSprite.gotoAndPlay(0);
+			}
 		});
 	});
 
@@ -443,9 +497,19 @@ function Dance(props: ChannelProps) {
 			receptorSprite.position.set(directionOffset(dir), 0);
 			receptorSprite.loop = false;
 			receptorSprite.animationSpeed = 0.4;
-			const receptor = { direction: dir, noteReceived: false, sprite: receptorSprite };
+
+			const pulseSprite = new PIXI.AnimatedSprite(
+				spritesheet.current.animations[Direction[dir] + 'ReceptorPulse'],
+			);
+			pulseSprite.position.set(directionOffset(dir), 0);
+			pulseSprite.loop = false;
+			pulseSprite.alpha = 0.5;
+			pulseSprite.animationSpeed = 0.4;
+
+			const receptor = { direction: dir, noteReceived: false, sprite: receptorSprite, pulseSprite: pulseSprite };
 			world.receptors.push(receptor);
 			fieldContainer.current.addChild(receptorSprite);
+			fieldContainer.current.addChild(pulseSprite);
 		}
 
 		noteContainer.current = new PIXI.Container();
