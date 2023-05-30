@@ -226,7 +226,7 @@ export function Undertale(props: ChannelProps) {
 				{!hasDialogue && <PlayerHeart />}
 			</TextBox>
 			<TotalText>
-				$<TweenNumber value={total?.raw} />
+				$<TweenNumber value={Math.floor(total?.raw ?? 0)} />
 			</TotalText>
 		</Container>
 	);

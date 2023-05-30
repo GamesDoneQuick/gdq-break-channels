@@ -366,7 +366,7 @@ export function DesertBus(_: ChannelProps) {
 			<Canvas width={1092} height={332} ref={canvasRef} />
 			<BusContainer ref={busRef}>
 				<TotalText>
-					$<TweenNumber value={total?.raw} />
+					$<TweenNumber value={Math.floor(total?.raw ?? 0)} />
 				</TotalText>
 				<Bus src={bus} />
 				<Tree src={tree} />

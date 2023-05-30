@@ -125,7 +125,7 @@ export function Mgs3(_: ChannelProps) {
 			)}
 			<Static src={staticNoise} />
 			<TotalText>
-				$<TweenNumber value={total?.raw} />
+				$<TweenNumber value={Math.floor(total?.raw ?? 0)} />
 			</TotalText>
 		</Container>
 	);

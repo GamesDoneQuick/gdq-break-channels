@@ -245,7 +245,7 @@ export function PapersPlease(props: ChannelProps) {
 					<GoalAmount>{goalAmountLocked}</GoalAmount>
 				</GoalStamp>
 				<TotalEl style={{ ...currentCountry.totalTextLocation }}>
-					$<TweenNumber value={total?.raw} />
+					$<TweenNumber value={Math.floor(total?.raw ?? 0)} />
 				</TotalEl>
 				<SupplementaryText style={{ ...currentCountry.supplementTextLocation }}>
 					<div>{goalAmount}</div>
