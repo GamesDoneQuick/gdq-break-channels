@@ -633,7 +633,7 @@ function Dance(props: ChannelProps) {
 	}, [app]);
 
 	useListenFor('donation', (donation: FormattedDonation) => {
-		worldRef.current.pendingDonations += 1;
+		worldRef.current.pendingDonations += Math.floor(Math.sqrt(donation.rawAmount));
 	});
 
 	return (
