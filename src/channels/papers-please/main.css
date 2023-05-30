@@ -39,7 +39,7 @@
 /* This exists to re-prioritize positioning */
 .person {
     top: -5px;
-	left: -250px;
+	left: -300px;
 }
 .personAppear {
     animation: 1.6s personAppear ease-in-out 2s 1 forwards;
