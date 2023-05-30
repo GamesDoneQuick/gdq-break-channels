@@ -393,8 +393,12 @@ function Dance(props: ChannelProps) {
 					addNote(Beat.Quarter);
 					world.emittedNoteLastBeat = true;
 				}
-			} else if (world.pendingDonations <= 4) {
+			} else if (world.pendingDonations <= 2) {
 				// we don't have enough notes for all the donos
+				addNote(Beat.Quarter);
+				world.emittedNoteLastBeat = true;
+			} else if (world.pendingDonations <= 4) {
+				// we still don't have enough notes for all the donos
 				addNote(Beat.Quarter);
 				addNote(Beat.Eighth);
 				world.emittedNoteLastBeat = true;
