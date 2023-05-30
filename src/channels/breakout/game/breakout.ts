@@ -1,10 +1,11 @@
 import { Collider } from './collider';
-import { collisionBox, containsPoint, sumVelocities } from './math';
+import { collisionBox, containsPoint, positionToVelocity, sumVelocities, velocityToPosition } from './math';
 import { Ball, Block, Bounds, Color, Move, Paddle, Side } from './model';
 
 const PADDLE_SPEED_LIMIT = 3;
 const BALL_SPEED_LIMIT = 2;
 const PADDLE_ACCEL = 0.2;
+const MIN_VERTICAL_SPEED = 0.3;
 
 export interface BreakoutState {
 	readonly bounds: Bounds;
@@ -60,6 +61,18 @@ export class Breakout {
 			// If the ball is inside the paddle, yeet it back out.
 			if (containsPoint(collisionBox(this.paddle), ball)) {
 				ball.x += paddleTranslate;
+			}
+
+			// If the ball has a low vertical velocity, adjust it.
+			const ballVelocity = velocityToPosition(ball);
+			if (Math.abs(ballVelocity.y) < MIN_VERTICAL_SPEED) {
+				const newVelocity = positionToVelocity({
+					...ballVelocity,
+					y: ballVelocity.y * 2,
+				});
+
+				ball.angle = newVelocity.angle;
+				ball.amplitude = Math.min(BALL_SPEED_LIMIT, newVelocity.amplitude);
 			}
 
 			const collisionResult = this.collider.collisionsFor({

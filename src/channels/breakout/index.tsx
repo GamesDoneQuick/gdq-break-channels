@@ -67,7 +67,7 @@ function Breakout(props: ChannelProps) {
 	function emitBall() {
 		const x = breakout.bounds.width / 2;
 		const y = breakout.bounds.height / 2;
-		const angle = angleBetween({ x, y }, breakout.paddle) + (Math.random() * Math.PI) / 8 - Math.PI / 16;
+		const angle = -Math.random() * Math.PI;
 
 		breakout.addBall({
 			x,
@@ -168,18 +168,18 @@ function Breakout(props: ChannelProps) {
 	useEffect(() => {
 		if (!app.current || crtFilter.current) return;
 		crtFilter.current = new CRTFilter({
-			vignetting: 0.15,
+			vignetting: 0.2,
 			time: 0,
 			lineWidth: 1,
-			lineContrast: 0.5,
-			noise: 0.2,
+			lineContrast: 0.3,
+			noise: 0.1,
 		});
 
 		app.current.stage.filters = [crtFilter.current];
 
 		backdrop.current = new PIXI.Graphics();
 
-		backdrop.current.beginFill(0x181818);
+		backdrop.current.beginFill(Color.LIGHT_GRAY);
 		backdrop.current.drawRect(breakout.bounds.x, breakout.bounds.y, breakout.bounds.width, breakout.bounds.height);
 
 		app.current.stage.addChild(backdrop.current);

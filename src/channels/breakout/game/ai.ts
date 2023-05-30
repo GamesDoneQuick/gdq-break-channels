@@ -27,11 +27,7 @@ export class BreakoutAI {
 		}
 
 		// Head towards middle if nothing else to do.
-		if (this.paddleCenter() > this.boardCenter()) {
-			this.move(Move.LEFT);
-		} else {
-			this.move(Move.RIGHT);
-		}
+		this.move(this.directionTo(this.boardCenter()));
 	}
 
 	private findBallToChase(): Ball | undefined {
