@@ -66,6 +66,7 @@ const citationTexts: string[] = [
 	'Did you know about Prime Gaming?',
 	'Sequence Breaking',
 	'Dropped your combo',
+	'Didn\'t say "Yes Chef".',
 ];
 
 export function PapersPlease(props: ChannelProps) {
