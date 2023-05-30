@@ -20,7 +20,8 @@ registerChannel('Mega Man', 87, MegaMan, {
 });
 
 const MEGA_MAN_CONSTS = {
-	MAX_QUEUE_LENGTH: 5,
+	QUEUE_INTERVAL: 55,
+	MAX_QUEUE_LENGTH: 2,
 	LARGE_PICKUP_DONATION_THRESHOLD: 100,
 	MOVE_SPEED_CLOUDS: 0.25,
 	MOVE_SPEED_BUILDING: 0.5,
@@ -39,7 +40,9 @@ function MegaMan(props: ChannelProps) {
 		usePreloadedReplicant<Total | null>('total', null)[0]?.raw ?? 0,
 	);
 	const introRunning = useRef<boolean>(true);
+	const donationCountdown = useRef<number>(0);
 	const donationQueue = useRef<MegaManDonationQueueEntry[]>([]);
+	const liveDonations = useRef<MegaManDonationQueueEntry[]>([]);
 
 	const megaManYSpeed = useRef<number>(0);
 
@@ -112,11 +115,15 @@ function MegaMan(props: ChannelProps) {
 
 		(objects.current.ground as PIXI.TilingSprite).tilePosition.x -= MEGA_MAN_CONSTS.MOVE_SPEED_FOREGROUND;
 
+		donationCountdown.current--;
+		if (donationCountdown.current <= 0 && donationQueue.current.length > 0) {
+			liveDonations.current.push(donationQueue.current.shift()!);
+			donationCountdown.current = MEGA_MAN_CONSTS.QUEUE_INTERVAL;
+		}
+
 		const container = objects.current.container as PIXI.Container;
 
-		if (donationQueue.current.length > 0) {
-			const dono = donationQueue.current[0];
-
+		for (const dono of liveDonations.current) {
 			if (dono.state === MegaManDonationState.WAITING) {
 				// Beginning to handle a new donation: Create the enemy sprite
 				dono.state = MegaManDonationState.STARTED;
@@ -204,7 +211,7 @@ function MegaMan(props: ChannelProps) {
 						dono.sprPickup.animationSpeed = 1 / 6;
 						dono.sprPickup.play();
 						dono.sprPickupYSpeed = MEGA_MAN_CONSTS.JUMP_PICKUP_INITIAL;
-						
+
 						container.addChild(dono.sprDestroy, dono.sprPickup);
 						dono.state = MegaManDonationState.HIT;
 					}
@@ -225,9 +232,9 @@ function MegaMan(props: ChannelProps) {
 				}
 
 				// Check for pickup x Mega Man collision
-				if (dono.sprPickup!.x <= 54) {
+				if (dono.sprPickup!.x <= 52) {
 					dono.sprPickup!.destroy();
-					donationQueue.current.shift();
+					liveDonations.current.shift();
 
 					// Pause all animations for 500ms (the time it takes for TweenNumber to count up)
 					// By pausing the main PIXI ticker, animated sprites are also stopped
@@ -353,6 +360,7 @@ function MegaMan(props: ChannelProps) {
 	}, [app]);
 
 	useListenFor('donation', (donation: FormattedDonation) => {
+		console.log('True total:', donation.newTotal);
 		if (donationQueue.current.length >= MEGA_MAN_CONSTS.MAX_QUEUE_LENGTH) {
 			// Avoid making the queue too long during donation trains, but start dropping big pickups
 			const latestDonation = donationQueue.current.at(-1)!;
