@@ -306,7 +306,7 @@ function DragonWarrior(props: ChannelProps) {
 	useListenFor('donation', (donation: FormattedDonation) => {
 		if (gameState.current === 'overworld') {
 			// Get donation without dollar sign because it doesn't exist in the NES font
-			let amount = (Math.round(donation.rawAmount * 100) / 100).toString();
+			let amount = donation.amount.slice(1);
 			let a = amount.startsWith('8') ? 'An' : 'A';
 
 			frame.current = 0;
