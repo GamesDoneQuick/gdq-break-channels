@@ -41,6 +41,7 @@ export enum Color {
 	INDIGO = 0x4b0082,
 	VIOLET = 0x9400d3,
 	WHITE = 0xcfcfcf,
+	LIGHT_GRAY = 0x181818,
 }
 
 export enum Side {

@@ -54,6 +54,7 @@ function Breakout(props: ChannelProps) {
 
 	const blocks = useRef<PIXI.Graphics[]>([]);
 	const balls = useRef<PIXI.Graphics[]>([]);
+	const backdrop = useRef<PIXI.Graphics | null>(null);
 	const paddle = useRef<PIXI.Graphics | null>(null);
 	const crtFilter = useRef<CRTFilter | null>(null);
 	const ai = useRef<BreakoutAI | null>(null);
@@ -155,21 +156,33 @@ function Breakout(props: ChannelProps) {
 				paddle.current.destroy();
 				app.current!.stage.removeChild(paddle.current);
 			}
+
+			if (backdrop.current) {
+				backdrop.current.destroy();
+				app.current!.stage.removeChild(backdrop.current);
+			}
 		};
 	});
 
-	// Create initial filters
+	// Create initial filters/backdrop
 	useEffect(() => {
 		if (!app.current || crtFilter.current) return;
 		crtFilter.current = new CRTFilter({
 			vignetting: 0.15,
 			time: 0,
-			lineWidth: 1.25,
+			lineWidth: 1,
 			lineContrast: 0.5,
-			noise: 0.4,
+			noise: 0.2,
 		});
 
 		app.current.stage.filters = [crtFilter.current];
+
+		backdrop.current = new PIXI.Graphics();
+
+		backdrop.current.beginFill(0x181818);
+		backdrop.current.drawRect(breakout.bounds.x, breakout.bounds.y, breakout.bounds.width, breakout.bounds.height);
+
+		app.current.stage.addChild(backdrop.current);
 	});
 
 	// Create blocks

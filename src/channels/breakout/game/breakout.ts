@@ -2,7 +2,7 @@ import { Collider } from './collider';
 import { collisionBox, containsPoint, sumVelocities } from './math';
 import { Ball, Block, Bounds, Color, Move, Paddle, Side } from './model';
 
-const PADDLE_SPEED_LIMIT = 2.5;
+const PADDLE_SPEED_LIMIT = 3;
 const BALL_SPEED_LIMIT = 2;
 const PADDLE_ACCEL = 0.2;
 

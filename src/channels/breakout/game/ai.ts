@@ -76,7 +76,12 @@ export class BreakoutAI {
 	}
 
 	private directionTo(xCoord: number): Move {
-		if (this.paddleCenter() > xCoord) return Move.LEFT;
+		const paddleCenter = this.paddleCenter();
+
+		// We're close enough. Just sit still (helps prevent wobbling):
+		if (Math.abs(paddleCenter - xCoord) < this.game.paddle.width * 0.3) return Move.NONE;
+
+		if (paddleCenter > xCoord) return Move.LEFT;
 
 		return Move.RIGHT;
 	}
