@@ -123,17 +123,32 @@ function Breakout(props: ChannelProps) {
 
 		paddle.current.setTransform(breakout.paddle.x, breakout.paddle.y);
 
-		if (breakout.isLevelClear()) {
+		if (breakout.isLevelClear() && !resetting.current) {
+			resetting.current = true;
+
 			// Clear all the balls.
 			breakout.balls.length = 0;
 
-			// Reset all the blocks;
-			breakout.blocks.forEach((block) => (block.destroyed = false));
+			breakout.stop();
 
-			// We won. Give us a starter ball.
-			emitBall();
+			const victoryInterval = setInterval(() => {
+				breakout.blocks.forEach((block) => {
+					block.destroyed = Math.random() > 0.5;
+				});
+			}, 100);
 
-			resetting.current = false;
+			setTimeout(() => {
+				clearInterval(victoryInterval);
+
+				// Reset all the blocks;
+				breakout.blocks.forEach((block) => (block.destroyed = false));
+
+				// We won. Give us a starter ball.
+				emitBall();
+
+				resetting.current = false;
+				breakout.start();
+			}, 2000);
 		}
 
 		return () => {
@@ -183,7 +198,7 @@ function Breakout(props: ChannelProps) {
 		backdrop.current.drawRect(breakout.bounds.x, breakout.bounds.y, breakout.bounds.width, breakout.bounds.height);
 
 		app.current.stage.addChild(backdrop.current);
-	});
+	}, [app, crtFilter]);
 
 	// Create blocks
 	useEffect(() => {
@@ -240,7 +255,7 @@ function Breakout(props: ChannelProps) {
 		Array.from({ length: blocksPerRow }, (_, i) =>
 			addBlock(Color.VIOLET, { x: i * (BLOCK_WIDTH + 5) + leftOffset, y: top + 90 }),
 		);
-	});
+	}, [app, total]);
 
 	useEffect(() => {
 		if (!app.current || ai.current || !breakout) return;
@@ -255,7 +270,7 @@ function Breakout(props: ChannelProps) {
 			clearInterval(aiInterval);
 			ai.current = null;
 		};
-	});
+	}, [app, ai]);
 
 	// Create paddle
 	useEffect(() => {
@@ -264,7 +279,7 @@ function Breakout(props: ChannelProps) {
 		paddle.current = new PIXI.Graphics(PADDLE_TEMPLATE.geometry);
 
 		app.current.stage.addChild(paddle.current);
-	});
+	}, [app, paddle]);
 
 	return (
 		<Container>
