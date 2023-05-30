@@ -10,5 +10,6 @@ import './undertale';
 import './t-rex-runner';
 import './template';
 import './papers-please';
+import './dance';
 
 export * from './channels';
