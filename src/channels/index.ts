@@ -8,6 +8,7 @@ import './tetris';
 import './spyro';
 import './undertale';
 import './t-rex-runner';
+import './dragon-warrior';
 import './template';
 import './papers-please';
 

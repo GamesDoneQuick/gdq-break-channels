@@ -58,3 +58,8 @@
 	font-family: WebbyCaps;
 	src: url('fonts/WebbyCaps.ttf') format('truetype');
 }
+
+@font-face {
+	font-family: DragonWarrior;
+	src: url('fonts/dragon-warrior.ttf') format('truetype');
+}
