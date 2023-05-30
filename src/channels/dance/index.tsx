@@ -50,6 +50,11 @@ const CONSTS = {
 	COMBO_MIN_ALPHA: 0.9,
 	COMBO_X: 450,
 	COMBO_Y: 155,
+	MAX_COMBO_MESSAGE: 'MAX COMBO: ',
+	MAX_COMBO_COLOR: 0xffffff,
+	MAX_COMBO_SIZE: 24,
+	MAX_COMBO_X: 450,
+	MAX_COMBO_Y: 290,
 };
 
 const BEATS_PER_MILLIS = CONSTS.TARGET_BPM / (60 * 1000);
@@ -261,6 +266,7 @@ interface World {
 	pendingDonations: number;
 	noteHitRemaining: number;
 	comboCount: number;
+	maxCombo: number;
 	nextBeat: number;
 	emittedNoteLastBeat: Boolean;
 	receptors: Receptor[];
@@ -272,6 +278,7 @@ function initWorld(): World {
 		pendingDonations: 0,
 		noteHitRemaining: 0,
 		comboCount: 0,
+		maxCombo: 0,
 		nextBeat: 0,
 		emittedNoteLastBeat: true,
 		receptors: [],
@@ -308,6 +315,7 @@ function Dance(props: ChannelProps) {
 	const noteContainer = useRef<PIXI.Container | null>(null);
 	const noteHit = useRef<PIXI.Text | null>(null);
 	const combo = useRef<PIXI.Text | null>(null);
+	const maxCombo = useRef<PIXI.Text | null>(null);
 
 	const worldRef = useRef<World>(initWorld());
 
@@ -367,7 +375,8 @@ function Dance(props: ChannelProps) {
 			!spritesheet.current ||
 			!noteContainer.current ||
 			!noteHit.current ||
-			!combo.current
+			!combo.current ||
+			!maxCombo.current
 		)
 			return;
 
@@ -449,6 +458,7 @@ function Dance(props: ChannelProps) {
 				combo.current.text = world.comboCount + CONSTS.COMBO_MESSAGE;
 				combo.current.alpha = 1;
 			}
+			if (world.comboCount > world.maxCombo) world.maxCombo = world.comboCount;
 		} else if (doNoteHit) {
 			noteHit.current.text = CONSTS.DEFAULT_HIT_MESSAGE;
 			noteHit.current.style.fill = CONSTS.DEFAULT_HIT_COLOR;
@@ -463,6 +473,7 @@ function Dance(props: ChannelProps) {
 			}
 		}
 		noteHit.current.alpha = world.noteHitRemaining / CONSTS.HIT_FADE_MILLIS;
+		maxCombo.current.text = CONSTS.MAX_COMBO_MESSAGE + world.maxCombo;
 
 		// update note sprites
 		world.notes.forEach((note) => {
@@ -536,12 +547,23 @@ function Dance(props: ChannelProps) {
 		combo.current.alpha = 0;
 		combo.current.position.set(CONSTS.COMBO_X, CONSTS.COMBO_Y);
 
+		maxCombo.current = new PIXI.Text(CONSTS.MAX_COMBO_MESSAGE + world.maxCombo, {
+			fontFamily: 'gdqpixel',
+			fontSize: CONSTS.MAX_COMBO_SIZE,
+			fill: CONSTS.MAX_COMBO_COLOR,
+		});
+		maxCombo.current.position.set(CONSTS.MAX_COMBO_X, CONSTS.MAX_COMBO_Y);
+
 		app.current.stage.addChild(noteHit.current);
 		app.current.stage.addChild(combo.current);
+		app.current.stage.addChild(maxCombo.current);
 		app.current.stage.addChild(fieldContainer.current);
 
 		return () => {
 			const world = worldRef.current;
+
+			if (!maxCombo.current?.destroyed) maxCombo.current?.destroy();
+			maxCombo.current = null;
 
 			if (!combo.current?.destroyed) combo.current?.destroy();
 			combo.current = null;
