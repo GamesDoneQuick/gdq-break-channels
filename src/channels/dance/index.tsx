@@ -10,14 +10,7 @@ import TweenNumber from '@gdq/lib/components/TweenNumber';
 import { useCallback, useEffect, useRef } from 'react';
 
 import spritesImage from './sprites.png';
-
-import b4u from './b4u.png';
-import butterfly from './butterfly.png';
-import csfilsm from './cant-stop-falling-in-love-speed-mix.png';
-import kickTheCan from './kick-the-can.png';
-import max300 from './max-300.png';
-
-const BACKGROUNDS = [b4u, butterfly, csfilsm, kickTheCan, max300];
+import backgroundImages from './backgrounds.png';
 
 const CONSTS = {
 	LEFT_PAD: 150,
@@ -58,6 +51,36 @@ const CONSTS = {
 };
 
 const BEATS_PER_MILLIS = CONSTS.TARGET_BPM / (60 * 1000);
+
+const BACKGROUNDS = ['b4u', 'butterfly', 'cantStop', 'kickTheCan', 'max300'];
+
+const BACKGROUNDS_ATLAS = {
+	frames: {
+		b4u: {
+			frame: { x: 0, y: 0, w: 546, h: 166 },
+			sourceSize: { w: 546, h: 166 },
+		},
+		butterfly: {
+			frame: { x: 0, y: 166, w: 546, h: 166 },
+			sourceSize: { w: 546, h: 166 },
+		},
+		cantStop: {
+			frame: { x: 0, y: 332, w: 546, h: 166 },
+			sourceSize: { w: 546, h: 166 },
+		},
+		kickTheCan: {
+			frame: { x: 0, y: 498, w: 546, h: 166 },
+			sourceSize: { w: 546, h: 166 },
+		},
+		max300: {
+			frame: { x: 0, y: 664, w: 546, h: 166 },
+			sourceSize: { w: 546, h: 166 },
+		},
+	},
+	meta: {
+		scale: '.5',
+	},
+};
 
 const SPRITES = {
 	animations: {
@@ -308,8 +331,9 @@ function Dance(props: ChannelProps) {
 	const [total] = useReplicant<Total | null>('total', null);
 
 	const containerRef = useRef<HTMLDivElement>(null);
-	const background = useRef('');
 	const spritesheet = useRef<PIXI.Spritesheet | null>(null);
+	const backgroundSheet = useRef<PIXI.Spritesheet | null>(null);
+	const background = useRef<PIXI.Sprite | null>(null);
 
 	const fieldContainer = useRef<PIXI.Container | null>(null);
 	const noteContainer = useRef<PIXI.Container | null>(null);
@@ -499,7 +523,14 @@ function Dance(props: ChannelProps) {
 
 		const world = worldRef.current;
 
-		background.current = BACKGROUNDS[getRandomInt(BACKGROUNDS.length)];
+		backgroundSheet.current = new PIXI.Spritesheet(PIXI.BaseTexture.from(backgroundImages), BACKGROUNDS_ATLAS);
+		backgroundSheet.current.parse();
+
+		const bgTexture = BACKGROUNDS[getRandomInt(BACKGROUNDS.length)];
+
+		background.current = new PIXI.Sprite(backgroundSheet.current.textures[bgTexture]);
+		background.current.tint = 0x999999;
+		app.current.stage.addChild(background.current);
 
 		spritesheet.current = new PIXI.Spritesheet(PIXI.BaseTexture.from(spritesImage), SPRITES);
 		spritesheet.current.parse();
@@ -587,6 +618,12 @@ function Dance(props: ChannelProps) {
 			if (!fieldContainer.current?.destroyed) fieldContainer.current?.destroy();
 			fieldContainer.current = null;
 
+			if (!background.current?.destroyed) background.current?.destroy();
+			background.current = null;
+
+			if (backgroundSheet.current) backgroundSheet.current?.destroy();
+			backgroundSheet.current = null;
+
 			if (spritesheet.current) spritesheet.current?.destroy();
 			spritesheet.current = null;
 		};
@@ -598,7 +635,6 @@ function Dance(props: ChannelProps) {
 
 	return (
 		<Container ref={containerRef}>
-			<Background src={background.current} />
 			<Canvas width={1092} height={332} ref={canvasRef} />
 			<TotalText>
 				$<TweenNumber value={Math.floor(total?.raw ?? 0)} />
@@ -631,15 +667,4 @@ const TotalText = styled.div`
 
 	right: 20px;
 	top: 30px;
-`;
-
-const Background = styled.img`
-	position: absolute;
-	width: 1092px;
-	height: 1092px;
-	object-fit: cover;
-	filter: brightness(0.5);
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
 `;
