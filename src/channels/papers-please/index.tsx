@@ -91,7 +91,7 @@ export function PapersPlease(props: ChannelProps) {
 	const totalRaw = total ? total.raw : 0;
 	const [animationPlaying, setAnimationPlaying] = useState(false);
 	const [goalProgress, setGoalProgress] = useState(totalRaw);
-	const goalTarget = (Math.floor(goalProgress / 10000) + 1) * 10000;
+	const goalTarget = (Math.floor(goalProgress / 1000) + 1) * 1000;
 	const goalAmount = CurrencyToAbbreviation({
 		inputNumber: goalTarget,
 		inputLocale: 'en-US',
