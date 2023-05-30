@@ -48,3 +48,13 @@
 	font-family: CryptOfTomorrow;
 	src: url('fonts/CryptOfTomorrow.ttf') format('truetype');
 }
+
+@font-face {
+	font-family: ProggyTiny;
+	src: url('fonts/ProggyTiny.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: WebbyCaps;
+	src: url('fonts/WebbyCaps.ttf') format('truetype');
+}
