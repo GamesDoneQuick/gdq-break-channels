@@ -262,22 +262,45 @@ function DragonWarrior(props: ChannelProps) {
 		anim.position.set(530, 152);
 		anim.play();
 
-		const donationTotal = new PIXI.Container();
+		const container = new PIXI.Container();
 
 		// Add nodes
-		app.current?.stage.addChild(map_left.current);
-		app.current?.stage.addChild(map_right.current);
-		app.current?.stage.addChild(donationTotal);
-		app.current?.stage.addChild(anim);
+		container.addChild(map_left.current);
+		container.addChild(map_right.current);
+		container.addChild(anim);
 
 		for (let tile of battle_bg_sprites.current) {
-			app.current?.stage.addChild(tile);
+			container.addChild(tile);
 		}
 
-		app.current?.stage.addChild(textBox.current);
-		app.current?.stage.addChild(blueSlime.current);
-		app.current?.stage.addChild(redSlime.current);
-		app.current?.stage.addChild(metalSlime.current);
+		container.addChild(textBox.current);
+		container.addChild(blueSlime.current);
+		container.addChild(redSlime.current);
+		container.addChild(metalSlime.current);
+
+		app.current?.stage.addChild(container);
+
+		return () => {
+			if (!map_left.current?.destroyed) map_left.current?.destroy();
+			if (!map_right.current?.destroyed) map_right.current?.destroy();
+			if (!blueSlime.current?.destroyed) blueSlime.current?.destroy();
+			if (!redSlime.current?.destroyed) redSlime.current?.destroy();
+			if (!metalSlime.current?.destroyed) metalSlime.current?.destroy();
+			if (!currentSlime.current?.destroyed) currentSlime.current?.destroy();
+			if (!textBox.current?.destroyed) textBox.current?.destroy();
+
+			for (let sprite of battle_bg_sprites.current || []) {
+				if (!sprite.destroyed) sprite.destroy();
+			}
+
+			if (!anim.destroyed) anim.destroy();
+
+			if (battle_bg.current) battle_bg.current.destroy();
+			if (slimes.current) slimes.current.destroy();
+			if (player.current) player.current.destroy();
+
+			if (!container.destroyed) container.destroy(true);
+		};
 	}, [app]);
 
 	useListenFor('donation', (donation: FormattedDonation) => {
