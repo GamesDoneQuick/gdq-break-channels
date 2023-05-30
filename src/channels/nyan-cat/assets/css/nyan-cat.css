@@ -1,0 +1,177 @@
+.sprite, .stars .star {
+	position: absolute;
+	background-position: 0 0, 0 5px, 0 10px, 0 15px, 0 20px, 0 25px, 0 30px, 0 35px, 0 40px, 0 45px, 0 50px, 0 55px, 0 60px, 0 65px, 0 70px, 0 75px, 0 80px, 0 85px, 0 90px, 0 95px, 0 100px, 0 105px, 0 110px, 0 115px, 0 120px, 0 125px;
+	background-size: 100% 5px;
+	background-repeat: no-repeat;
+}
+
+.wrapper {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	margin-top: -150px;
+	margin-left: -200px;
+	border-width: 1px;
+	overflow: hidden;
+	border-style: solid;
+	border-color: #0259b2;
+	background: #013366;
+	box-shadow: 0 10px 100px rgba(0, 0, 0, 0.3);
+}
+
+.nyan-cat {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	z-index: 1;
+	width: 200px;
+	height: 124px;
+}
+
+.nyan-cat img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+.new-dono {
+	-webkit-animation: dono 2s linear infinite;
+	animation: dono 2s linear infinite;
+}
+
+.stars {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	-webkit-animation: moveleft 2s linear infinite;
+	animation: moveleft 2s linear infinite;
+}
+
+.stars .star {
+	width: 28px;
+	height: 28px;
+	overflow: hidden;
+}
+
+.stars .star span {
+	position: absolute;
+	left: 0;
+	width: 112px;
+	height: 28px;
+	background-position: 0 0, 0 2px, 0 4px, 0 6px, 0 8px, 0 10px, 0 12px, 0 14px, 0 16px, 0 18px, 0 20px, 0 22px, 0 24px, 0 26px, 0 28px;
+	background-size: 112px 2px;
+	background-repeat: no-repeat;
+	-webkit-animation: star 300ms step-start infinite alternate;
+	animation: star 300ms step-start infinite alternate;
+}
+
+.star:nth-child(1) {
+	left: 17.5%;
+	top: -3.333%;
+}
+
+.star:nth-child(2) {
+	left: 62.5%;
+	top: 10%;
+}
+
+.star:nth-child(3) {
+	left: 87.5%;
+	top: 23%;
+}
+
+.star:nth-child(4) {
+	left: 5%;
+	top: 3.333%;
+}
+
+.star:nth-child(5) {
+	left: 75%;
+	top: 66.666%;
+}
+
+.star:nth-child(6) {
+	left: 25%;
+	top: 83.333%;
+}
+
+.star:nth-child(7) {
+	left: 117.5%;
+	top: -3.333%;
+}
+
+.star:nth-child(8) {
+	left: 162.5%;
+	top: 10%;
+}
+
+.star:nth-child(9) {
+	left: 187.5%;
+	top: 23.333%;
+}
+
+.star:nth-child(10) {
+	left: 105%;
+	top: 33.333%;
+}
+
+.star:nth-child(11) {
+	left: 175%;
+	top: 66.666%;
+}
+
+.star:nth-child(12) {
+	left: 125%;
+	top: 83.333%;
+}
+
+.star > span {
+	background-image: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 12px, #ffffff 12px, #ffffff 16px, rgba(0, 0, 0, 0) 16px, rgba(0, 0, 0, 0) 112px), linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 12px, #ffffff 12px, #ffffff 16px, rgba(0, 0, 0, 0) 16px, rgba(0, 0, 0, 0) 112px), linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 4px, #ffffff 4px, #ffffff 8px, rgba(0, 0, 0, 0) 8px, rgba(0, 0, 0, 0) 20px, #ffffff 20px, #ffffff 24px, rgba(0, 0, 0, 0) 24px, rgba(0, 0, 0, 0) 40px, #ffffff 40px, #ffffff 44px, rgba(0, 0, 0, 0) 44px, rgba(0, 0, 0, 0) 68px, #ffffff 68px, #ffffff 72px, rgba(0, 0, 0, 0) 72px, rgba(0, 0, 0, 0) 112px), linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 4px, #ffffff 4px, #ffffff 8px, rgba(0, 0, 0, 0) 8px, rgba(0, 0, 0, 0) 20px, #ffffff 20px, #ffffff 24px, rgba(0, 0, 0, 0) 24px, rgba(0, 0, 0, 0) 40px, #ffffff 40px, #ffffff 44px, rgba(0, 0, 0, 0) 44px, rgba(0, 0, 0, 0) 68px, #ffffff 68px, #ffffff 72px, rgba(0, 0, 0, 0) 72px, rgba(0, 0, 0, 0) 112px), linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 68px, #ffffff 68px, #ffffff 72px, rgba(0, 0, 0, 0) 72px, rgba(0, 0, 0, 0) 112px), linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 68px, #ffffff 68px, #ffffff 72px, rgba(0, 0, 0, 0) 72px, rgba(0, 0, 0, 0) 112px), linear-gradient(to right, #ffffff 0%, #ffffff 4px, rgba(0, 0, 0, 0) 4px, rgba(0, 0, 0, 0) 24px, #ffffff 24px, #ffffff 28px, rgba(0, 0, 0, 0) 28px, rgba(0, 0, 0, 0) 32px, #ffffff 32px, #ffffff 36px, rgba(0, 0, 0, 0) 36px, rgba(0, 0, 0, 0) 40px, #ffffff 40px, #ffffff 44px, rgba(0, 0, 0, 0) 44px, rgba(0, 0, 0, 0) 48px, #ffffff 48px, #ffffff 52px, rgba(0, 0, 0, 0) 52px, rgba(0, 0, 0, 0) 60px, #ffffff 60px, #ffffff 68px, rgba(0, 0, 0, 0) 68px, rgba(0, 0, 0, 0) 72px, #ffffff 72px, #ffffff 80px, rgba(0, 0, 0, 0) 80px, rgba(0, 0, 0, 0) 96px, #ffffff 96px, #ffffff 100px, rgba(0, 0, 0, 0) 100px, rgba(0, 0, 0, 0) 112px), linear-gradient(to right, #ffffff 0%, #ffffff 4px, rgba(0, 0, 0, 0) 4px, rgba(0, 0, 0, 0) 24px, #ffffff 24px, #ffffff 28px, rgba(0, 0, 0, 0) 28px, rgba(0, 0, 0, 0) 32px, #ffffff 32px, #ffffff 36px, rgba(0, 0, 0, 0) 36px, rgba(0, 0, 0, 0) 40px, #ffffff 40px, #ffffff 44px, rgba(0, 0, 0, 0) 44px, rgba(0, 0, 0, 0) 48px, #ffffff 48px, #ffffff 52px, rgba(0, 0, 0, 0) 52px, rgba(0, 0, 0, 0) 60px, #ffffff 60px, #ffffff 68px, rgba(0, 0, 0, 0) 68px, rgba(0, 0, 0, 0) 72px, #ffffff 72px, #ffffff 80px, rgba(0, 0, 0, 0) 80px, rgba(0, 0, 0, 0) 96px, #ffffff 96px, #ffffff 100px, rgba(0, 0, 0, 0) 100px, rgba(0, 0, 0, 0) 112px), linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 68px, #ffffff 68px, #ffffff 72px, rgba(0, 0, 0, 0) 72px, rgba(0, 0, 0, 0) 112px), linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 68px, #ffffff 68px, #ffffff 72px, rgba(0, 0, 0, 0) 72px, rgba(0, 0, 0, 0) 112px), linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 4px, #ffffff 4px, #ffffff 8px, rgba(0, 0, 0, 0) 8px, rgba(0, 0, 0, 0) 20px, #ffffff 20px, #ffffff 24px, rgba(0, 0, 0, 0) 24px, rgba(0, 0, 0, 0) 40px, #ffffff 40px, #ffffff 44px, rgba(0, 0, 0, 0) 44px, rgba(0, 0, 0, 0) 68px, #ffffff 68px, #ffffff 72px, rgba(0, 0, 0, 0) 72px, rgba(0, 0, 0, 0) 112px), linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 4px, #ffffff 4px, #ffffff 8px, rgba(0, 0, 0, 0) 8px, rgba(0, 0, 0, 0) 20px, #ffffff 20px, #ffffff 24px, rgba(0, 0, 0, 0) 24px, rgba(0, 0, 0, 0) 40px, #ffffff 40px, #ffffff 44px, rgba(0, 0, 0, 0) 44px, rgba(0, 0, 0, 0) 68px, #ffffff 68px, #ffffff 72px, rgba(0, 0, 0, 0) 72px, rgba(0, 0, 0, 0) 112px), linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 12px, #ffffff 12px, #ffffff 16px, rgba(0, 0, 0, 0) 16px, rgba(0, 0, 0, 0) 112px), linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 12px, #ffffff 12px, #ffffff 16px, rgba(0, 0, 0, 0) 16px, rgba(0, 0, 0, 0) 112px);
+}
+
+@keyframes dono {
+	0% {
+		top: 0;
+	}
+	100% {
+		top: -300px;
+	}
+}
+
+@keyframes moveleft {
+	0% {
+		left: 0;
+	}
+	100% {
+		left: -100%;
+	}
+}
+
+@keyframes star {
+	0% {
+		left: 0;
+	}
+	25% {
+		left: 0;
+	}
+	49.99% {
+		left: 0;
+	}
+	50% {
+		left: -28px;
+	}
+	74.99% {
+		left: -28px;
+	}
+	75% {
+		left: -56px;
+	}
+	99.99% {
+		left: -56px;
+	}
+	100% {
+		left: -84px;
+	}
+}
