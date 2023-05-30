@@ -48,6 +48,9 @@ const CONSTS = {
 	MAX_COMBO_SIZE: 24,
 	MAX_COMBO_X: 450,
 	MAX_COMBO_Y: 290,
+	CATCHUP_BEAT_THRESHOLD: 3,
+	CATCHUP_EIGHTH_THRESHOLD: 10,
+	CATCHUP_SIXTEENTH_THRESHOLD: 20,
 };
 
 const BEATS_PER_MILLIS = CONSTS.TARGET_BPM / (60 * 1000);
@@ -418,7 +421,7 @@ function Dance(props: ChannelProps) {
 		if (world.nextBeat < 0) {
 			doBeat = true;
 
-			if (world.pendingDonations == 0) {
+			if (world.pendingDonations <= CONSTS.CATCHUP_BEAT_THRESHOLD) {
 				// emit notes every other beat by default
 				if (world.emittedNoteLastBeat) {
 					world.emittedNoteLastBeat = false;
@@ -426,11 +429,11 @@ function Dance(props: ChannelProps) {
 					addNote(Beat.Quarter);
 					world.emittedNoteLastBeat = true;
 				}
-			} else if (world.pendingDonations <= 2) {
+			} else if (world.pendingDonations <= CONSTS.CATCHUP_EIGHTH_THRESHOLD) {
 				// we don't have enough notes for all the donos
 				addNote(Beat.Quarter);
 				world.emittedNoteLastBeat = true;
-			} else if (world.pendingDonations <= 4) {
+			} else if (world.pendingDonations <= CONSTS.CATCHUP_SIXTEENTH_THRESHOLD) {
 				// we still don't have enough notes for all the donos
 				addNote(Beat.Quarter);
 				addNote(Beat.Eighth);
