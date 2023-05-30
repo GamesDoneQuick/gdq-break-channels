@@ -213,6 +213,26 @@ interface Receptor {
 	sprite: PIXI.AnimatedSprite;
 }
 
+interface World {
+	pendingDonations: number;
+	noteHitRemaining: number;
+	comboCount: number;
+	nextBeat: number;
+	receptors: Receptor[];
+	notes: Note[];
+}
+
+function initWorld(): World {
+	return {
+		pendingDonations: 0,
+		noteHitRemaining: 0,
+		comboCount: 0,
+		nextBeat: 0,
+		receptors: [],
+		notes: [],
+	};
+}
+
 function directionOffset(direction: Direction) {
 	return direction * (CONSTS.COLUMN_WIDTH + CONSTS.COLUMN_PAD);
 }
@@ -244,15 +264,12 @@ function Dance(props: ChannelProps) {
 	const noteHit = useRef<PIXI.Text | null>(null);
 	const combo = useRef<PIXI.Text | null>(null);
 
-	const pendingDonations = useRef(0);
-	const noteHitRemaining = useRef(0);
-	const comboCount = useRef(0);
-	const nextBeat = useRef(0);
-	const receptors = useRef<Receptor[]>([]);
-	const notes = useRef<Note[]>([]);
+	const worldRef = useRef<World>(initWorld());
 
 	const addNote = useCallback((beat: Beat) => {
-		if (!app.current || !notes.current || !spritesheet.current || !noteContainer.current) return;
+		if (!app.current || !worldRef.current || !spritesheet.current || !noteContainer.current) return;
+
+		const world = worldRef.current;
 
 		const arrows = [];
 
@@ -284,14 +301,14 @@ function Dance(props: ChannelProps) {
 
 		const note = {
 			y:
-				timeToScroll(nextBeat.current) +
+				timeToScroll(world.nextBeat) +
 				beat * 0.25 * CONSTS.QUARTER_SPACING +
 				(332 / CONSTS.QUARTER_SPACING + 2) * CONSTS.QUARTER_SPACING,
 			hasDonation: false,
 			arrows: arrows,
 		};
 
-		notes.current.push(note);
+		world.notes.push(note);
 		note.arrows.forEach((arrow) => {
 			noteContainer.current?.addChildAt(arrow.sprite, 0);
 		});
@@ -300,13 +317,15 @@ function Dance(props: ChannelProps) {
 	const [app, canvasRef] = usePIXICanvas({ width: 1092, height: 332 }, () => {
 		if (
 			!app.current ||
-			!notes.current ||
+			!worldRef.current ||
 			!spritesheet.current ||
 			!noteContainer.current ||
 			!noteHit.current ||
 			!combo.current
 		)
 			return;
+
+		const world = worldRef.current;
 
 		const delta = app.current.ticker.deltaMS;
 		const scroll = timeToScroll(delta);
@@ -315,12 +334,12 @@ function Dance(props: ChannelProps) {
 		let doDonation = false;
 
 		// scroll notes, check for hits/hits with donos
-		for (const [index, note] of notes.current.entries()) {
+		for (const [index, note] of world.notes.entries()) {
 			note.y = note.y - scroll;
 
-			if (!note.hasDonation && pendingDonations.current > 0) {
+			if (!note.hasDonation && world.pendingDonations > 0) {
 				note.hasDonation = true;
-				pendingDonations.current -= 1;
+				world.pendingDonations -= 1;
 			}
 
 			if (note.y < 5) {
@@ -329,18 +348,18 @@ function Dance(props: ChannelProps) {
 
 				for (const arrow of note.arrows) {
 					noteContainer.current.removeChild(arrow.sprite);
-					receptors.current[arrow.direction].noteReceived = true;
+					world.receptors[arrow.direction].noteReceived = true;
 				}
-				notes.current.splice(index, 1);
+				world.notes.splice(index, 1);
 			}
 		}
 
 		// update nextBeat and add notes if needed
-		nextBeat.current = nextBeat.current - delta;
-		if (nextBeat.current < 0) {
-			if (pendingDonations.current == 0) {
+		world.nextBeat = world.nextBeat - delta;
+		if (world.nextBeat < 0) {
+			if (world.pendingDonations == 0) {
 				addNote(Beat.Quarter);
-			} else if (pendingDonations.current <= 4) {
+			} else if (world.pendingDonations <= 4) {
 				// we don't have enough notes for all the donos
 				addNote(Beat.Quarter);
 				addNote(Beat.Eighth);
@@ -351,7 +370,7 @@ function Dance(props: ChannelProps) {
 				addNote(Beat.Eighth);
 				addNote(Beat.SecondSixteenth);
 			}
-			nextBeat.current = nextBeat.current + 1 / BEATS_PER_MILLIS;
+			world.nextBeat = world.nextBeat + 1 / BEATS_PER_MILLIS;
 		}
 
 		// handle rendering of hit messages/dono combos
@@ -360,39 +379,36 @@ function Dance(props: ChannelProps) {
 			noteHit.current.text = msg;
 			noteHit.current.style.fill = color;
 			noteHit.current.style.fontSize = CONSTS.DONO_HIT_SIZE;
-			noteHitRemaining.current = CONSTS.HIT_FADE_MILLIS;
-			comboCount.current += 1;
-			if (comboCount.current >= CONSTS.COMBO_THRESHOLD) {
-				combo.current.text = comboCount.current + CONSTS.COMBO_MESSAGE;
+			world.noteHitRemaining = CONSTS.HIT_FADE_MILLIS;
+			world.comboCount += 1;
+			if (world.comboCount >= CONSTS.COMBO_THRESHOLD) {
+				combo.current.text = world.comboCount + CONSTS.COMBO_MESSAGE;
 				combo.current.alpha = 1;
 			}
 		} else if (doNoteHit) {
 			noteHit.current.text = CONSTS.DEFAULT_HIT_MESSAGE;
 			noteHit.current.style.fill = CONSTS.DEFAULT_HIT_COLOR;
 			noteHit.current.style.fontSize = CONSTS.DEFAULT_HIT_SIZE;
-			noteHitRemaining.current = CONSTS.HIT_FADE_MILLIS;
-			comboCount.current = 0;
+			world.noteHitRemaining = CONSTS.HIT_FADE_MILLIS;
+			world.comboCount = 0;
 			combo.current.alpha = 0;
 		} else {
-			noteHitRemaining.current = Math.max(noteHitRemaining.current - delta, 0);
-			if (comboCount.current >= CONSTS.COMBO_THRESHOLD) {
-				combo.current.alpha = Math.max(
-					noteHitRemaining.current / CONSTS.HIT_FADE_MILLIS,
-					CONSTS.COMBO_MIN_ALPHA,
-				);
+			world.noteHitRemaining = Math.max(world.noteHitRemaining - delta, 0);
+			if (world.comboCount >= CONSTS.COMBO_THRESHOLD) {
+				combo.current.alpha = Math.max(world.noteHitRemaining / CONSTS.HIT_FADE_MILLIS, CONSTS.COMBO_MIN_ALPHA);
 			}
 		}
-		noteHit.current.alpha = noteHitRemaining.current / CONSTS.HIT_FADE_MILLIS;
+		noteHit.current.alpha = world.noteHitRemaining / CONSTS.HIT_FADE_MILLIS;
 
 		// update note sprites
-		notes.current.forEach((note) => {
+		world.notes.forEach((note) => {
 			note.arrows.forEach((arrow) => {
 				arrow.sprite.position.set(directionOffset(arrow.direction), note.y);
 			});
 		});
 
 		// play receptor animation for hits
-		receptors.current.forEach((receptor) => {
+		world.receptors.forEach((receptor) => {
 			if (receptor.noteReceived) {
 				receptor.noteReceived = false;
 				receptor.sprite.gotoAndPlay(0);
@@ -402,6 +418,8 @@ function Dance(props: ChannelProps) {
 
 	useEffect(() => {
 		if (!app.current) return;
+
+		const world = worldRef.current;
 
 		background.current = BACKGROUNDS[getRandomInt(BACKGROUNDS.length)];
 
@@ -417,7 +435,7 @@ function Dance(props: ChannelProps) {
 			receptorSprite.loop = false;
 			receptorSprite.animationSpeed = 0.4;
 			const receptor = { direction: dir, noteReceived: false, sprite: receptorSprite };
-			receptors.current.push(receptor);
+			world.receptors.push(receptor);
 			fieldContainer.current.addChild(receptorSprite);
 		}
 
@@ -425,7 +443,7 @@ function Dance(props: ChannelProps) {
 		fieldContainer.current.addChild(noteContainer.current);
 
 		addNote(Beat.Quarter);
-		nextBeat.current = 1 / BEATS_PER_MILLIS;
+		world.nextBeat = 1 / BEATS_PER_MILLIS;
 
 		noteHit.current = new PIXI.Text('', {
 			fontFamily: 'gdqpixel',
@@ -446,41 +464,37 @@ function Dance(props: ChannelProps) {
 		app.current.stage.addChild(fieldContainer.current);
 
 		return () => {
+			const world = worldRef.current;
+
 			if (!combo.current?.destroyed) combo.current?.destroy();
 			combo.current = null;
 
 			if (!noteHit.current?.destroyed) noteHit.current?.destroy();
 			noteHit.current = null;
 
-			notes.current?.forEach((note) => {
+			world.notes.forEach((note) => {
 				note.arrows.forEach((arrow) => {
 					if (!arrow.sprite.destroyed) arrow.sprite.destroy();
 				});
 			});
-			notes.current = [];
-			if (!noteContainer.current?.destroyed) noteContainer.current?.destroy();
-			noteContainer.current = null;
-
-			receptors.current?.forEach((receptor) => {
+			world.receptors.forEach((receptor) => {
 				if (!receptor.sprite.destroyed) receptor.sprite.destroy();
 			});
-			receptors.current = [];
+			worldRef.current = initWorld();
+
+			if (!noteContainer.current?.destroyed) noteContainer.current?.destroy();
+			noteContainer.current = null;
 
 			if (!fieldContainer.current?.destroyed) fieldContainer.current?.destroy();
 			fieldContainer.current = null;
 
 			if (spritesheet.current) spritesheet.current?.destroy();
 			spritesheet.current = null;
-
-			nextBeat.current = 0;
-			comboCount.current = 0;
-			noteHitRemaining.current = 0;
-			pendingDonations.current = 0;
 		};
 	}, [app]);
 
 	useListenFor('donation', (donation: FormattedDonation) => {
-		pendingDonations.current += 1;
+		worldRef.current.pendingDonations += 1;
 	});
 
 	return (
