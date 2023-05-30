@@ -25,13 +25,13 @@ const MEGA_MAN_CONSTS = {
 	MOVE_SPEED_CLOUDS: 0.25,
 	MOVE_SPEED_BUILDING: 0.5,
 	MOVE_SPEED_FOREGROUND: 1,
+	MOVE_SPEED_ENEMY: 2,
 	MOVE_SPEED_BULLET: 4,
 	MOVE_SPEED_TELEPORT: 4,
 	JUMP_MEGA_MAN_INITIAL: -4,
 	JUMP_MEGA_MAN_GRAVITY: 0.25,
 	JUMP_PICKUP_INITIAL: -2,
 	JUMP_PICKUP_GRAVITY: 0.25,
-	PARK_POSITION: 400,
 };
 
 function MegaMan(props: ChannelProps) {
@@ -42,7 +42,6 @@ function MegaMan(props: ChannelProps) {
 	const donationQueue = useRef<MegaManDonationQueueEntry[]>([]);
 
 	const megaManYSpeed = useRef<number>(0);
-	const pickupYSpeed = useRef<number>(0);
 
 	const objects = useRef<Record<string, PIXI.DisplayObject> | null>(null);
 	const cloudRows = useRef<MegaManCloudRow[]>([]);
@@ -113,120 +112,130 @@ function MegaMan(props: ChannelProps) {
 
 		(objects.current.ground as PIXI.TilingSprite).tilePosition.x -= MEGA_MAN_CONSTS.MOVE_SPEED_FOREGROUND;
 
-		const enemy = objects.current.enemy as PIXI.AnimatedSprite;
-		const bullet = objects.current.bullet as PIXI.Sprite;
-		const destroy = objects.current.destroy as PIXI.AnimatedSprite;
-		const pickup = objects.current.pickup as PIXI.AnimatedSprite;
-
-		if (bullet.x < MEGA_MAN_CONSTS.PARK_POSITION) {
-			bullet.x += MEGA_MAN_CONSTS.MOVE_SPEED_BULLET;
-		}
-
-		if (pickup.x < MEGA_MAN_CONSTS.PARK_POSITION) {
-			pickup.x -= MEGA_MAN_CONSTS.MOVE_SPEED_FOREGROUND;
-
-			if (pickup.y + pickup.height < 65 || pickupYSpeed.current <= 0) {
-				pickup.y += pickupYSpeed.current;
-				pickupYSpeed.current += MEGA_MAN_CONSTS.JUMP_PICKUP_GRAVITY;
-				if (pickup.y + pickup.height > 65 && pickupYSpeed.current > 0) {
-					pickup.y = 65 - pickup.height;
-				}
-			}
-		}
+		const container = objects.current.container as PIXI.Container;
 
 		if (donationQueue.current.length > 0) {
-			const currentDonation = donationQueue.current[0];
+			const dono = donationQueue.current[0];
 
-			if (currentDonation.state === MegaManDonationState.WAITING) {
-				// Beginning to handle a new donation: Prepare the enemy sprite
-				currentDonation.state = MegaManDonationState.STARTED;
-
-				enemy.textures = spritesheet.current.animations[currentDonation.enemy.animName];
-				enemy.play();
-				enemy.x = 288;
-				if (currentDonation.enemy.isGrounded) {
-					enemy.y = 65 - enemy.height;
+			if (dono.state === MegaManDonationState.WAITING) {
+				// Beginning to handle a new donation: Create the enemy sprite
+				dono.state = MegaManDonationState.STARTED;
+				dono.sprEnemy = new PIXI.AnimatedSprite(spritesheet.current.animations[dono.enemy.animName]);
+				dono.sprEnemy.play();
+				dono.sprEnemy.x = 288;
+				dono.sprEnemy.animationSpeed = 1 / 8;
+				if (dono.enemy.isGrounded) {
+					dono.sprEnemy.y = 65 - dono.sprEnemy.height;
 				} else {
-					enemy.y = 25 - enemy.height / 2;
+					dono.sprEnemy.y = 25 - dono.sprEnemy.height / 2;
 				}
-			} else if (
-				currentDonation.state === MegaManDonationState.STARTED ||
-				currentDonation.state === MegaManDonationState.FIRED
-			) {
+				container.addChild(dono.sprEnemy);
+			} else if (dono.state === MegaManDonationState.STARTED || dono.state === MegaManDonationState.FIRED) {
 				// Enemy is still alive in these states - move it
-				enemy.x -= MEGA_MAN_CONSTS.MOVE_SPEED_FOREGROUND;
+				dono.sprEnemy!.x -= MEGA_MAN_CONSTS.MOVE_SPEED_ENEMY;
 
 				// Wait for a bit until firing the bullet
-				if (currentDonation.state === MegaManDonationState.STARTED) {
+				if (dono.state === MegaManDonationState.STARTED) {
 					// If hitting the enemy requires a jump, set YSpeed
-					if (currentDonation.enemy.mustJump && megaMan.y >= 41 && enemy.x <= 220) {
+					if (dono.enemy.mustJump && megaMan.y >= 41 && dono.sprEnemy!.x <= 170) {
 						megaManYSpeed.current = MEGA_MAN_CONSTS.JUMP_MEGA_MAN_INITIAL;
 						megaMan.textures = [spritesheet.current.textures.jump];
 					}
 
 					// Is it time to fire?
-					if (enemy.x <= 210) {
-						currentDonation.state = MegaManDonationState.FIRED;
-						bullet.x = 64;
-						bullet.y = megaMan.y + 9;
+					if (dono.sprEnemy!.x <= 150) {
+						dono.state = MegaManDonationState.FIRED;
+						dono.sprBullet = new PIXI.Sprite(spritesheet.current.textures.bullet);
+						dono.sprBullet.x = 64;
+						dono.sprBullet.y = megaMan.y + 9;
+						container.addChild(dono.sprBullet);
+
 						megaMan.textures =
 							megaMan.y < 41
 								? [spritesheet.current.textures.s_jump]
 								: spritesheet.current.animations.s_walk;
 						megaMan.play();
+						setTimeout(() => {
+							megaMan.textures =
+								megaMan.y < 41
+									? [spritesheet.current!.textures.jump]
+									: spritesheet.current!.animations.walk;
+							megaMan.play();
+						}, 300);
 					}
 				} else {
 					// Bullet has been fired and is travelling, check for collision
-					if (bullet.x + bullet.width >= enemy.x + enemy.width / 2 - 8) {
-						destroy.x = enemy.x + enemy.width / 2;
-						destroy.y = enemy.y + enemy.height / 2;
-						if (currentDonation.enemy == MegaManEnemyList.BATTON) {
-							destroy.y -= 6;
+					dono.sprBullet!.x += MEGA_MAN_CONSTS.MOVE_SPEED_BULLET;
+					if (dono.sprBullet!.x + dono.sprBullet!.width >= dono.sprEnemy!.x + dono.sprEnemy!.width / 2 - 8) {
+						dono.sprDestroy = new PIXI.AnimatedSprite(spritesheet.current.animations.destroy);
+						dono.sprDestroy.pivot.x = dono.sprDestroy.width / 2;
+						dono.sprDestroy.pivot.y = dono.sprDestroy.height / 2;
+						dono.sprDestroy.x = dono.sprEnemy!.x + dono.sprEnemy!.width / 2;
+						dono.sprDestroy.y = dono.sprEnemy!.y + dono.sprEnemy!.height / 2;
+						if (dono.enemy == MegaManEnemyList.BLOCKY) {
+							dono.sprDestroy.y -= 8;
+						} else if (dono.enemy == MegaManEnemyList.BATTON) {
+							dono.sprDestroy.y -= 6;
 						}
-						destroy.alpha = 1;
-						destroy.gotoAndPlay(0);
+						dono.sprDestroy.loop = false;
+						dono.sprDestroy.onComplete = () => dono.sprDestroy!.destroy();
+						dono.sprDestroy.animationSpeed = 1 / 4;
+						dono.sprDestroy.play();
 
-						megaMan.textures = spritesheet.current.animations.walk;
-						megaMan.play();
-						bullet.x = MEGA_MAN_CONSTS.PARK_POSITION;
-						enemy.x = MEGA_MAN_CONSTS.PARK_POSITION;
+						dono.sprEnemy!.destroy();
+						dono.sprBullet!.destroy();
 
-						if (currentDonation.bigPickup) {
-							pickup.textures =
+						let pickupAnimName: PIXI.Texture[];
+						if (dono.bigPickup) {
+							pickupAnimName =
 								Math.random() < 0.5
 									? spritesheet.current.animations.pickup_hl
 									: spritesheet.current.animations.pickup_el;
 						} else {
-							pickup.textures =
+							pickupAnimName =
 								Math.random() < 0.5
 									? spritesheet.current.animations.pickup_hs
 									: spritesheet.current.animations.pickup_es;
 						}
-						pickup.play();
-						pickup.x = destroy.x - pickup.width / 2;
-						pickup.y = destroy.y - pickup.height / 2;
-						pickupYSpeed.current = MEGA_MAN_CONSTS.JUMP_PICKUP_INITIAL;
-						currentDonation.state = MegaManDonationState.HIT;
+
+						dono.sprPickup = new PIXI.AnimatedSprite(pickupAnimName);
+						dono.sprPickup.x = dono.sprDestroy.x - dono.sprPickup.width / 2;
+						dono.sprPickup.y = dono.sprDestroy.y - dono.sprPickup.height / 2;
+						dono.sprPickup.animationSpeed = 1 / 6;
+						dono.sprPickup.play();
+						dono.sprPickupYSpeed = MEGA_MAN_CONSTS.JUMP_PICKUP_INITIAL;
+						
+						container.addChild(dono.sprDestroy, dono.sprPickup);
+						dono.state = MegaManDonationState.HIT;
 					}
 				}
 			} else {
 				// currentDonation.state == MegaManDonationState.HIT
+				if (!dono.sprDestroy!.destroyed) {
+					dono.sprDestroy!.x -= MEGA_MAN_CONSTS.MOVE_SPEED_FOREGROUND;
+				}
+
+				dono.sprPickup!.x -= MEGA_MAN_CONSTS.MOVE_SPEED_FOREGROUND;
+				if (dono.sprPickup!.y + dono.sprPickup!.height < 65 || dono.sprPickupYSpeed! <= 0) {
+					dono.sprPickup!.y += dono.sprPickupYSpeed!;
+					dono.sprPickupYSpeed! += MEGA_MAN_CONSTS.JUMP_PICKUP_GRAVITY;
+					if (dono.sprPickup!.y + dono.sprPickup!.height > 65 && dono.sprPickupYSpeed! > 0) {
+						dono.sprPickup!.y = 65 - dono.sprPickup!.height;
+					}
+				}
+
 				// Check for pickup x Mega Man collision
-				if (pickup.x <= 54) {
-					pickup.x = MEGA_MAN_CONSTS.PARK_POSITION;
+				if (dono.sprPickup!.x <= 54) {
+					dono.sprPickup!.destroy();
 					donationQueue.current.shift();
 
 					// Pause all animations for 500ms (the time it takes for TweenNumber to count up)
 					// By pausing the main PIXI ticker, animated sprites are also stopped
-					setShownTotal(currentDonation.newTotal);
+					setShownTotal(dono.newTotal);
 					app.current?.ticker.stop();
 					setTimeout(() => app.current?.ticker.start(), 500);
 				}
 			}
-		}
-
-		if (destroy.alpha > 0) {
-			destroy.x -= MEGA_MAN_CONSTS.MOVE_SPEED_FOREGROUND;
 		}
 
 		if (megaMan.y < 41 || megaManYSpeed.current < 0) {
@@ -234,7 +243,10 @@ function MegaMan(props: ChannelProps) {
 			megaManYSpeed.current += MEGA_MAN_CONSTS.JUMP_MEGA_MAN_GRAVITY;
 			if (megaMan.y >= 41 && megaManYSpeed.current > 0) {
 				megaMan.y = 41;
-				megaMan.textures = spritesheet.current.animations.s_walk;
+				megaMan.textures =
+					megaMan.textures[0] === spritesheet.current.textures.jump
+						? spritesheet.current.animations.walk
+						: spritesheet.current.animations.s_walk;
 				megaMan.play();
 			}
 		}
@@ -252,14 +264,11 @@ function MegaMan(props: ChannelProps) {
 			if (!spritesheet.current) return;
 
 			objects.current = {
+				container,
 				background: new PIXI.Graphics(),
 				building: new PIXI.Sprite(spritesheet.current.textures.building),
 				ground: new PIXI.TilingSprite(spritesheet.current.textures.ground, 273, 19),
-				enemy: new PIXI.AnimatedSprite(spritesheet.current.animations.enemy_mettool),
-				bullet: new PIXI.Sprite(spritesheet.current.textures.bullet),
 				megaMan: new PIXI.AnimatedSprite([spritesheet.current.textures.teleport1]),
-				destroy: new PIXI.AnimatedSprite(spritesheet.current.animations.destroy),
-				pickup: new PIXI.AnimatedSprite(spritesheet.current.animations.pickup_hs),
 				ready: new PIXI.Sprite(spritesheet.current.textures.ready),
 			};
 
@@ -300,15 +309,6 @@ function MegaMan(props: ChannelProps) {
 			objects.current.ground.y = 64;
 			container.addChild(objects.current.ground);
 
-			const enemy = objects.current.enemy as PIXI.AnimatedSprite;
-			enemy.x = MEGA_MAN_CONSTS.PARK_POSITION;
-			enemy.animationSpeed = 1 / 8;
-			container.addChild(enemy);
-
-			objects.current.bullet.x = MEGA_MAN_CONSTS.PARK_POSITION;
-			objects.current.bullet.y = 50;
-			container.addChild(objects.current.bullet);
-
 			// Intro animation: Mega Man starts in the teleport sprite
 			// Placed far above the camera frame, so he drops in the exact right moment
 			const megaMan = objects.current.megaMan as PIXI.AnimatedSprite;
@@ -318,20 +318,6 @@ function MegaMan(props: ChannelProps) {
 			megaMan.y = -32 - MEGA_MAN_CONSTS.MOVE_SPEED_TELEPORT * 180;
 			megaMan.loop = false;
 			container.addChild(megaMan);
-
-			const destroy = objects.current.destroy as PIXI.AnimatedSprite;
-			destroy.alpha = 0;
-			destroy.loop = false;
-			destroy.onComplete = () => (destroy.alpha = 0);
-			destroy.animationSpeed = 1 / 4;
-			destroy.pivot.x = destroy.width / 2;
-			destroy.pivot.y = destroy.height / 2;
-			container.addChild(destroy);
-
-			const pickup = objects.current.pickup as PIXI.AnimatedSprite;
-			pickup.x = MEGA_MAN_CONSTS.PARK_POSITION;
-			pickup.animationSpeed = 1 / 6;
-			container.addChild(pickup);
 
 			const ready = objects.current.ready as PIXI.Sprite;
 			ready.x = (273 - ready.width) / 2;

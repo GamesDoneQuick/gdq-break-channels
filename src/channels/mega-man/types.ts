@@ -1,4 +1,4 @@
-import type { Sprite, TilingSprite } from 'pixi.js';
+import type { AnimatedSprite, Sprite, TilingSprite } from 'pixi.js';
 
 export type MegaManCloudRow = {
 	initialDist: boolean;
@@ -32,4 +32,9 @@ export type MegaManDonationQueueEntry = {
 	newTotal: number;
 	enemy: MegaManEnemyDescription;
 	bigPickup: boolean;
+	sprEnemy?: AnimatedSprite;
+	sprBullet?: Sprite;
+	sprDestroy?: AnimatedSprite;
+	sprPickup?: AnimatedSprite;
+	sprPickupYSpeed?: number;
 };
