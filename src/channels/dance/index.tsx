@@ -416,11 +416,33 @@ function Dance(props: ChannelProps) {
 		let doDonation = false;
 		let doNoteHit = false;
 
-		// update nextBeat and add notes if needed
+		// update nextBeat
 		world.nextBeat = world.nextBeat - delta;
-		if (world.nextBeat < 0) {
-			doBeat = true;
+		if (world.nextBeat < 0) doBeat = true;
 
+		// scroll notes, check for hits/hits with donos
+		for (const [index, note] of world.notes.entries()) {
+			note.y = note.y - scroll;
+
+			if (!note.hasDonation && world.pendingDonations > 0) {
+				note.hasDonation = true;
+				world.pendingDonations -= 1;
+			}
+
+			if (note.y < 8 && ((note.beat == Beat.Quarter && doBeat) || note.beat != Beat.Quarter)) {
+				doNoteHit = true;
+				if (note.hasDonation) doDonation = true;
+
+				for (const arrow of note.arrows) {
+					noteContainer.current.removeChild(arrow.sprite);
+					world.receptors[arrow.direction].noteReceived = true;
+				}
+				world.notes.splice(index, 1);
+			}
+		}
+
+		// add notes if needed
+		if (doBeat) {
 			if (world.pendingDonations <= CONSTS.CATCHUP_BEAT_THRESHOLD) {
 				// emit notes every other beat by default
 				if (world.emittedNoteLastBeat) {
@@ -446,30 +468,6 @@ function Dance(props: ChannelProps) {
 				addNote(Beat.SecondSixteenth);
 				world.emittedNoteLastBeat = true;
 			}
-		}
-
-		// scroll notes, check for hits/hits with donos
-		for (const [index, note] of world.notes.entries()) {
-			note.y = note.y - scroll;
-
-			if (!note.hasDonation && world.pendingDonations > 0) {
-				note.hasDonation = true;
-				world.pendingDonations -= 1;
-			}
-
-			if (note.y < 8 && ((note.beat == Beat.Quarter && doBeat) || note.beat != Beat.Quarter)) {
-				doNoteHit = true;
-				if (note.hasDonation) doDonation = true;
-
-				for (const arrow of note.arrows) {
-					noteContainer.current.removeChild(arrow.sprite);
-					world.receptors[arrow.direction].noteReceived = true;
-				}
-				world.notes.splice(index, 1);
-			}
-		}
-
-		if (doBeat) {
 			world.nextBeat = world.nextBeat + 1 / BEATS_PER_MILLIS;
 		}
 
