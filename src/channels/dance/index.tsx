@@ -218,6 +218,7 @@ interface World {
 	noteHitRemaining: number;
 	comboCount: number;
 	nextBeat: number;
+	emittedNoteLastBeat: Boolean;
 	receptors: Receptor[];
 	notes: Note[];
 }
@@ -228,6 +229,7 @@ function initWorld(): World {
 		noteHitRemaining: 0,
 		comboCount: 0,
 		nextBeat: 0,
+		emittedNoteLastBeat: true,
 		receptors: [],
 		notes: [],
 	};
@@ -238,7 +240,6 @@ function directionOffset(direction: Direction) {
 }
 
 function timeToScroll(delta: number) {
-	if (delta == 0) return 0;
 	return delta * BEATS_PER_MILLIS * CONSTS.QUARTER_SPACING;
 }
 
@@ -358,17 +359,25 @@ function Dance(props: ChannelProps) {
 		world.nextBeat = world.nextBeat - delta;
 		if (world.nextBeat < 0) {
 			if (world.pendingDonations == 0) {
-				addNote(Beat.Quarter);
+				// emit notes every other beat by default
+				if (world.emittedNoteLastBeat) {
+					world.emittedNoteLastBeat = false;
+				} else {
+					addNote(Beat.Quarter);
+					world.emittedNoteLastBeat = true;
+				}
 			} else if (world.pendingDonations <= 4) {
 				// we don't have enough notes for all the donos
 				addNote(Beat.Quarter);
 				addNote(Beat.Eighth);
+				world.emittedNoteLastBeat = true;
 			} else {
 				// we _really_ don't have enough notes for all the donos
 				addNote(Beat.Quarter);
 				addNote(Beat.FirstSixteenth);
 				addNote(Beat.Eighth);
 				addNote(Beat.SecondSixteenth);
+				world.emittedNoteLastBeat = true;
 			}
 			world.nextBeat = world.nextBeat + 1 / BEATS_PER_MILLIS;
 		}
