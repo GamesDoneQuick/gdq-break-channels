@@ -66,6 +66,7 @@ const citationTexts: string[] = [
 	'Did you know about Prime Gaming?',
 	'Sequence Breaking',
 	'Dropped your combo',
+	'Didn\'t say "Yes Chef".',
 ];
 
 export function PapersPlease(props: ChannelProps) {
@@ -90,7 +91,7 @@ export function PapersPlease(props: ChannelProps) {
 	const totalRaw = total ? total.raw : 0;
 	const [animationPlaying, setAnimationPlaying] = useState(false);
 	const [goalProgress, setGoalProgress] = useState(totalRaw);
-	const goalTarget = (Math.floor(goalProgress / 10000) + 1) * 10000;
+	const goalTarget = (Math.floor(goalProgress / 1000) + 1) * 1000;
 	const goalAmount = CurrencyToAbbreviation({
 		inputNumber: goalTarget,
 		inputLocale: 'en-US',
@@ -245,7 +246,7 @@ export function PapersPlease(props: ChannelProps) {
 					<GoalAmount>{goalAmountLocked}</GoalAmount>
 				</GoalStamp>
 				<TotalEl style={{ ...currentCountry.totalTextLocation }}>
-					$<TweenNumber value={total?.raw} />
+					$<TweenNumber value={Math.floor(total?.raw ?? 0)} />
 				</TotalEl>
 				<SupplementaryText style={{ ...currentCountry.supplementTextLocation }}>
 					<div>{goalAmount}</div>

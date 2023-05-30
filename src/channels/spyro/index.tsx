@@ -60,7 +60,7 @@ export function Spyro(props: ChannelProps) {
 			<TotalEl>
 				<Gem src={gem} />
 				<span>
-					$<TweenNumber value={total?.raw} />
+					$<TweenNumber value={Math.floor(total?.raw ?? 0)} />
 				</span>
 			</TotalEl>
 		</Container>

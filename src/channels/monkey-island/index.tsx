@@ -154,7 +154,7 @@ export function MonkeyIsland(props: ChannelProps) {
 			<VideoBG ref={videoRef} />
 			<ShootingStars ref={starsRef} />
 			<TotalText>
-				$<TweenNumber value={total?.raw} />
+				$<TweenNumber value={Math.floor(total?.raw ?? 0)} />
 			</TotalText>
 			<StanAndGuybrush src={stanAndGuybrush} />
 			<Dialogue>

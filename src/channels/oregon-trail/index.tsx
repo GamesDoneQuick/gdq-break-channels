@@ -137,7 +137,7 @@ export function OregonTrail(_: ChannelProps) {
 			{!viewFerry && (
 				<Container>
 					<TotalText>
-						$<TweenNumber value={total?.raw} />
+						$<TweenNumber value={Math.floor(total?.raw ?? 0)} />
 					</TotalText>
 					<DonationText>raised for</DonationText>
 					<DonationTextBigger>{event.beneficiary}</DonationTextBigger>
