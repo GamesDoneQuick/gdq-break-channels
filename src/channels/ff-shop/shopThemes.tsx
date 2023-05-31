@@ -15,7 +15,7 @@ export const AllThemes: Record<string, ShopTheme> = {
 			rgba(41, 59, 224, 1) 88%,
 			rgba(42, 61, 250, 1) 100%
 		)`,
-		highlightColor: '#1fd3fc',
+		highlightColor: '#51f4fc',
 	},
 	finalFantasyVIII: {
 		id: 'finalFantasyVIII',
@@ -23,7 +23,7 @@ export const AllThemes: Record<string, ShopTheme> = {
 			rgba(40,40,40,1) 0%,
 			rgba(66,66,66,1) 27%,
 			rgba(159,162,163,1) 100%)`,
-		highlightColor: `#e1ff00`,
+		highlightColor: `#ffff00`,
 	},
 	chronoTrigger: {
 		id: 'chronoTrigger',
@@ -35,7 +35,7 @@ export const AllThemes: Record<string, ShopTheme> = {
 			rgba(126, 132, 133, 1) 78%,
 			rgba(159, 162, 163, 1) 100%
 		)`,
-		highlightColor: '#1cd45f',
+		highlightColor: '#0fff67',
 	},
 	dragonQuest: {
 		id: 'dragonQuest',
@@ -44,7 +44,7 @@ export const AllThemes: Record<string, ShopTheme> = {
 			rgba(0, 0, 0, 1) 0%,
 			rgba(0, 0, 0, 1) 100%
 		)`,
-		highlightColor: '#d43d1c',
+		highlightColor: '#fa1919',
 	},
 	finalFantasyIV: {
 		id: 'finalFantasyIV',
@@ -53,7 +53,7 @@ export const AllThemes: Record<string, ShopTheme> = {
 			rgba(10, 26, 105, 1) 0%,
 			rgba(10, 26, 105, 1) 100%
 		)`,
-		highlightColor: '#e1ff00',
+		highlightColor: '#ffff00',
 	},
 };
 

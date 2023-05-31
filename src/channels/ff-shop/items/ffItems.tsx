@@ -3,6 +3,9 @@ import sword from '../assets/items/sword.png';
 import spear from '../assets/items/spear.png';
 import staff from '../assets/items/staff.png';
 import item from '../assets/items/item.png';
+import materiaMagic from '../assets/items/materia-magic.png';
+import materiaSummon from '../assets/items/materia-summon.png';
+import materiaSupport from '../assets/items/materia-support.png';
 
 export const FFItems: Record<string, ShopItem> = {
 	busterSword: {
@@ -88,6 +91,46 @@ export const FFItems: Record<string, ShopItem> = {
 		series: 'finalFantasy',
 		donationTypeRequired: 'small',
 		sprite: item,
+	},
+	knightsOfTheRound: {
+		id: 'knightsOfTheRound',
+		name: 'Knights of the Round',
+		description: `Summons the extremely powerful Knights of the Round Table. Its animation could kill your run.`,
+		series: 'finalFantasy',
+		donationTypeRequired: 'big',
+		sprite: materiaSummon,
+	},
+	bahamutZero: {
+		id: 'bahamutZero',
+		name: 'Bahamut ZERO',
+		description: `A hidden and easily-missed Summon Materia. Its devastating Tera Flare is satisfying to watch.`,
+		series: 'finalFantasy',
+		donationTypeRequired: 'big',
+		sprite: materiaSummon,
+	},
+	hpAbsorb: {
+		id: 'hpAbsorb',
+		name: 'HP Absorb',
+		description: `When using the Materia attached to this one, some HP can be regained.`,
+		series: 'finalFantasy',
+		donationTypeRequired: 'small',
+		sprite: materiaSupport,
+	},
+	fire: {
+		id: 'fire',
+		name: 'Fire',
+		description: `Just your basic fire magic. Can be found in most games.`,
+		series: 'finalFantasy',
+		donationTypeRequired: 'small',
+		sprite: materiaMagic,
+	},
+	time: {
+		id: 'time',
+		name: 'Time',
+		description: `Just your basic time magic. Can NOT be found in most games.`,
+		series: 'finalFantasy',
+		donationTypeRequired: 'small',
+		sprite: materiaMagic,
 	},
 };
 

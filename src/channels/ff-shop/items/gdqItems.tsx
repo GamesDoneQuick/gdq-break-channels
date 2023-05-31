@@ -1,8 +1,7 @@
 import { ShopItem } from '../shopItems';
 import item from '../assets/items/item.png';
-import materiaAbility from '../assets/items/materia-ability.png';
-import materiaSpell from '../assets/items/materia-spell.png';
-import materiaStatus from '../assets/items/materia-status.png';
+import materiaMagic from '../assets/items/materia-magic.png';
+import materiaIndependent from '../assets/items/materia-independent.png';
 import materiaCommand from '../assets/items/materia-command.png';
 
 export const GDQItems: Record<string, ShopItem> = {
@@ -28,7 +27,7 @@ export const GDQItems: Record<string, ShopItem> = {
 		description: `I...don't know how you got here. Impressive!`,
 		series: 'gdq',
 		donationTypeRequired: 'small',
-		sprite: materiaAbility,
+		sprite: materiaCommand,
 	},
 	framePerfectTrick: {
 		id: 'framePerfectTrick',
@@ -36,7 +35,7 @@ export const GDQItems: Record<string, ShopItem> = {
 		description: `Achievable with masterful precision or incredible luck. Either way, we're happy!`,
 		series: 'gdq',
 		donationTypeRequired: 'small',
-		sprite: materiaSpell,
+		sprite: materiaMagic,
 	},
 	softLock: {
 		id: 'softLock',
@@ -44,7 +43,7 @@ export const GDQItems: Record<string, ShopItem> = {
 		description: `Uh oh, everythings' broken! Don't worry, just laugh it off and keep trying.`,
 		series: 'gdq',
 		donationTypeRequired: 'small',
-		sprite: materiaStatus,
+		sprite: materiaIndependent,
 	},
 	noclipMode: {
 		id: 'noclipMode',
@@ -53,6 +52,22 @@ export const GDQItems: Record<string, ShopItem> = {
 		series: 'gdq',
 		donationTypeRequired: 'big',
 		sprite: materiaCommand,
+	},
+	saveTheAnimals: {
+		id: 'saveTheAnimals',
+		name: 'Save the Animals',
+		description: `Who cares about frames when furry pals are involved? Those cuties are worth the cost.`,
+		series: 'gdq',
+		donationTypeRequired: 'big',
+		sprite: materiaMagic,
+	},
+	killTheAnimals: {
+		id: 'killTheAnimals',
+		name: 'Kill the Animals',
+		description: `Who cares how monstrous this is? A good run is worth any and every cost.`,
+		series: 'gdq',
+		donationTypeRequired: 'big',
+		sprite: materiaMagic,
 	},
 };
 
