@@ -1,5 +1,6 @@
 import './channels';
 
+import './breakout';
 import './desert-bus';
 import './mgs3';
 import './monkey-island';

@@ -23,6 +23,7 @@
     "@pixi/filter-bevel": "^4.2.0",
     "@pixi/filter-drop-shadow": "^4.2.0",
     "@pixi/filter-outline": "^4.2.0",
+    "@pixi/filter-crt": "^4.2.0",
     "clone": "^2.1.2",
     "currency-to-abbreviation": "^2.0.1",
     "events": "^3.3.0",
