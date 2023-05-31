@@ -18,6 +18,7 @@ import cursorImage from './cursor.png';
 import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
 
 const HP_SCALE_FACTOR = 2;
+const MAX_HITS = 5;
 
 registerChannel('Dragon Warrior', 86, DragonWarrior);
 
@@ -131,6 +132,7 @@ function DragonWarrior(props: ChannelProps) {
 	const [message, setMessage] = useState('');
 	const donationText = useRef<string>('');
 	const HP = useRef<number>(0);
+	const hits = useRef<number>(0);
 	const attacks = useRef<FormattedDonation[]>([]);
 
 	const frame = useRef<number>(0);
@@ -247,6 +249,10 @@ function DragonWarrior(props: ChannelProps) {
 					}
 
 					HP.current = Math.max(0, HP.current - donation.rawAmount);
+					hits.current++;
+					if (hits.current >= MAX_HITS) {
+						HP.current = 0;
+					}
 				}
 			}
 		}
@@ -403,6 +409,7 @@ function DragonWarrior(props: ChannelProps) {
 			currentSlime.current = blueSlime.current;
 
 			HP.current = Math.round(donation.rawAmount * HP_SCALE_FACTOR);
+			hits.current = 0;
 
 			if (donation.rawAmount >= 100) {
 				currentSlime.current = redSlime.current;
