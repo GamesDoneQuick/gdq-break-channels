@@ -153,7 +153,7 @@ export class Breakout {
 	}
 
 	stop() {
-		clearInterval(this.interval);
+		clearInterval(this.interval as Parameters<typeof clearInterval>[0]);
 		this.interval = undefined;
 	}
 
