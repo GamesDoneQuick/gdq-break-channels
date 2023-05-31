@@ -9,6 +9,7 @@ import './tetris';
 import './spyro';
 import './undertale';
 import './t-rex-runner';
+import './ff-shop';
 import './template';
 import './papers-please';
 
