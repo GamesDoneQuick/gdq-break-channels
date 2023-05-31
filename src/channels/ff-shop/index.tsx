@@ -21,15 +21,23 @@ registerChannel('FFMenu', 97, FFMenu, {
 });
 
 const NUMBER_OF_ITEMS = 5;
+const MAXIMUM_SCROLL = 195;
+const STARTING_SCROLL_WINDOW = 100;
+const MINUMUM_SCROLL = 1;
 
 const currentShopItems = nodecg.Replicant<ShopItem[]>('ff-shop-current', {
 	defaultValue: getRandomItems(NUMBER_OF_ITEMS),
 });
 
+function randomScrollPosition(): number {
+	return MAXIMUM_SCROLL - Math.floor(Math.random() * STARTING_SCROLL_WINDOW);
+}
+
 export function FFMenu(props: ChannelProps) {
 	const [event] = usePreloadedReplicant<Event>('currentEvent');
 	const [total] = useReplicant<Total | null>('total', null);
 	const theme = useRef<ShopTheme>(getRandomTheme());
+	const scrollPosition = useRef<number>(randomScrollPosition());
 
 	useListenFor('donation', (donation: FormattedDonation) => {
 		const newItem = getItemFromDonation(donation);
@@ -38,6 +46,11 @@ export function FFMenu(props: ChannelProps) {
 		const newShopItems = [newItem, ...oldShopItems];
 		newShopItems.splice(-1);
 		currentShopItems.value = newShopItems;
+		if (scrollPosition.current <= MINUMUM_SCROLL) {
+			scrollPosition.current = randomScrollPosition();
+		} else {
+			scrollPosition.current = scrollPosition.current - 1;
+		}
 	});
 
 	const formatCurrency = (val: number) =>
@@ -67,21 +80,26 @@ export function FFMenu(props: ChannelProps) {
 						</MenuCard>
 					</Row>
 					<Row>
-						<MenuCard gradient={theme.current.gradient} style={{ padding: '8px 56px 8px 56px' }}>
-							<Column style={{ flexDirection: 'column-reverse' }}>
-								{currentShopItems.value != undefined &&
-									currentShopItems.value.map((item, i) => (
-										<ItemRow key={`${item.id}-${i}`}>
-											<SpriteContainer>
-												<ItemSprite src={item.sprite} />
-											</SpriteContainer>
-											<ItemName>{item.name}</ItemName>
-											{item.donationAmount != undefined && (
-												<ItemAmount>{formatCurrency(item.donationAmount)}</ItemAmount>
-											)}
-										</ItemRow>
-									))}
-							</Column>
+						<MenuCard gradient={theme.current.gradient} style={{ padding: '0' }}>
+							<Row style={{ padding: '8px 0px 8px 56px' }}>
+								<Column style={{ flexDirection: 'column-reverse' }}>
+									{currentShopItems.value != undefined &&
+										currentShopItems.value.map((item, i) => (
+											<ItemRow key={`${item.id}-${i}`}>
+												<SpriteContainer>
+													<ItemSprite src={item.sprite} />
+												</SpriteContainer>
+												<ItemName>{item.name}</ItemName>
+												{item.donationAmount != undefined && (
+													<ItemAmount>{formatCurrency(item.donationAmount)}</ItemAmount>
+												)}
+											</ItemRow>
+										))}
+								</Column>
+								<ScrollBar scrollbarColor={theme.current.scrollbarColor}>
+									<ScrollBlock scrollPosition={scrollPosition.current} />
+								</ScrollBar>
+							</Row>
 						</MenuCard>
 						<MenuCard
 							gradient={theme.current.gradient}
@@ -200,9 +218,34 @@ const ItemAmount = styled.div`
 	font-family: gdqpixel;
 	font-size: 16px;
 `;
+
 const ItemDescription = styled.div<{ highlightColor: string }>`
 	color: ${({ highlightColor }) => highlightColor};
 	font-weight: 900;
+`;
+
+const ScrollBar = styled.div<{ scrollbarColor: string }>`
+	position: relative;
+	width: 3%;
+	height: 100%
+	padding: 0;
+	margin-left: 56px;
+	right: 0;
+	background-color: ${({ scrollbarColor }) => scrollbarColor};
+	display: flex;
+	flex-direction: column;
+	justify-content: end;
+`;
+
+const ScrollBlock = styled.div<{ scrollPosition: number }>`
+	position: relative;
+	width: calc(100% - 2px);
+	height: 10%;
+	margin-top: 0;
+	margin-bottom: ${({ scrollPosition }) => scrollPosition}px;
+	right: 0;
+	background-color: rgba(159, 162, 163, 1);
+	border: 2px outset rgba(215, 215, 215, 1);
 `;
 
 const DonationText = styled.div<{ highlightColor: string }>`

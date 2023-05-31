@@ -2,6 +2,7 @@ export interface ShopTheme {
 	id: string;
 	gradient: string;
 	highlightColor: string;
+	scrollbarColor: string;
 }
 
 export const AllThemes: Record<string, ShopTheme> = {
@@ -16,6 +17,7 @@ export const AllThemes: Record<string, ShopTheme> = {
 			rgba(42, 61, 250, 1) 100%
 		)`,
 		highlightColor: '#51f4fc',
+		scrollbarColor: 'rgba(26, 26, 75, 0.5)',
 	},
 	finalFantasyVIII: {
 		id: 'finalFantasyVIII',
@@ -24,6 +26,7 @@ export const AllThemes: Record<string, ShopTheme> = {
 			rgba(66,66,66,1) 27%,
 			rgba(159,162,163,1) 100%)`,
 		highlightColor: `#ffff00`,
+		scrollbarColor: 'rgba(66,66,66,0.5)',
 	},
 	chronoTrigger: {
 		id: 'chronoTrigger',
@@ -36,6 +39,7 @@ export const AllThemes: Record<string, ShopTheme> = {
 			rgba(159, 162, 163, 1) 100%
 		)`,
 		highlightColor: '#0fff67',
+		scrollbarColor: 'rgba(36, 46, 48, 0.5)',
 	},
 	dragonQuest: {
 		id: 'dragonQuest',
@@ -45,6 +49,7 @@ export const AllThemes: Record<string, ShopTheme> = {
 			rgba(0, 0, 0, 1) 100%
 		)`,
 		highlightColor: '#fa1919',
+		scrollbarColor: 'rgba(0, 0, 0, 1)',
 	},
 	finalFantasyIV: {
 		id: 'finalFantasyIV',
@@ -54,6 +59,7 @@ export const AllThemes: Record<string, ShopTheme> = {
 			rgba(10, 26, 105, 1) 100%
 		)`,
 		highlightColor: '#ffff00',
+		scrollbarColor: 'rgba(0, 0, 65, 0.5)',
 	},
 };
 
