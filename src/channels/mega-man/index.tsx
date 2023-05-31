@@ -98,6 +98,7 @@ function MegaMan(props: ChannelProps) {
 						megaMan.texture = spritesheet.current!.textures.stand;
 						megaMan.y = 41;
 						setTimeout(() => {
+							if (megaMan.destroyed) return;
 							introRunning.current = false;
 							megaMan.textures = spritesheet.current!.animations.walk;
 							megaMan.play();
@@ -163,6 +164,7 @@ function MegaMan(props: ChannelProps) {
 								: spritesheet.current.animations.s_walk;
 						megaMan.play();
 						setTimeout(() => {
+							if (megaMan.destroyed) return;
 							megaMan.textures =
 								megaMan.y < 41
 									? [spritesheet.current!.textures.jump]
@@ -239,8 +241,8 @@ function MegaMan(props: ChannelProps) {
 					// Pause all animations for 500ms (the time it takes for TweenNumber to count up)
 					// By pausing the main PIXI ticker, animated sprites are also stopped
 					setShownTotal(dono.newTotal);
-					app.current?.ticker.stop();
-					setTimeout(() => app.current?.ticker.start(), 500);
+					app.current?.ticker?.stop();
+					setTimeout(() => app.current?.ticker?.start(), 500);
 				}
 			}
 		}
@@ -334,8 +336,14 @@ function MegaMan(props: ChannelProps) {
 
 			// Intro animation: "READY" is blinked here
 			for (let i = 0; i < 3000; i += 250) {
-				setTimeout(() => (ready.alpha = 1), i + 125);
-				setTimeout(() => (ready.alpha = 0), i + 250);
+				setTimeout(() => {
+					if (ready.destroyed) return;
+					ready.alpha = 1;
+				}, i + 125);
+				setTimeout(() => {
+					if (ready.destroyed) return;
+					ready.alpha = 0;
+				}, i + 250);
 			}
 		});
 
@@ -366,7 +374,6 @@ function MegaMan(props: ChannelProps) {
 	}, [app]);
 
 	useListenFor('donation', (donation: FormattedDonation) => {
-		console.log('True total:', donation.newTotal);
 		if (donationQueue.current.length >= MEGA_MAN_CONSTS.MAX_QUEUE_LENGTH) {
 			// Avoid making the queue too long during donation trains, but start dropping big pickups
 			const latestDonation = donationQueue.current.at(-1)!;
