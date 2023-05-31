@@ -17,7 +17,7 @@ export interface BreakoutState {
 export class Breakout {
 	readonly balls: Ball[] = [];
 	private readonly collider: Collider = new Collider(this.bounds);
-	private interval?: NodeJS.Timer;
+	private interval?: ReturnType<typeof setInterval>;
 
 	moveDirection = Move.NONE;
 
