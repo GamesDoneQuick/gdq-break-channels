@@ -1,4 +1,4 @@
-import type { FormattedDonation, Total } from '@gdq/types/tracker';
+import type { Event, FormattedDonation, Total } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
 
 import { useListenFor, useReplicant } from 'use-nodecg';
@@ -15,8 +15,8 @@ import textBoxImage from './text_box.png';
 import commandImage from './command.png';
 import slimesImage from './slimes.png';
 import cursorImage from './cursor.png';
+import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
 
-const CHARITY = 'MSF';
 const HP_SCALE_FACTOR = 2;
 
 registerChannel('Dragon Warrior', 86, DragonWarrior);
@@ -108,6 +108,7 @@ const SPIRAL_MAP = [
 ];
 
 function DragonWarrior(props: ChannelProps) {
+	const [event] = usePreloadedReplicant<Event>('currentEvent');
 	const [total] = useReplicant<Total | null>('total', null);
 
 	const battle_bg = useRef<PIXI.Spritesheet | null>(null);
@@ -389,13 +390,12 @@ function DragonWarrior(props: ChannelProps) {
 
 	const formatDonation = (donation: FormattedDonation) => {
 		let amount = donation.amount.slice(1);
-		return `Chat's donation to ${CHARITY} has been increased by ${amount} dollars.`;
+		return `Chat's donation to ${event.beneficiaryShort} has been increased by ${amount} dollars.`;
 	};
 
 	useListenFor('donation', (donation: FormattedDonation) => {
 		if (gameState.current === 'overworld') {
 			// Get donation without dollar sign because it doesn't exist in the NES font
-
 			frame.current = 0;
 			gameState.current = 'pending';
 
