@@ -12,7 +12,12 @@ import bgImage from './bg.png';
 import battle_bgImage from './battle_bg.png';
 import playerImage from './player.png';
 import textBoxImage from './text_box.png';
+import commandImage from './command.png';
 import slimesImage from './slimes.png';
+import cursorImage from './cursor.png';
+
+const CHARITY = 'MSF';
+const HP_SCALE_FACTOR = 2;
 
 registerChannel('Dragon Warrior', 86, DragonWarrior);
 
@@ -117,9 +122,15 @@ function DragonWarrior(props: ChannelProps) {
 	const metalSlime = useRef<PIXI.Sprite | null>(null);
 	const currentSlime = useRef<PIXI.Sprite | null>(null);
 	const textBox = useRef<PIXI.Sprite | null>(null);
+	const command = useRef<PIXI.Sprite | null>(null);
+	const cursor = useRef<PIXI.Sprite | null>(null);
+	const monster = useRef<string>('');
+	const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const [message, setMessage] = useState('');
 	const donationText = useRef<string>('');
+	const HP = useRef<number>(0);
+	const attacks = useRef<FormattedDonation[]>([]);
 
 	const frame = useRef<number>(0);
 	const gameState = useRef<'overworld' | 'pending' | 'fade_in' | 'encounter' | 'fade_out'>('overworld');
@@ -156,22 +167,31 @@ function DragonWarrior(props: ChannelProps) {
 				}
 			} else if (frame.current >= 49) {
 				// Done animating everything
-				gameState.current = 'encounter';
-
-				setTimeout(() => {
+				if (HP.current < 0) {
+					frame.current = 500;
 					gameState.current = 'fade_out';
-				}, 1500);
+				} else {
+					gameState.current = 'encounter';
+				}
 			}
 		} else if (gameState.current === 'fade_out') {
-			if (textBox.current) {
-				textBox.current.visible = false;
-				setMessage('');
-			}
-			if (currentSlime.current) {
-				currentSlime.current.visible = false;
-			}
-
 			frame.current -= 7;
+
+			if (frame.current < 50) {
+				if (textBox.current) {
+					textBox.current.visible = false;
+					setMessage('');
+				}
+				if (command.current) {
+					command.current.visible = false;
+				}
+				if (cursor.current) {
+					cursor.current.visible = false;
+				}
+				if (currentSlime.current) {
+					currentSlime.current.visible = false;
+				}
+			}
 
 			if (battle_bg_sprites.current) {
 				for (let i = 0; i < 49; i++) {
@@ -181,6 +201,49 @@ function DragonWarrior(props: ChannelProps) {
 
 			if (frame.current <= 0) {
 				gameState.current = 'overworld';
+			}
+		} else if (gameState.current === 'encounter') {
+			frame.current += 2;
+
+			if (command.current && HP.current > 0) {
+				command.current.visible = true;
+			}
+			if (cursor.current && HP.current > 0) {
+				cursor.current.visible = Math.round(frame.current / 60) % 2 == 0;
+			}
+
+			if (frame.current > 350) {
+				let donation = attacks.current.pop();
+
+				if (HP.current === 0) {
+					HP.current = -1;
+					frame.current = 49;
+					gameState.current = 'fade_in';
+					donationText.current = `Thou hast done well in defeating the ${monster.current}.`;
+					if (timeout.current) {
+						clearTimeout(timeout.current);
+						timeout.current = null;
+					}
+				} else if (donation) {
+					timeout.current = setTimeout(() => {
+						HP.current = -1;
+						frame.current = 49;
+						gameState.current = 'fade_in';
+						donationText.current = `The ${monster.current} is running away.`;
+					}, 15000);
+
+					frame.current = 49;
+					gameState.current = 'fade_in';
+					donationText.current = formatDonation(donation);
+					if (command.current) {
+						command.current.visible = false;
+					}
+					if (cursor.current) {
+						cursor.current.visible = false;
+					}
+
+					HP.current = Math.max(0, HP.current - donation.rawAmount);
+				}
 			}
 		}
 	});
@@ -245,13 +308,27 @@ function DragonWarrior(props: ChannelProps) {
 		textBox.current.width = 384;
 		textBox.current.height = 112;
 		textBox.current.x = 354;
-		textBox.current.y = 200;
+		textBox.current.y = 220;
 		textBox.current.visible = false;
+
+		command.current = PIXI.Sprite.from(commandImage);
+		command.current.width = 256;
+		command.current.height = 96;
+		command.current.x = 484;
+		command.current.y = 0;
+		command.current.visible = false;
+
+		cursor.current = PIXI.Sprite.from(cursorImage);
+		cursor.current.width = 16;
+		cursor.current.height = 16;
+		cursor.current.x = 498;
+		cursor.current.y = 32;
+		cursor.current.visible = false;
 
 		battle_bg_sprites.current = [];
 		for (let i = 0; i < 49; i++) {
 			let tile = new PIXI.Sprite(battle_bg.current.textures[`tile_${i}`]);
-			tile.position.set((i % 7) * 32 + 434, Math.floor(i / 7) * 32 + 55);
+			tile.position.set((i % 7) * 32 + 434, Math.floor(i / 7) * 32 + 75);
 			tile.visible = false;
 			battle_bg_sprites.current.push(tile);
 		}
@@ -274,6 +351,8 @@ function DragonWarrior(props: ChannelProps) {
 		}
 
 		container.addChild(textBox.current);
+		container.addChild(command.current);
+		container.addChild(cursor.current);
 		container.addChild(blueSlime.current);
 		container.addChild(redSlime.current);
 		container.addChild(metalSlime.current);
@@ -288,6 +367,8 @@ function DragonWarrior(props: ChannelProps) {
 			if (!metalSlime.current?.destroyed) metalSlime.current?.destroy();
 			if (!currentSlime.current?.destroyed) currentSlime.current?.destroy();
 			if (!textBox.current?.destroyed) textBox.current?.destroy();
+			if (!command.current?.destroyed) command.current?.destroy();
+			if (!cursor.current?.destroyed) cursor.current?.destroy();
 
 			for (let sprite of battle_bg_sprites.current || []) {
 				if (!sprite.destroyed) sprite.destroy();
@@ -303,23 +384,42 @@ function DragonWarrior(props: ChannelProps) {
 		};
 	}, [app]);
 
+	const formatDonation = (donation: FormattedDonation) => {
+		let amount = donation.amount.slice(1);
+		return `Chat's donation to ${CHARITY} has been increased by ${amount} dollars.`;
+	};
+
 	useListenFor('donation', (donation: FormattedDonation) => {
+		if (timeout.current) {
+			clearTimeout(timeout.current);
+		}
+
 		if (gameState.current === 'overworld') {
 			// Get donation without dollar sign because it doesn't exist in the NES font
-			let amount = donation.amount.slice(1);
-			let a = amount.startsWith('8') ? 'An' : 'A';
 
 			frame.current = 0;
 			gameState.current = 'pending';
-			donationText.current = `${a} ${amount} dollar donation draws near!`;
 
+			monster.current = 'Blue Slime';
 			currentSlime.current = blueSlime.current;
+
+			HP.current = Math.round(donation.rawAmount * HP_SCALE_FACTOR);
 
 			if (donation.rawAmount >= 100) {
 				currentSlime.current = redSlime.current;
+				monster.current = 'Red Slime';
 			} else if (donation.rawAmount >= 1000) {
 				currentSlime.current = metalSlime.current;
+				monster.current = 'Metal Slime';
 			}
+
+			donationText.current = `A ${monster.current} draws near!`;
+
+			attacks.current = [donation];
+		} else if (gameState.current === 'fade_in' || gameState.current === 'pending') {
+			attacks.current.push(donation);
+		} else if (gameState.current === 'encounter') {
+			attacks.current.push(donation);
 		}
 	});
 
@@ -357,7 +457,7 @@ const TextBox = styled.div`
 	position: absolute;
 
 	left: 372px;
-	top: 204px;
+	top: 224px;
 	width: 352px;
 	transform: translate(0px, 15px);
 `;
