@@ -353,9 +353,15 @@ function MegaMan(props: ChannelProps) {
 				}
 			}
 
-			spritesheet.current?.destroy(true);
+			donationQueue.current = [];
+			for (const dono of liveDonations.current) {
+				if (dono.sprEnemy && !dono.sprEnemy.destroyed) dono.sprEnemy.destroy(true);
+				if (dono.sprBullet && !dono.sprBullet.destroyed) dono.sprBullet.destroy(true);
+				if (dono.sprDestroy && !dono.sprDestroy.destroyed) dono.sprDestroy.destroy(true);
+				if (dono.sprPickup && !dono.sprPickup.destroyed) dono.sprPickup.destroy(true);
+			}
 
-			if (!container.destroyed) container.destroy(true);
+			spritesheet.current?.destroy(true);
 		};
 	}, [app]);
 
