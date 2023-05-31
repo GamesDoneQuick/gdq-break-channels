@@ -222,9 +222,12 @@ function DragonWarrior(props: ChannelProps) {
 					donationText.current = `Thou hast done well in defeating the ${monster.current}.`;
 					if (timeout.current) {
 						clearTimeout(timeout.current);
-						timeout.current = null;
 					}
+					timeout.current = null;
 				} else if (donation) {
+					if (timeout.current) {
+						clearTimeout(timeout.current);
+					}
 					timeout.current = setTimeout(() => {
 						HP.current = -1;
 						frame.current = 49;
@@ -390,10 +393,6 @@ function DragonWarrior(props: ChannelProps) {
 	};
 
 	useListenFor('donation', (donation: FormattedDonation) => {
-		if (timeout.current) {
-			clearTimeout(timeout.current);
-		}
-
 		if (gameState.current === 'overworld') {
 			// Get donation without dollar sign because it doesn't exist in the NES font
 
