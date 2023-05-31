@@ -1,5 +1,5 @@
 .passportOuterMoveAround {
-    animation: 2s moveAround ease-in-out 3.6s 1;
+    animation: 2s moveAround ease-in-out 1.6s 1;
 }
 @keyframes moveAround {
     0% { opacity: 1; top: 150px; left: 175px; transform: rotate(0deg); scale: 0.1 }
@@ -9,30 +9,30 @@
     100% { opacity: 1; top: 255px; left: 420px; transform: rotate(-90deg); }
 }
 .passportInnerMoveIn {
-    animation: 1.5s moveIn ease-in-out 5s 1 forwards;
+    animation: 1.5s moveIn ease-in-out 3.4s 1 forwards;
 }
 @keyframes moveIn {
     0% { bottom: 500px; }
     100% { bottom: 21px; }
 }
 .passportInnerMoveDown {
-    animation: 10.2s moveDown ease-in-out 0s 1 forwards;
+    animation: 8.2s moveDown ease-in-out 0s 1 forwards;
 }
 @keyframes moveDown {
     0% { bottom: 21px; }
-    15% { bottom: -306px; }
-    95% { bottom: -306px; }
+    20% { bottom: -306px; }
+    92% { bottom: -306px; }
     100% { bottom: -600px; }
 }
 .stamperStamp {
-    animation: 5s stamp ease-in-out 1.7s 1 forwards;
+    animation: 3.7s stamp ease-in-out 1.7s 1 forwards;
 }
 @keyframes stamp {
     0% { left: 1059px; }
-    7% { left: 459px; }
-    9% { left: 475px; }
     11% { left: 459px; }
     14% { left: 475px; }
+    18% { left: 459px; }
+    21% { left: 475px; }
     80% { left: 475px; }
     100% { left: 1059px; }
 }
@@ -42,7 +42,7 @@
 	left: -300px;
 }
 .personAppear {
-    animation: 1.6s personAppear ease-in-out 2s 1 forwards;
+    animation: 1.6s personAppear ease-in-out 0s 1 forwards;
 }
 @keyframes personAppear {
     0% { left: -250px; top: 15px; scale: .8; filter: brightness(0); }
@@ -52,7 +52,7 @@
 .personLeave {
     left: 44px;
     top: -5px;
-    animation: 2.1s personLeave ease-in-out 10.6s 1 forwards;
+    animation: 2.1s personLeave ease-in-out 8.6s 1 forwards;
 }
 @keyframes personLeave {
     0% { left: 44px; top: -5px ; scale: 1; filter: brightness(1); }
@@ -60,7 +60,7 @@
     100% { left: 400px; top: 15px; scale: .7; filter: brightness(0); }
 }
 .showStamp {
-    animation: 500ms ease-in-out 5s 1 forwards visible;
+    animation: 100ms ease-in-out 3.5s 1 forwards visible;
 }
 @keyframes visible {
     0% { opacity: 0; }

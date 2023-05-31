@@ -134,7 +134,7 @@ export function PapersPlease(props: ChannelProps) {
 		}
 		setTimeout(() => {
 			setAnimationPlaying(false);
-		}, 8000);
+		}, 5000);
 	};
 
 	const goal = () => {
@@ -155,7 +155,7 @@ export function PapersPlease(props: ChannelProps) {
 		}, 3200);
 		setTimeout(() => {
 			setAnimationPlaying(false);
-		}, 16000);
+		}, 11000);
 	};
 
 	const citationEvent = (donation: FormattedDonation) => {
@@ -193,7 +193,9 @@ export function PapersPlease(props: ChannelProps) {
 	});
 
 	useEffect(() => {
-		appear();
+		setTimeout(() => {
+			appear();
+		}, 2000);
 	}, []);
 
 	useEffect(() => {
@@ -203,7 +205,7 @@ export function PapersPlease(props: ChannelProps) {
 				setAnimationPlaying(true);
 				// TRIGGER GOAL ANIMATIONS
 				goal();
-				// TODO: TRIGGER START AGAIN
+				// TRIGGER START AGAIN
 				setTimeout(() => {
 					let country: Country = generateRandomCountry();
 					// Roll until unique
@@ -212,7 +214,7 @@ export function PapersPlease(props: ChannelProps) {
 					}
 					setCurrentCountry(country);
 					appear();
-				}, 14000);
+				}, 11200);
 			}
 		}
 	}, [total?.raw]);
