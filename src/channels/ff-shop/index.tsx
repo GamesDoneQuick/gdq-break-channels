@@ -164,15 +164,16 @@ const ItemRow = styled.div`
 `;
 
 const SpriteContainer = styled.div`
-	width: 17px;
+	width: 25px;
+	height: 100%;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	margin: 0 16px 0 4px;
+	margin: 0 12px 0 0px;
 `;
 
-const ItemSprite = styled.img`
-	transform: scale(1.75);
+const ItemSprite = styled.img<{ src: string | undefined }>`
+	transform: scale(${({ src }) => (src != undefined && src.includes('materia') ? '2.5' : '1.75')});
 	image-rendering: pixelated;
 	image-rendering: -moz-crisp-edges;
 	image-rendering: crisp-edges;
@@ -180,12 +181,21 @@ const ItemSprite = styled.img`
 
 const ItemName = styled.div`
 	width: auto;
+	height: 100%;
 	flex-grow: 1;
+	display: flex;
+	judtify-content: center;
+	align-items: center;
 	font-size: 28px;
+	padding-top: 2px;
 `;
 
 const ItemAmount = styled.div`
+	height: 100%;
 	text-align: right;
+	display: flex;
+	judtify-content: center;
+	align-items: center;
 	justify-self: end;
 	font-family: gdqpixel;
 	font-size: 16px;
