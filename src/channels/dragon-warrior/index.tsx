@@ -304,14 +304,14 @@ function DragonWarrior(props: ChannelProps) {
 
 		blueSlime.current = new PIXI.Sprite(slimes.current.textures['Blue']);
 		blueSlime.current.visible = false;
-		blueSlime.current.position.set(546 - 19, 150);
+		blueSlime.current.position.set(530, 170);
 
 		redSlime.current = new PIXI.Sprite(slimes.current.textures['Red']);
-		redSlime.current.position.set(546 - 19, 150);
+		redSlime.current.position.set(530, 170);
 		redSlime.current.visible = false;
 
 		metalSlime.current = new PIXI.Sprite(slimes.current.textures['Metal']);
-		metalSlime.current.position.set(546 - 19, 150);
+		metalSlime.current.position.set(530, 170);
 		metalSlime.current.visible = false;
 
 		textBox.current = PIXI.Sprite.from(textBoxImage);
