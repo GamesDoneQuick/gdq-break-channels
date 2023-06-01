@@ -3,13 +3,12 @@ import { ChannelProps, registerChannel } from '../channels';
 
 import { useListenFor, useReplicant } from 'use-nodecg';
 import styled from '@emotion/styled';
-import TweenNumber from '@gdq/lib/components/TweenNumber';
 import { usePIXICanvas } from '@gdq/lib/hooks/usePIXICanvas';
 import * as PIXI from 'pixi.js';
 import { CRTFilter } from '@pixi/filter-crt';
 import { useBreakout } from './hook';
-import { useEffect, useRef } from 'react';
-import { Block, Color, Position } from './game/model';
+import { useEffect, useRef, useState } from 'react';
+import { Block, Color, Position, toCss } from './game/model';
 import {
 	AI_SAMPLE_MS,
 	BALL_RADIUS,
@@ -22,13 +21,28 @@ import {
 	PADDLE_WIDTH,
 } from './config';
 import { BreakoutAI } from './game/ai';
-import { angleBetween } from './game/math';
+import Donation from './components/Donation';
+import SuperTweenNumber from './components/SuperTweenNumber';
+import { shuffleCopy } from './game/math';
 
 registerChannel('Breakout', 84, Breakout, {
 	position: 'bottomLeft',
 	site: 'GitHub',
 	handle: 'plamoni',
 });
+
+interface KeyedDonation extends FormattedDonation {
+	readonly key: string;
+}
+
+const FUN_COLORS: readonly string[] = [
+	Color.RED,
+	Color.ORANGE,
+	Color.YELLOW,
+	Color.GREEN,
+	Color.BLUE,
+	Color.VIOLET,
+].map(toCss);
 
 function Breakout(props: ChannelProps) {
 	const [total] = useReplicant<Total | null>('total', null);
@@ -59,9 +73,24 @@ function Breakout(props: ChannelProps) {
 	const crtFilter = useRef<CRTFilter | null>(null);
 	const ai = useRef<BreakoutAI | null>(null);
 	const resetting = useRef<boolean>(false);
+	const [donations, setDonations] = useState<KeyedDonation[]>([]);
+	const donationsContainer = useRef<HTMLDivElement>(null);
+	const [letterColors, setLetterColors] = useState<string[]>([]);
 
 	useListenFor('donation', (donation: FormattedDonation) => {
 		emitBall();
+
+		if (donation.rawAmount >= 500) {
+			for (let i = 0; i < 10; i++) {
+				emitBall();
+			}
+		}
+
+		setDonations((donations) => [{ ...donation, key: `${new Date().getTime()}_${Math.random()}` }, ...donations]);
+
+		setTimeout(() => {
+			setDonations((donations) => donations.slice(0, donations.length - 1));
+		}, 5000);
 	});
 
 	function emitBall() {
@@ -135,10 +164,14 @@ function Breakout(props: ChannelProps) {
 				breakout.blocks.forEach((block) => {
 					block.destroyed = Math.random() > 0.5;
 				});
+
+				setLetterColors(shuffleCopy(FUN_COLORS));
 			}, 100);
 
 			setTimeout(() => {
 				clearInterval(victoryInterval);
+
+				setLetterColors([]);
 
 				// Reset all the blocks;
 				breakout.blocks.forEach((block) => (block.destroyed = false));
@@ -285,8 +318,13 @@ function Breakout(props: ChannelProps) {
 		<Container>
 			<Canvas ref={canvasRef} />
 			<TotalEl>
-				$<TweenNumber value={Math.floor(total?.raw ?? 0)} />
+				<SuperTweenNumber value={Math.floor(total?.raw ?? 0)} letterColors={letterColors} />
 			</TotalEl>
+			<Donations style={{ position: 'absolute' }} ref={donationsContainer}>
+				{donations.map((donation, i) => (
+					<Donation key={donation.key} donation={donation} offset={i} />
+				))}
+			</Donations>
 		</Container>
 	);
 }
@@ -297,6 +335,7 @@ const Container = styled.div`
 	height: 100%;
 	padding: 0;
 	margin: 0;
+	overflow: hidden;
 `;
 
 const TotalEl = styled.div`
@@ -315,4 +354,13 @@ const Canvas = styled.canvas`
 	position: absolute;
 	width: 100% !important;
 	height: 100% !important;
+`;
+
+const Donations = styled.div`
+	position: absolute;
+
+	bottom: 50%;
+	left: calc(50% + 5px);
+
+	transform: translateX(-50%);
 `;

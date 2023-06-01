@@ -54,3 +54,14 @@ export function collisionBox(block: Block): Bounds {
 		height: block.height + 2 * block.collisionBuffer,
 	};
 }
+
+export function shuffleCopy<T>(arr: readonly T[]): T[] {
+	const result = [...arr];
+
+	for (let i = result.length - 1; i > 0; i--) {
+		const j = 0 | (Math.random() * (i + 1));
+		[result[i], result[j]] = [result[j], result[i]];
+	}
+
+	return result;
+}

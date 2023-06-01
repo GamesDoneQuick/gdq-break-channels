@@ -44,6 +44,14 @@ export enum Color {
 	LIGHT_GRAY = 0x181818,
 }
 
+export function toCss(color: Color): string {
+	const red = (color >> 16) & 0xff;
+	const green = (color >> 8) & 0xff;
+	const blue = color & 0xff;
+
+	return `rgb(${red} ${green} ${blue})`;
+}
+
 export enum Side {
 	TOP = 'top',
 	RIGHT = 'right',
