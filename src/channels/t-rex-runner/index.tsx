@@ -352,7 +352,7 @@ export function TRexRunner(props: ChannelProps) {
 				} else {
 					// Destroy this obstacle
 					obstacleContainer.removeChild(obstacle.sprite);
-
+					obstacle.sprite.destroy();
 					obstacles.current.splice(index, 1);
 				}
 			}
