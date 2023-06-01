@@ -82,7 +82,7 @@ export function FFMenu(props: ChannelProps) {
 					<Row>
 						<MenuCard gradient={theme.current.gradient} style={{ padding: '0' }}>
 							<Row style={{ padding: '8px 0px 8px 56px' }}>
-								<Column style={{ flexDirection: 'column-reverse' }}>
+								<Column style={{ flexDirection: 'column-reverse', alignSelf: 'center', height: '92%' }}>
 									{currentShopItems.value != undefined &&
 										currentShopItems.value.map((item, i) => (
 											<ItemRow key={`${item.id}-${i}`}>
