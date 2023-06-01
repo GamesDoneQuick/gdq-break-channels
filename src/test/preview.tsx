@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import staticImg from '../assets/static.gif';
 import GitHubLogo from '../assets/GitHub-Mark-32px.png';
 import TwitchLogo from '../assets/TwitchGlitchPurple.png';
+import TwitterLogo from '../assets/TwitterLogo.png';
 
 export function BreakChannels() {
 	const [channelKey] = usePreloadedReplicant<number>('break-channel', 0);
@@ -46,7 +47,8 @@ export function BreakChannels() {
 			{channel.credit && (
 				<CreditEl position={channel.credit.position}>
 					{channel.credit.site && (
-						<CreditIcon src={channel.credit.site === 'GitHub' ? GitHubLogo : TwitchLogo} />
+						<CreditIcon src={channel.credit.site === 'GitHub' ? GitHubLogo :
+							channel.credit.site === 'Twitter' ? TwitterLogo : TwitchLogo} />
 					)}
 					<CreditName>{channel.credit.handle}</CreditName>
 				</CreditEl>
