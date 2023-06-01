@@ -2,7 +2,7 @@ import './channels';
 
 import './breakout';
 import './desert-bus';
-import './mgs3';
+import './risk-of-rain';
 import './monkey-island';
 import './oregon-trail';
 import './tetris';
