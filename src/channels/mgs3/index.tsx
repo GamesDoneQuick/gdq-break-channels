@@ -18,7 +18,11 @@ import { useListenForFn } from '@gdq/lib/hooks/useListenForFn';
 import mgs3Video from './SnakeLoop.webm';
 import staticNoise from '@gdq/assets/static.gif';
 
-registerChannel('Metal Gear Solid 3', 64, Mgs3);
+registerChannel('Metal Gear Solid 3', 64, Mgs3, {
+	handle: 'VodBox',
+	position: 'bottomLeft',
+	site: 'SupportClass',
+});
 
 const vid = document.createElement('video');
 vid.src = mgs3Video;

@@ -36,7 +36,11 @@ import bug from './images/bug.png';
 import splat from './images/splat.png';
 import TweenNumber from '@gdq/lib/components/TweenNumber';
 
-registerChannel('Desert Bus', 16, DesertBus);
+registerChannel('Desert Bus', 16, DesertBus, {
+	handle: 'VodBox',
+	position: 'bottomRight',
+	site: 'SupportClass',
+});
 
 const lines = [line1, line2, line3, line4, line5, line6, line7];
 

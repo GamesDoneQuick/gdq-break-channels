@@ -19,7 +19,11 @@ import tetrominos from './assets/tetrominos.png';
 import frame from './assets/frame.png';
 import donationText from './assets/text.png';
 
-registerChannel('Tetris', 5, Tetris);
+registerChannel('Tetris', 5, Tetris, {
+	handle: 'VodBox',
+	position: 'bottomRight',
+	site: 'SupportClass',
+});
 
 export function Tetris(_: ChannelProps) {
 	const manager = useGameManager();

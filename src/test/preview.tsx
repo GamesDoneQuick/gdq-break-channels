@@ -5,6 +5,13 @@ import { useEffect, useRef, useState } from 'react';
 import staticImg from '../assets/static.gif';
 import GitHubLogo from '../assets/GitHub-Mark-32px.png';
 import TwitchLogo from '../assets/TwitchGlitchPurple.png';
+import SCLogo from '../assets/sc_logo.png';
+
+const CreditLogos: Record<Required<Credit>['site'], string> = {
+	GitHub: GitHubLogo,
+	Twitch: TwitchLogo,
+	SupportClass: SCLogo,
+};
 
 export function BreakChannels() {
 	const [channelKey] = usePreloadedReplicant<number>('break-channel', 0);
@@ -40,14 +47,20 @@ export function BreakChannels() {
 		};
 	}, [key]);
 
+	const icon =
+		channel.credit?.site &&
+		(channel.credit.site === 'SupportClass' ? (
+			<SCIcon src={CreditLogos[channel.credit.site]} />
+		) : (
+			<CreditIcon src={CreditLogos[channel.credit.site]} />
+		));
+
 	return (
 		<Container>
 			<channel.el lock={() => setTempLock(true)} unlock={() => setTempLock(false)} />
 			{channel.credit && (
 				<CreditEl position={channel.credit.position}>
-					{channel.credit.site && (
-						<CreditIcon src={channel.credit.site === 'GitHub' ? GitHubLogo : TwitchLogo} />
-					)}
+					{icon}
 					<CreditName>{channel.credit.handle}</CreditName>
 				</CreditEl>
 			)}
@@ -130,6 +143,15 @@ const CreditIcon = styled.img`
 	height: 27px;
 	margin: 0;
 	padding: 4px;
+	box-sizing: border-box;
+	object-fit: contain;
+`;
+
+const SCIcon = styled.img`
+	background: white;
+	width: 27px;
+	height: 27px;
+	margin: 0;
 	box-sizing: border-box;
 	object-fit: contain;
 `;
