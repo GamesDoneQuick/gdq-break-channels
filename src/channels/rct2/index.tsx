@@ -26,13 +26,16 @@ registerChannel('RollerCoaster Tycoon', 331, RCT2, {
 });
 
 var bottomInProgress = 0;
+var randomBottomUnbuncher = true;
 
 function RCT2(props: ChannelProps) {
 	const [event] = usePreloadedReplicant<Event>('currentEvent');
 	const [total] = useReplicant<Total | null>('total', null);
 	const containerRef = useRef<HTMLDivElement>(null);
-	const RandomPopupInterval = 60000; //one per minute
 	const BottomMessageStickTime = 8000; //How long bottombar elements stay around
+	const BottomMessageUnbuncherTimer = 20000; //How long the delay is for random bottombars
+	//This prevents bunching behaviours
+	//Milestones won't be affected by this, so they can appear whenever there's no other bottombar event
 
 	enum MessageType {
 		Award,
@@ -47,7 +50,7 @@ function RCT2(props: ChannelProps) {
 	const Messages: Message[] = [
 		//Feel free to add on to these, inspiration is hard
 		//awards
-		{ content: "having 'The hypest run in the country'!", type: MessageType.Award },
+		{ content: "having 'The hypest runs in the country'!", type: MessageType.Award },
 		{ content: "having 'The roundest orbs in the country'!", type: MessageType.Award },
 		{ content: "having 'The cutest saved animals in the country'!", type: MessageType.Award },
 		{ content: "having 'The fastest saved frames in the country'!", type: MessageType.Award },
@@ -64,12 +67,6 @@ function RCT2(props: ChannelProps) {
 
 	]
 
-	useEffect(() => {
-		const interval = setInterval(() => {
-			
-		}, RandomPopupInterval);
-	});
-
 	useListenFor('donation', (donation: FormattedDonation) => {
 		const checkFives = () => {
 			//Returns true every milestone
@@ -78,6 +75,7 @@ function RCT2(props: ChannelProps) {
 		}
 		
 		const spawnBalloon = () => {
+			//spawns a donation balloon
 			const el = document.createElement('img');
 			el.className = 'balloon';
 			el.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
@@ -117,6 +115,7 @@ function RCT2(props: ChannelProps) {
 		}
 
 		const spawnBottom = () => {
+			//Spawns a milestone bottombar
 			const el = document.createElement('img');
 			el.className = 'bottomBarAward';
 			el.style.left = '142px';
@@ -153,11 +152,13 @@ function RCT2(props: ChannelProps) {
 		}
 
 		const spawnRandomEvent = () => {
+			//Spawns a random event bottombar
 			const message = Messages[Math.floor(Math.random() * Messages.length)];
 			const messageString = message.content;
 			const messageType = message.type;
 			if (bottomInProgress === 0) {
 				bottomInProgress = 1;
+				randomBottomUnbuncher = false;
 				if (messageType === MessageType.Award) {
 					const el = document.createElement('img');
 					el.className = 'bottomBarAward';
@@ -222,22 +223,24 @@ function RCT2(props: ChannelProps) {
 						bottomInProgress = 0;
 					}, BottomMessageStickTime)
 				}
+				setTimeout(() => {
+					randomBottomUnbuncher = true;
+				}, BottomMessageUnbuncherTimer)
 			}
 		}
 
-		setTimeout(spawnBalloon, 10);
+		for (var i = 0; i < (donation.rawAmount / 50); i++) {
+			setTimeout(spawnBalloon, (300*i));
+		}
+
 		if (checkFives() && bottomInProgress === 0) {
 			setTimeout(spawnBottom, 10);
 		}
-		if (Math.random() <= 0.1) {
+		if (Math.random() <= 0.1 && randomBottomUnbuncher) {
 			//10% chance per donation of a special message
+			//Assuming another special message didn't get spawned too soon
 			setTimeout(spawnRandomEvent, 10);
 		}
-		/**
-		 * Background is a webm (Looping time???)
-		 * On donation: Balloon pops up, floats up (maybe popping chance???)
-		 * What about bottom bar? Pop up during big donations? All donations?
-		 */
 	});
 
 	return (
