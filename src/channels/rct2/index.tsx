@@ -37,6 +37,9 @@ function RCT2(props: ChannelProps) {
 	//This prevents bunching behaviours
 	//Milestones won't be affected by this, so they can appear whenever there's no other bottombar event
 
+	const popChance = 0.25;
+	const randomBottomChance = 0.1;
+
 	enum MessageType {
 		Award,
 		Research
@@ -94,7 +97,7 @@ function RCT2(props: ChannelProps) {
 				}),
 			);
 
-			if (Math.random() < 0.25) {
+			if (Math.random() < popChance) {
 				//pop animation is 0.2s
 				const popTimer = Math.random() * 6000 + 2000;
 				setTimeout(() => {
@@ -236,7 +239,7 @@ function RCT2(props: ChannelProps) {
 		if (checkFives() && bottomInProgress === 0) {
 			setTimeout(spawnBottom, 10);
 		}
-		if (Math.random() <= 0.1 && randomBottomUnbuncher) {
+		if (Math.random() <= randomBottomChance && randomBottomUnbuncher) {
 			//10% chance per donation of a special message
 			//Assuming another special message didn't get spawned too soon
 			setTimeout(spawnRandomEvent, 10);
