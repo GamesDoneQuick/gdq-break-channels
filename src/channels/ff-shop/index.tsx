@@ -16,8 +16,8 @@ import TweenNumber from '@gdq/lib/components/TweenNumber';
 
 registerChannel('FFMenu', 97, FFMenu, {
 	position: 'bottomRight',
-	site: 'GitHub',
-	handle: 'dylbyl',
+	site: 'Twitter',
+	handle: 'dyl_byl',
 });
 
 const NUMBER_OF_ITEMS = 5;
