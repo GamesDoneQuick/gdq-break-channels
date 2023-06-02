@@ -14,5 +14,6 @@ import './dragon-warrior';
 import './ff-shop';
 import './template';
 import './papers-please';
+import './rct2';
 
 export * from './channels';
