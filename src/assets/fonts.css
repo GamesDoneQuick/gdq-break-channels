@@ -60,6 +60,11 @@
 }
 
 @font-face {
+	font-family: DragonWarrior;
+	src: url('fonts/dragon-warrior.ttf') format('truetype');
+}
+
+@font-face {
 	font-family: Reactor7;
 	src: url('fonts/Reactor7.ttf') format('truetype');
 }

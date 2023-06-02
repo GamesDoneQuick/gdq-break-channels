@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import { Collider } from './collider';
 import { collisionBox, containsPoint, positionToVelocity, sumVelocities, velocityToPosition } from './math';
 import { Ball, Block, Bounds, Color, Move, Paddle, Side } from './model';
@@ -181,7 +182,9 @@ export class Breakout {
 		};
 	}
 
-	static deserialize(state: BreakoutState): Breakout {
+	static deserialize(repState: BreakoutState): Breakout {
+		const state = cloneDeep(repState);
+
 		const breakout = new Breakout(state.bounds, state.paddle, state.blocks);
 
 		state.balls.forEach((ball) => {
