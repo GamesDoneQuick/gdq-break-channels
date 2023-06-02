@@ -2,6 +2,7 @@ import './channels';
 
 import './breakout';
 import './desert-bus';
+import './mega-man';
 import './mgs3';
 import './monkey-island';
 import './oregon-trail';
