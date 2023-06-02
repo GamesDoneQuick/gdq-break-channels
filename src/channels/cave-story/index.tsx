@@ -38,7 +38,7 @@ registerChannel('Cave Story', 290, CaveStory, {
 function CaveStory(props: ChannelProps) {
 	const [total] = useReplicant<Total | null>('total', null);
 
-	const flyingDonationsHolder = useRef<FlyingDonationsHolder>(null);
+	const flyingDonations = useRef<Set<DonationFlyerData>>(new Set<DonationFlyerData>());
 
 	const curDeck = useRef<Array<string>>([]);
 	const nextDeck = useRef<Array<string>>([]);
@@ -72,7 +72,7 @@ function CaveStory(props: ChannelProps) {
 	}
 
 	useListenFor('donation', (donation: FormattedDonation) => {
-		if (!flyingDonationsHolder.current) return;
+		if (!flyingDonations.current) return;
 		
 		var dollars = donation.rawAmount;
 		var character;
@@ -94,16 +94,11 @@ function CaveStory(props: ChannelProps) {
 		}
 		
 		const newDonation:DonationFlyerData = {id:performance.now()+"",moneyString:donation.amount,character:character};
-		
-		const stateRefAdding = flyingDonationsHolder.current.state;
-		stateRefAdding.data.add(newDonation);
-		flyingDonationsHolder.current.setState(stateRefAdding);
+		flyingDonations.current.add(newDonation);
 
 		setTimeout(() => {
-			if (!flyingDonationsHolder.current) return;
-			const stateRefRemoving = flyingDonationsHolder.current.state;
-			stateRefRemoving.data.delete(newDonation);
-			flyingDonationsHolder.current.setState(stateRefRemoving);
+			if (!flyingDonations.current) return;
+			flyingDonations.current.delete(newDonation);
 		}, 5000);
 	});
 
@@ -128,7 +123,16 @@ function CaveStory(props: ChannelProps) {
 			<Clouds4/>
 			<Clouds5/>
 			<Clouds5/>
-			<FlyingDonationsHolder ref={flyingDonationsHolder}/>
+			<FlyingDonationsStyler>
+				{[...flyingDonations.current].map((item:DonationFlyerData) => (
+					<SidewaysMover key={item.id}>
+						<VerticalMover>
+							<DonationLabel>{item.moneyString}</DonationLabel>
+							<FlyingCharacter character={item.character}/>
+						</VerticalMover>
+					</SidewaysMover>
+				))}
+			</FlyingDonationsStyler>
 			<Level src={level}/>
 			<Dragon src={dragon}/>
 			<Sue src={sue}/>
@@ -147,53 +151,28 @@ type DonationFlyerData = {
 	character:string
 }
 
-class FlyingDonationsHolder extends React.Component<{}, {data:Set<DonationFlyerData>}> {
-	constructor(props:{}) {
-		super(props);
-		this.state = {data:new Set<DonationFlyerData>()};
-	}
-	render() {
-		return(
-			<FlyingDonationsStyler>
-				{
-					[...this.state.data].map((item:DonationFlyerData) => (
-						<SidewaysMover key={item.id}>
-							<VerticalMover>
-								<DonationLabel>{item.moneyString}</DonationLabel>
-								<FlyingCharacter character={item.character}/>
-							</VerticalMover>
-						</SidewaysMover>
-					))
-				}
-			</FlyingDonationsStyler>
-		);
-	}
-}
-
-class FlyingCharacter extends React.Component<{ character: string },{}> {
-	render() {
-		switch(this.props.character){
-			case "Misery":
-				return <Misery src={misery}/>;
-			case "Balrog":
-				return <Balrog src={balrog}/>;
-			case "Quote":
-				return <Quote src={quote}/>;
-			case "QuoteMask":
-				return <Quote src={quoteMask}/>;
-			case "Curly":
-				return <Quote src={curly}/>;
-			case "Puppy":
-				return <Puppy src={puppy}/>;
-			case "GhostCat":
-				return <GhostCat src={ghostcat}/>;
-			case "CritterBig":
-				return <CritterBig src={critterBig}/>;
-			case "CritterSmall":
-				return <CritterSmall src={critterSmall}/>;
-			case "Bat":
-				return <Bat src={bat}/>;
-		}
+function FlyingCharacter(props:{character:string}) {
+	switch(props.character){
+		case "Misery":
+			return <Misery src={misery}/>;
+		case "Balrog":
+			return <Balrog src={balrog}/>;
+		case "Quote":
+			return <Quote src={quote}/>;
+		case "QuoteMask":
+			return <Quote src={quoteMask}/>;
+		case "Curly":
+			return <Quote src={curly}/>;
+		case "Puppy":
+			return <Puppy src={puppy}/>;
+		case "GhostCat":
+			return <GhostCat src={ghostcat}/>;
+		case "CritterBig":
+			return <CritterBig src={critterBig}/>;
+		case "CritterSmall":
+			return <CritterSmall src={critterSmall}/>;
+		default:
+			return <Bat src={bat}/>;
 	}
 }
 
