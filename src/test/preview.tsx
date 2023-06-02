@@ -6,11 +6,13 @@ import staticImg from '../assets/static.gif';
 import GitHubLogo from '../assets/GitHub-Mark-32px.png';
 import TwitchLogo from '../assets/TwitchGlitchPurple.png';
 import SCLogo from '../assets/sc_logo.png';
+import TwitterLogo from '../assets/TwitterLogo.png';
 
 const CreditLogos: Record<Required<Credit>['site'], string> = {
 	GitHub: GitHubLogo,
 	Twitch: TwitchLogo,
 	SupportClass: SCLogo,
+	Twitter: TwitterLogo,
 };
 
 export function BreakChannels() {

@@ -37,6 +37,6 @@ export interface Channel {
 
 export interface Credit {
 	position: 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
-	site?: 'GitHub' | 'Twitch' | 'SupportClass';
+	site?: 'GitHub' | 'Twitch' | 'SupportClass' | 'Twitter';
 	handle: string;
 }
