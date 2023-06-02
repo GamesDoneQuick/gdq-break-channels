@@ -40,27 +40,33 @@ function CaveStory(props: ChannelProps) {
 
 	const flyingDonationsHolder = useRef<FlyingDonationsHolder>(null);
 
-	var curDeck: Array<string> = [];
-	var nextDeck: Array<string> = [];
+	const curDeck = useRef<Array<string>>([]);
+	const nextDeck = useRef<Array<string>>([]);
+	const decksInitializedYet = useRef<boolean>(false);
+	
 	function putIntoBackHalfOfDeck(item:string){
-		const startHalfLength = Math.ceil(nextDeck.length/2);
-		const remainingHalfLength = nextDeck.length-startHalfLength;
+		const startHalfLength = Math.ceil(nextDeck.current.length/2);
+		const remainingHalfLength = nextDeck.current.length-startHalfLength;
 		const finalIndex = startHalfLength + Math.floor(Math.random()*(remainingHalfLength+1));
-		nextDeck.splice(finalIndex, 0, item);
+		nextDeck.current.splice(finalIndex, 0, item);
 	}
-	putIntoBackHalfOfDeck("Misery");
-	putIntoBackHalfOfDeck("Balrog");
-	putIntoBackHalfOfDeck("Quote");
-	putIntoBackHalfOfDeck("Curly");
-	putIntoBackHalfOfDeck("Puppy");
-	curDeck = nextDeck;
-	nextDeck = [];
+	function putRandomlyInDeck(item:string){
+		curDeck.current.splice(Math.floor(curDeck.current.length*Math.random()),0,item);
+	}
 	function getRandomCharacter(){
-		var result:string = curDeck.shift()!;
+		if (!decksInitializedYet.current) {
+			putRandomlyInDeck("Balrog");
+			putRandomlyInDeck("Quote");
+			putRandomlyInDeck("Curly");
+			putRandomlyInDeck("Misery");
+			putRandomlyInDeck("Puppy");
+			decksInitializedYet.current = true;
+		}
+		var result:string = curDeck.current.shift()!;
 		putIntoBackHalfOfDeck(result);
-		if (curDeck.length == 0) {
-			curDeck = nextDeck;
-			nextDeck = [];
+		if (curDeck.current.length == 0) {
+			curDeck.current = nextDeck.current;
+			nextDeck.current = [];
 		}
 		return result;
 	}
