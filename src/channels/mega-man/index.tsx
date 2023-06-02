@@ -412,10 +412,10 @@ function MegaMan(props: ChannelProps) {
 		<Container>
 			<Canvas width={1092} height={332} ref={canvasRef} />
 			<TotalShadow>
-				$<TweenNumber value={shownTotal} />
+				$<TweenNumber value={Math.floor(shownTotal)} />
 			</TotalShadow>
 			<TotalEl>
-				$<TweenNumber value={shownTotal} />
+				$<TweenNumber value={Math.floor(shownTotal)} />
 			</TotalEl>
 		</Container>
 	);

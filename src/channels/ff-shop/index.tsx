@@ -112,7 +112,7 @@ export function FFMenu(props: ChannelProps) {
 									{event.beneficiary}
 								</DonationTextBigger>
 								<TotalEl>
-									$<TweenNumber value={total?.raw} />
+									$<TweenNumber value={Math.floor(total?.raw ?? 0)} />
 								</TotalEl>
 							</Column>
 						</MenuCard>

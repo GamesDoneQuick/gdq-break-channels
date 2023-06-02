@@ -434,7 +434,7 @@ function DragonWarrior(props: ChannelProps) {
 			<Canvas width={1092} height={332} ref={canvasRef} />
 			<TextBox>{message}</TextBox>
 			<TotalEl>
-				$<TweenNumber value={total?.raw} />
+				$<TweenNumber value={Math.floor(total?.raw ?? 0)} />
 			</TotalEl>
 		</Container>
 	);
