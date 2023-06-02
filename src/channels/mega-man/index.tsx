@@ -376,7 +376,7 @@ function MegaMan(props: ChannelProps) {
 	useListenFor('donation', (donation: FormattedDonation) => {
 		if (donationQueue.current.length >= MEGA_MAN_CONSTS.MAX_QUEUE_LENGTH) {
 			// Avoid making the queue too long during donation trains, but start dropping big pickups
-			const latestDonation = donationQueue.current.at(-1)!;
+			const latestDonation = donationQueue.current[donationQueue.current.length - 1];
 			latestDonation.newTotal = donation.rawNewTotal;
 			latestDonation.bigPickup = true;
 		} else {
