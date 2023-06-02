@@ -211,6 +211,7 @@ const DonationLabel = styled.div`
 	color: white;
 	transform: translate(-50%, 0%);
 	padding-bottom: 0.5em;
+	text-align:center;
 `;
 
 const Balrog = styled.img`
@@ -264,7 +265,7 @@ const Puppy = styled.img`
 `;
 const Quote = styled.img`
 	position: relative;
-	left: -60px;
+	left: -20px;
 	width: 120px;
 	height: 442px;
 	image-rendering: pixelated;
