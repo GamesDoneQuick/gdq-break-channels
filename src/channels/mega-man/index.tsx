@@ -205,8 +205,8 @@ function MegaMan(props: ChannelProps) {
 					}
 				}
 
-				// Check for pickup x Mega Man collision
-				if (dono.sprPickup!.x <= 52) {
+				// Check for collision between the pickup and Mega Man
+				if (dono.sprPickup!.x <= 52 && megaMan.y >= 33 - dono.sprPickup!.height) {
 					dono.sprPickup!.destroy();
 					liveDonations.current.shift();
 
