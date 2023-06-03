@@ -92,8 +92,12 @@ export function PapersPlease(props: ChannelProps) {
 	const [animationPlaying, setAnimationPlaying] = useState(false);
 	const [goalProgress, setGoalProgress] = useState(totalRaw);
 	const goalTarget = (Math.floor(goalProgress / 1000) + 1) * 1000;
+
+	const floorDivisor = Math.pow(10, Math.floor(Math.log10(goalTarget) - 2));
+	const flooredTarget = Math.floor(goalTarget / floorDivisor) * floorDivisor;
+
 	const goalAmount = CurrencyToAbbreviation({
-		inputNumber: goalTarget,
+		inputNumber: flooredTarget,
 		inputLocale: 'en-US',
 		decimalPlacesToRound: 2,
 	});
