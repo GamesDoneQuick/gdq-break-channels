@@ -12,8 +12,9 @@ import * as PIXI from 'pixi.js';
 import sheetTexture from './assets/atlas.png';
 import sheetAtlas from './assets/atlas.json';
 import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
-import { ScrollingBackground } from "./backgrounds";
-import backgroundFactoryMM2Wily1 from "./backgrounds/mm2-wily1";
+
+import type { ScrollingBackground } from './backgrounds';
+import backgroundFactoryMM2Wily1 from './backgrounds/mm2-wily1';
 
 registerChannel('Mega Man', 87, MegaMan, {
 	position: 'bottomLeft',
@@ -21,7 +22,7 @@ registerChannel('Mega Man', 87, MegaMan, {
 	handle: 'Suyooo',
 });
 
-const MEGA_MAN_CONSTS = {
+export const MEGA_MAN_CONSTS = {
 	QUEUE_INTERVAL: 55,
 	MAX_QUEUE_LENGTH: 1,
 	LARGE_PICKUP_DONATION_THRESHOLD: 100,

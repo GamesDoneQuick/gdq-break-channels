@@ -1,13 +1,31 @@
 {
   "frames": {
-    "building": {
+    "buildingB": {
       "frame": {
         "x": 1,
         "y": 1,
+        "w": 96,
+        "h": 47
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 9
+      },
+      "sourceSize": {
+        "w": 96,
+        "h": 56
+      }
+    },
+    "buildingA": {
+      "frame": {
+        "x": 1,
+        "y": 50,
         "w": 64,
         "h": 83
       },
-      "rotated": false,
+      "rotated": true,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
@@ -18,10 +36,28 @@
         "h": 83
       }
     },
+    "fence": {
+      "frame": {
+        "x": 99,
+        "y": 1,
+        "w": 16,
+        "h": 48
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "w": 16,
+        "h": 48
+      }
+    },
     "ground": {
       "frame": {
-        "x": 67,
-        "y": 1,
+        "x": 86,
+        "y": 51,
         "w": 32,
         "h": 19
       },
@@ -36,10 +72,28 @@
         "h": 19
       }
     },
+    "barrel": {
+      "frame": {
+        "x": 86,
+        "y": 85,
+        "w": 15,
+        "h": 16
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "w": 16,
+        "h": 16
+      }
+    },
     "cloud_left": {
       "frame": {
-        "x": 67,
-        "y": 35,
+        "x": 1,
+        "y": 116,
         "w": 16,
         "h": 16
       },
@@ -56,8 +110,8 @@
     },
     "cloud_middle": {
       "frame": {
-        "x": 67,
-        "y": 53,
+        "x": 19,
+        "y": 116,
         "w": 16,
         "h": 16
       },
@@ -74,8 +128,8 @@
     },
     "cloud_right": {
       "frame": {
-        "x": 67,
-        "y": 71,
+        "x": 37,
+        "y": 116,
         "w": 16,
         "h": 16
       },

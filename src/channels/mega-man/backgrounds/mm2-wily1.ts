@@ -8,10 +8,14 @@ import {
 import * as PIXI from 'pixi.js';
 import sheetTexture from '../assets/bg-mm2wily1.png';
 import sheetAtlas from '../assets/bg-mm2wily1.json';
+import { MEGA_MAN_CONSTS } from '..';
 
 const factory: ScrollingBackgroundFactory = () => {
 	const WIDTH = 273;
-	const bg = new ScrollingBackground(WIDTH, 1);
+	const BGCOLOR = 0x183c5c;
+	const TINTCOLOR = 0xd0d8de;
+
+	const bg = new ScrollingBackground(WIDTH, MEGA_MAN_CONSTS.MOVE_SPEED_FOREGROUND);
 
 	const loadFunc = async () => {
 		const spritesheet = new PIXI.Spritesheet(PIXI.BaseTexture.from(sheetTexture), sheetAtlas);
@@ -21,7 +25,7 @@ const factory: ScrollingBackgroundFactory = () => {
 			constructor() {
 				super(new PIXI.Graphics());
 				const background = this.container as PIXI.Graphics;
-				background.beginFill(0x183c5c);
+				background.beginFill(BGCOLOR);
 				background.drawRect(0, 0, 273, 83);
 				background.endFill();
 			}
@@ -31,7 +35,6 @@ const factory: ScrollingBackgroundFactory = () => {
 			private readonly left: PIXI.Sprite;
 			private readonly middle: PIXI.TilingSprite;
 			private readonly right: PIXI.Sprite;
-			private currentWidth: number = 112;
 
 			constructor() {
 				super(new PIXI.Container());
@@ -53,17 +56,53 @@ const factory: ScrollingBackgroundFactory = () => {
 				super.enter();
 				this.middle.width = Math.floor(Math.random() * 5) * 16;
 				this.right.x = this.middle.width + 16;
-				this.currentWidth = this.middle.width + 32;
-			}
-
-			width(): number {
-				return this.currentWidth;
 			}
 		}
 
-		class BackgroundMM2Wily1Building extends ScrollingBackgroundRowComponent {
+		const BARREL_COUNT = 10;
+		class BackgroundMM2Wily1Fence extends ScrollingBackgroundRowComponent {
+			private fence: PIXI.TilingSprite;
+			private barrels: PIXI.TilingSprite[];
+
 			constructor() {
-				super(new PIXI.Sprite(spritesheet.textures.building));
+				super(new PIXI.Container());
+				this.fence = new PIXI.TilingSprite(spritesheet.textures.fence, 0, 48);
+				this.fence.tint = TINTCOLOR;
+				this.barrels = new Array(BARREL_COUNT);
+				for (let i = 0; i < BARREL_COUNT; i++) {
+					this.barrels[i] = new PIXI.TilingSprite(spritesheet.textures.barrel, 16, 16);
+					this.barrels[i].tint = TINTCOLOR;
+				}
+				this.container.addChild(this.fence, ...this.barrels);
+			}
+
+			enter(): void {
+				super.enter();
+				const tileWidth = Math.floor(Math.random() * 64) + 32;
+				console.log(tileWidth);
+				this.fence.width = tileWidth * 16;
+
+				for (let i = 0; i < BARREL_COUNT; i++) {
+					this.barrels[i].x = (Math.floor(Math.random() * (tileWidth - 5)) + 2) * 16;
+					this.barrels[i].height = Math.random() < 0.66 ? 16 : 32;
+					this.barrels[i].width = this.barrels[i].height === 32 || Math.random() < 0.66 ? 16 : 32;
+					this.barrels[i].y = 48 - this.barrels[i].height;
+				}
+			}
+		}
+
+		class BackgroundMM2Wily1BuildingA extends ScrollingBackgroundRowComponent {
+			constructor() {
+				super(new PIXI.Sprite(spritesheet.textures.buildingA));
+				(this.container as PIXI.Sprite).tint = TINTCOLOR;
+			}
+		}
+
+		class BackgroundMM2Wily1BuildingB extends ScrollingBackgroundRowComponent {
+			constructor() {
+				super(new PIXI.Sprite(spritesheet.textures.buildingB));
+				(this.container as PIXI.Sprite).tint = TINTCOLOR;
+				this.container.y = 8;
 			}
 		}
 
@@ -80,22 +119,31 @@ const factory: ScrollingBackgroundFactory = () => {
 
 		bg.addComponent(new BackgroundMM2Wily1Color());
 		bg.addRows(
-			new ScrollingBackgroundRow(bg, -8, 0.25, [0, 80], 16, false, [
+			new ScrollingBackgroundRow(bg, -8, 0.25, [0, 32], 16, false, [
+				new BackgroundMM2Wily1Cloud(),
+				new BackgroundMM2Wily1Cloud(),
+				new BackgroundMM2Wily1Cloud(),
+				new BackgroundMM2Wily1Cloud(),
+				new BackgroundMM2Wily1Cloud(),
+				new BackgroundMM2Wily1Cloud(),
+			]),
+			new ScrollingBackgroundRow(bg, 8, 0.25, [16, 80], 16, false, [
 				new BackgroundMM2Wily1Cloud(),
 				new BackgroundMM2Wily1Cloud(),
 				new BackgroundMM2Wily1Cloud(),
 				new BackgroundMM2Wily1Cloud(),
 			]),
-			new ScrollingBackgroundRow(bg, 8, 0.25, [32, 128], 16, false, [
-				new BackgroundMM2Wily1Cloud(),
-				new BackgroundMM2Wily1Cloud(),
-				new BackgroundMM2Wily1Cloud(),
-			]),
-			new ScrollingBackgroundRow(bg, 24, 0.25, [128, 192], 16, false, [
+			new ScrollingBackgroundRow(bg, 24, 0.25, [64, 128], 16, false, [
 				new BackgroundMM2Wily1Cloud(),
 				new BackgroundMM2Wily1Cloud(),
 			]),
-			new ScrollingBackgroundRow(bg, 0, 0.5, [512, 1024, WIDTH], 16, false, [new BackgroundMM2Wily1Building()]),
+			new ScrollingBackgroundRow(bg, 0, 0.5, [256, 512, WIDTH], 16, true, [
+				new BackgroundMM2Wily1BuildingA(),
+				new BackgroundMM2Wily1BuildingB(),
+			]),
+			new ScrollingBackgroundRow(bg, 16, 0.75, [800, 1120, WIDTH * 2], 16, false, [
+				new BackgroundMM2Wily1Fence(),
+			]),
 		);
 		bg.addComponent(new BackgroundMM2Wily1Ground());
 	};
