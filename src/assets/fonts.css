@@ -68,3 +68,8 @@
 	font-family: Reactor7;
 	src: url('fonts/Reactor7.ttf') format('truetype');
 }
+
+@font-face {
+	font-family: minesweeper;
+	src: url('fonts/Minesweeper.woff2') format('woff2');
+}
