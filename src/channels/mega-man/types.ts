@@ -1,11 +1,5 @@
 import type { AnimatedSprite, Sprite, TilingSprite } from 'pixi.js';
 
-export type MegaManCloudRow = {
-	initialDist: boolean;
-	minNextX: number;
-	clouds: { left: Sprite; middle: TilingSprite; right: Sprite }[];
-};
-
 export enum MegaManDonationState {
 	WAITING,
 	STARTED,

@@ -1,6 +1,6 @@
 import type { FormattedDonation, Total } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
-import { MegaManCloudRow, MegaManDonationQueueEntry, MegaManDonationState, MegaManEnemyList } from './types';
+import { MegaManDonationQueueEntry, MegaManDonationState, MegaManEnemyList } from './types';
 
 import { useListenFor } from 'use-nodecg';
 import styled from '@emotion/styled';
@@ -10,8 +10,10 @@ import { usePIXICanvas } from '@gdq/lib/hooks/usePIXICanvas';
 import * as PIXI from 'pixi.js';
 
 import sheetTexture from './assets/atlas.png';
-import { atlas as sheetAtlas } from './assets/atlas';
+import sheetAtlas from './assets/atlas.json';
 import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
+import { ScrollingBackground } from "./backgrounds";
+import backgroundFactoryMM2Wily1 from "./backgrounds/mm2-wily1";
 
 registerChannel('Mega Man', 87, MegaMan, {
 	position: 'bottomLeft',
@@ -23,8 +25,6 @@ const MEGA_MAN_CONSTS = {
 	QUEUE_INTERVAL: 55,
 	MAX_QUEUE_LENGTH: 1,
 	LARGE_PICKUP_DONATION_THRESHOLD: 100,
-	MOVE_SPEED_CLOUDS: 0.25,
-	MOVE_SPEED_BUILDING: 0.5,
 	MOVE_SPEED_FOREGROUND: 1,
 	MOVE_SPEED_ENEMY: 2,
 	MOVE_SPEED_BULLET: 4,
@@ -46,36 +46,12 @@ function MegaMan(props: ChannelProps) {
 
 	const megaManYSpeed = useRef<number>(0);
 
+	const background = useRef<ScrollingBackground | null>(null);
 	const objects = useRef<Record<string, PIXI.DisplayObject> | null>(null);
-	const cloudRows = useRef<MegaManCloudRow[]>([]);
 	const spritesheet = useRef<PIXI.Spritesheet | null>(null);
 
 	const [app, canvasRef] = usePIXICanvas({ width: 1092, height: 332 }, () => {
 		if (!objects.current || !spritesheet.current) return;
-
-		// We must enter the cloudRow updates even if the intro is running, to set up initial cloud positions
-		for (const cloudRow of cloudRows.current) {
-			if (!introRunning.current) {
-				cloudRow.minNextX -= MEGA_MAN_CONSTS.MOVE_SPEED_CLOUDS;
-			}
-			for (const cloud of cloudRow.clouds) {
-				if (cloud.right.x <= -16) {
-					// When setting up initial cloud positions, allow them to be placed on-screen
-					const rightSide = cloudRow.initialDist ? Math.floor(Math.random() * 8) * 16 : 288;
-					cloud.left.x = Math.floor(Math.random() * 8) * 16 + Math.max(rightSide, cloudRow.minNextX);
-					cloud.middle.x = cloud.left.x + 16;
-					cloud.middle.width = Math.floor(Math.random() * 5) * 16;
-					cloud.right.x = cloud.middle.x + cloud.middle.width;
-					cloudRow.minNextX = cloud.right.x + 16;
-				}
-				if (!introRunning.current) {
-					cloud.left.x -= MEGA_MAN_CONSTS.MOVE_SPEED_CLOUDS;
-					cloud.middle.x -= MEGA_MAN_CONSTS.MOVE_SPEED_CLOUDS;
-					cloud.right.x -= MEGA_MAN_CONSTS.MOVE_SPEED_CLOUDS;
-				}
-			}
-			cloudRow.initialDist = false;
-		}
 
 		const megaMan = objects.current.megaMan as PIXI.AnimatedSprite;
 
@@ -106,15 +82,11 @@ function MegaMan(props: ChannelProps) {
 					};
 				}
 			}
+			// Return here so during the intro, all other sprites are paused
 			return;
 		}
 
-		if (objects.current.building.x <= -64) {
-			objects.current.building.x += (Math.floor(Math.random() * 32) + 32) * 16 + 288;
-		}
-		objects.current.building.x -= MEGA_MAN_CONSTS.MOVE_SPEED_BUILDING;
-
-		(objects.current.ground as PIXI.TilingSprite).tilePosition.x -= MEGA_MAN_CONSTS.MOVE_SPEED_FOREGROUND;
+		background.current?.tick();
 
 		donationCountdown.current--;
 		if (donationCountdown.current <= 0 && donationQueue.current.length > 0) {
@@ -268,55 +240,18 @@ function MegaMan(props: ChannelProps) {
 		app.current.stage.addChild(container);
 		container.setTransform(0, 0, 4, 4);
 
+		[background.current] = backgroundFactoryMM2Wily1();
+		container.addChild(background.current.getContainer());
+
 		spritesheet.current = new PIXI.Spritesheet(PIXI.BaseTexture.from(sheetTexture), sheetAtlas);
 		spritesheet.current.parse().then(() => {
 			if (!spritesheet.current) return;
 
 			objects.current = {
 				container,
-				background: new PIXI.Graphics(),
-				building: new PIXI.Sprite(spritesheet.current.textures.building),
-				ground: new PIXI.TilingSprite(spritesheet.current.textures.ground, 273, 19),
 				megaMan: new PIXI.AnimatedSprite([spritesheet.current.textures.teleport1]),
 				ready: new PIXI.Sprite(spritesheet.current.textures.ready),
 			};
-
-			const background = objects.current.background as PIXI.Graphics;
-			background.beginFill(0x183c5c);
-			background.drawRect(0, 0, 273, 83);
-			background.endFill();
-			container.addChild(objects.current.background);
-
-			function createCloudRow(cloudCount: number, y: number) {
-				if (!spritesheet.current) return;
-
-				const row: MegaManCloudRow = { initialDist: true, minNextX: 0, clouds: [] };
-				for (let i = 0; i < cloudCount; i++) {
-					const cloud = {
-						left: new PIXI.Sprite(spritesheet.current.textures.cloud_left),
-						middle: new PIXI.TilingSprite(spritesheet.current.textures.cloud_middle, 16, 16),
-						right: new PIXI.Sprite(spritesheet.current.textures.cloud_right),
-					};
-
-					cloud.left.x = cloud.middle.x = cloud.right.x = -16;
-					cloud.left.y = cloud.middle.y = cloud.right.y = y;
-					container.addChild(cloud.left);
-					container.addChild(cloud.middle);
-					container.addChild(cloud.right);
-					row.clouds.push(cloud);
-				}
-				cloudRows.current.push(row);
-			}
-
-			createCloudRow(3, -8);
-			createCloudRow(2, 8);
-			createCloudRow(1, 24);
-
-			objects.current.building.x = -64;
-			container.addChild(objects.current.building);
-
-			objects.current.ground.y = 64;
-			container.addChild(objects.current.ground);
 
 			// Intro animation: Mega Man starts in the teleport sprite
 			// Placed far above the camera frame, so he drops in the exact right moment
@@ -348,17 +283,10 @@ function MegaMan(props: ChannelProps) {
 		});
 
 		return () => {
+			background.current?.destroy();
 			for (const key in objects.current) {
 				const obj = objects.current[key];
 				if (!obj.destroyed) obj.destroy(true);
-			}
-
-			for (const cloudRow of cloudRows.current) {
-				for (const cloud of cloudRow.clouds) {
-					if (!cloud.left.destroyed) cloud.left.destroy(true);
-					if (!cloud.middle.destroyed) cloud.middle.destroy(true);
-					if (!cloud.right.destroyed) cloud.right.destroy(true);
-				}
 			}
 
 			donationQueue.current = [];
