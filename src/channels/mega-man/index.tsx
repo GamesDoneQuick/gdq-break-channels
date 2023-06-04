@@ -305,9 +305,6 @@ function MegaMan(props: ChannelProps) {
 	return (
 		<Container>
 			<Canvas width={1092} height={332} ref={canvasRef} />
-			<TotalShadow>
-				$<TweenNumber value={Math.floor(shownTotal)} />
-			</TotalShadow>
 			<TotalEl>
 				$<TweenNumber value={Math.floor(shownTotal)} />
 			</TotalEl>
@@ -329,17 +326,6 @@ const Canvas = styled.canvas`
 	height: 100% !important;
 `;
 
-const TotalShadow = styled.div`
-	font-family: gdqpixel;
-	font-size: 46px;
-	color: black;
-
-	position: absolute;
-
-	left: 32px;
-	top: 36px;
-`;
-
 const TotalEl = styled.div`
 	font-family: gdqpixel;
 	font-size: 46px;
@@ -349,4 +335,5 @@ const TotalEl = styled.div`
 
 	left: 32px;
 	top: 32px;
+	filter: drop-shadow(0 4px 0 black);
 `;
