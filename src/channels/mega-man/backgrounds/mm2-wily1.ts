@@ -141,7 +141,7 @@ const factory: ScrollingBackgroundFactory = () => {
 				new BackgroundMM2Wily1BuildingA(),
 				new BackgroundMM2Wily1BuildingB(),
 			]),
-			new ScrollingBackgroundRow(bg, 16, 0.75, [800, 1120, WIDTH * 2], 16, false, [
+			new ScrollingBackgroundRow(bg, 16, 0.75, [1120, 1600, WIDTH * 2], 16, false, [
 				new BackgroundMM2Wily1Fence(),
 			]),
 		);

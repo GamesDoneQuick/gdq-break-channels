@@ -1,11 +1,12 @@
 import type { MegaManEnemyDescription } from './types';
 
 export const MegaManEnemyList: { [enemy: string]: MegaManEnemyDescription } = {
-	METTOOL: { animName: 'enemy_mettool', isGrounded: true, mustJump: false },
-	SCWORM: { animName: 'enemy_scworm', isGrounded: true, mustJump: false },
-	BLOCKY: { animName: 'enemy_blocky', isGrounded: true, mustJump: true, dropYOffset: -8 },
-	BATTON: { animName: 'enemy_batton', isGrounded: false, mustJump: true, yOffset: 4, dropYOffset: -4 },
-	TELLY: { animName: 'enemy_telly', isGrounded: false, mustJump: true },
+	/* Mega Man 2 */
+	METTOOL: { animNames: ['enemy_mettool'], isGrounded: true, mustJump: false },
+	SCWORM: { animNames: ['enemy_scwormA', 'enemy_scwormB'], isGrounded: true, mustJump: false },
+	BLOCKY: { animNames: ['enemy_blockyA', 'enemy_blockyB'], isGrounded: true, mustJump: true, dropYOffset: -8 },
+	BATTON: { animNames: ['enemy_batton'], isGrounded: false, mustJump: true, yOffset: 4, dropYOffset: -4 },
+	TELLY: { animNames: ['enemy_telly'], isGrounded: false, mustJump: true },
 };
 const enemyListKeys = Object.keys(MegaManEnemyList);
 

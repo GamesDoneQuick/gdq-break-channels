@@ -89,7 +89,8 @@ function MegaMan(props: ChannelProps) {
 			if (dono.state === MegaManDonationState.WAITING) {
 				// Beginning to handle a new donation: Create the enemy sprite
 				dono.state = MegaManDonationState.STARTED;
-				dono.sprEnemy = new PIXI.AnimatedSprite(spritesheet.current.animations[dono.enemy.animName]);
+				const animIdx = Math.floor(Math.random() * dono.enemy.animNames.length);
+				dono.sprEnemy = new PIXI.AnimatedSprite(spritesheet.current.animations[dono.enemy.animNames[animIdx]]);
 				dono.sprEnemy.play();
 				dono.sprEnemy.x = 288;
 				dono.sprEnemy.animationSpeed = 1 / 8;

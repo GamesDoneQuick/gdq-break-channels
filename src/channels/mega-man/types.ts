@@ -8,7 +8,7 @@ export enum MegaManDonationState {
 }
 
 export type MegaManEnemyDescription = {
-	animName: string;
+	animNames: string[];
 	isGrounded: boolean;
 	mustJump: boolean;
 	yOffset?: number;
