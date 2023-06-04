@@ -1,6 +1,7 @@
 import type { FormattedDonation, Total } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
 import { MegaManDonationQueueEntry, MegaManDonationState } from './types';
+import MEGA_MAN_CONSTS from "./config";
 import { getRandomEnemy } from "./enemies";
 
 import { useListenFor } from 'use-nodecg';
@@ -22,20 +23,6 @@ registerChannel('Mega Man', 87, MegaMan, {
 	site: 'GitHub',
 	handle: 'Suyooo',
 });
-
-export const MEGA_MAN_CONSTS = {
-	QUEUE_INTERVAL: 55,
-	MAX_QUEUE_LENGTH: 1,
-	LARGE_PICKUP_DONATION_THRESHOLD: 100,
-	MOVE_SPEED_FOREGROUND: 1,
-	MOVE_SPEED_ENEMY: 2,
-	MOVE_SPEED_BULLET: 4,
-	MOVE_SPEED_TELEPORT: 4,
-	JUMP_MEGA_MAN_INITIAL: -4,
-	JUMP_MEGA_MAN_GRAVITY: 0.25,
-	JUMP_PICKUP_INITIAL: -2,
-	JUMP_PICKUP_GRAVITY: 0.25,
-};
 
 function MegaMan(props: ChannelProps) {
 	const [shownTotal, setShownTotal] = useState<number>(

@@ -8,7 +8,7 @@ import {
 import * as PIXI from 'pixi.js';
 import sheetTexture from '../assets/bg-mm2wily1.png';
 import sheetAtlas from '../assets/bg-mm2wily1.json';
-import { MEGA_MAN_CONSTS } from '..';
+import MEGA_MAN_CONSTS from "../config";
 
 const factory: ScrollingBackgroundFactory = () => {
 	const WIDTH = 273;
