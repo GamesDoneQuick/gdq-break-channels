@@ -1,4 +1,4 @@
-import { useReducer, useRef, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import { Global, css } from '@emotion/react';
 import styled from '@emotion/styled';
 import TweenNumber from '@gdq/lib/components/TweenNumber';
@@ -133,6 +133,13 @@ export function Minesweeper(props: ChannelProps) {
 			dispatch({ type: actions.REVEAL_TILES, revealChance: 0.5 });
 		}
 	});
+
+	useEffect(() => {
+		if (gridState.nonMines.length === 0) {
+			// reset the grid when we run out of hidden tiles to reveal
+			dispatch({ type: actions.RESET });
+		}
+	}, [gridState.nonMines]);
 
 	return (
 		<Container>

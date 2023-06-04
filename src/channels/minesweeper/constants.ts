@@ -33,3 +33,6 @@ export const mineNumberTiles = [
 	TILE_MAP.SEVEN,
 	TILE_MAP.EIGHT,
 ];
+
+// How much the reveal chance is lowered by each iteration
+export const REVEAL_CHANCE_DECAY = 0.05;

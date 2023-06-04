@@ -1,5 +1,5 @@
 import { TileData } from './Tile';
-import { GRID_COLUMNS, GRID_ROWS } from './constants';
+import { GRID_COLUMNS, GRID_ROWS, REVEAL_CHANCE_DECAY } from './constants';
 
 function random(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min)) + min;
@@ -53,26 +53,34 @@ export function getMineCount(grid: TileData[][], tileId: string) {
 }
 
 export function createTileCluster(grid: TileData[][], startingTileId: string, revealChange: number) {
-	const visitedTiles = [startingTileId];
+	const visitedTiles: string[] = [];
 	const [rowIndex, tileIndex] = splitTileIndex(startingTileId);
-	const adjacentTiles = getAdjacentTiles(rowIndex, tileIndex).filter(([ri, ti]) => isTileInbounds(ri, ti));
 
-	function visitTile({ id, isMine }: TileData, chance = revealChange) {
-		const [ri, ti] = splitTileIndex(id);
+	function visitTile(rowIndex: number, tileIndex: number, chance = revealChange) {
+		const tile = grid[rowIndex]?.[tileIndex] as TileData | undefined;
+		// stop tile from being revealed (and cascading further)
+		// when the following conditions are met
 		if (
-			//
-			isMine ||
-			visitedTiles.includes(id) ||
-			Math.random() > chance
+			// not a valid tile
+			!tile ||
+			// the tile is a mine
+			tile.isMine ||
+			// has already been visisted
+			visitedTiles.includes(tile.id) ||
+			// or does not meet the reveal chance
+			// note: we always want the first tile chosen to be revealed
+			(visitedTiles.length > 0 && Math.random() > chance)
 		) {
 			return;
 		}
-		visitedTiles.push(id);
-		const adjacentTiles = getAdjacentTiles(ri, ti).filter(([ri, ti]) => isTileInbounds(ri, ti));
-		adjacentTiles.forEach((tile) => visitTile(grid[tile[0]][tile[1]], chance - 0.05));
+		visitedTiles.push(tile.id);
+		const adjacentTiles = getAdjacentTiles(rowIndex, tileIndex);
+		adjacentTiles.forEach(([ajacentRowIndex, adjacentTileIndex]) =>
+			visitTile(ajacentRowIndex, adjacentTileIndex, chance - REVEAL_CHANCE_DECAY),
+		);
 	}
 
-	adjacentTiles.forEach((tile) => visitTile(grid[tile[0]][tile[1]]));
+	visitTile(rowIndex, tileIndex);
 
 	return visitedTiles;
 }
