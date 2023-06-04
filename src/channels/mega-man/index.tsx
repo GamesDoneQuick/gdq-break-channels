@@ -1,6 +1,7 @@
 import type { FormattedDonation, Total } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
-import { MegaManDonationQueueEntry, MegaManDonationState, MegaManEnemyList } from './types';
+import { MegaManDonationQueueEntry, MegaManDonationState } from './types';
+import { getRandomEnemy } from "./enemies";
 
 import { useListenFor } from 'use-nodecg';
 import styled from '@emotion/styled';
@@ -106,9 +107,9 @@ function MegaMan(props: ChannelProps) {
 				dono.sprEnemy.x = 288;
 				dono.sprEnemy.animationSpeed = 1 / 8;
 				if (dono.enemy.isGrounded) {
-					dono.sprEnemy.y = 65 - dono.sprEnemy.height;
+					dono.sprEnemy.y = 65 - dono.sprEnemy.height + (dono.enemy.yOffset ?? 0);
 				} else {
-					dono.sprEnemy.y = 25 - dono.sprEnemy.height / 2;
+					dono.sprEnemy.y = 25 - dono.sprEnemy.height / 2 + (dono.enemy.yOffset ?? 0);
 				}
 				container.addChild(dono.sprEnemy);
 			} else if (dono.state === MegaManDonationState.STARTED || dono.state === MegaManDonationState.FIRED) {
@@ -153,12 +154,8 @@ function MegaMan(props: ChannelProps) {
 						dono.sprDestroy.pivot.x = dono.sprDestroy.width / 2;
 						dono.sprDestroy.pivot.y = dono.sprDestroy.height / 2;
 						dono.sprDestroy.x = dono.sprEnemy!.x + dono.sprEnemy!.width / 2;
-						dono.sprDestroy.y = dono.sprEnemy!.y + dono.sprEnemy!.height / 2;
-						if (dono.enemy == MegaManEnemyList.BLOCKY) {
-							dono.sprDestroy.y -= 8;
-						} else if (dono.enemy == MegaManEnemyList.BATTON) {
-							dono.sprDestroy.y -= 6;
-						}
+						dono.sprDestroy.y =
+							dono.sprEnemy!.y + dono.sprEnemy!.height / 2 + (dono.enemy.dropYOffset ?? 0);
 						dono.sprDestroy.loop = false;
 						dono.sprDestroy.onComplete = () => dono.sprDestroy!.destroy();
 						dono.sprDestroy.animationSpeed = 1 / 4;
@@ -309,29 +306,10 @@ function MegaMan(props: ChannelProps) {
 			latestDonation.newTotal = donation.rawNewTotal;
 			latestDonation.bigPickup = true;
 		} else {
-			let enemy;
-			switch (Math.floor(Math.random() * 5)) {
-				case 0:
-					enemy = MegaManEnemyList.METTOOL;
-					break;
-				case 1:
-					enemy = MegaManEnemyList.SCWORM;
-					break;
-				case 2:
-					enemy = MegaManEnemyList.BLOCKY;
-					break;
-				case 3:
-					enemy = MegaManEnemyList.BATTON;
-					break;
-				default:
-					enemy = MegaManEnemyList.TELLY;
-					break;
-			}
-
 			donationQueue.current.push({
 				state: MegaManDonationState.WAITING,
 				newTotal: donation.rawNewTotal,
-				enemy,
+				enemy: getRandomEnemy(),
 				bigPickup: donation.rawAmount >= MEGA_MAN_CONSTS.LARGE_PICKUP_DONATION_THRESHOLD,
 			});
 		}

@@ -1,4 +1,4 @@
-import type { AnimatedSprite, Sprite, TilingSprite } from 'pixi.js';
+import type { AnimatedSprite, Sprite } from 'pixi.js';
 
 export enum MegaManDonationState {
 	WAITING,
@@ -11,14 +11,8 @@ export type MegaManEnemyDescription = {
 	animName: string;
 	isGrounded: boolean;
 	mustJump: boolean;
-};
-
-export const MegaManEnemyList: { [enemy: string]: MegaManEnemyDescription } = {
-	METTOOL: { animName: 'enemy_mettool', isGrounded: true, mustJump: false },
-	SCWORM: { animName: 'enemy_scworm', isGrounded: true, mustJump: false },
-	BLOCKY: { animName: 'enemy_blocky', isGrounded: true, mustJump: true },
-	BATTON: { animName: 'enemy_batton', isGrounded: false, mustJump: true },
-	TELLY: { animName: 'enemy_telly', isGrounded: false, mustJump: true },
+	yOffset?: number;
+	dropYOffset?: number;
 };
 
 export type MegaManDonationQueueEntry = {
