@@ -250,8 +250,8 @@ export abstract class ScrollingBackgroundRowComponent extends ScrollingBackgroun
 
 	/**
 	 * Returns the current width of the component. It is only called while the component is on the screen.
-	 * It is called every tick, so please don't do calculations in this method if possible - if you cannot return a
-	 * constant, calculate the width in enter()/tick(), store it, and just return it in this method.
+	 * It is called every tick, so please don't do calculations in this method if possible - calculate the width in
+	 * enter() instead, store it, and just return that variable in this method.
 	 */
 	width(): number {
 		return this.container.width;

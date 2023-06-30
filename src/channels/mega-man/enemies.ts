@@ -7,6 +7,13 @@ export const MegaManEnemyList: { [enemy: string]: MegaManEnemyDescription } = {
 	BLOCKY: { animNames: ['enemy_blockyA', 'enemy_blockyB'], isGrounded: true, mustJump: true, dropYOffset: -8 },
 	BATTON: { animNames: ['enemy_batton'], isGrounded: false, mustJump: true, yOffset: 4, dropYOffset: -4 },
 	TELLY: { animNames: ['enemy_telly'], isGrounded: false, mustJump: true },
+	/* Mega Man 3 */
+	POTTON: { animNames: ['enemy_potton'], isGrounded: false, mustJump: true, yOffset: -4, dropYOffset: 4 },
+	PENPEN: { animNames: ['enemy_penpen'], isGrounded: true, mustJump: false },
+	YAMBOW: { animNames: ['enemy_yambowA', 'enemy_yambowB'], isGrounded: false, mustJump: true },
+	/* Mega Man 4 */
+	RINGRING: { animNames: ['enemy_ringring'], isGrounded: false, mustJump: true },
+	MINOAN: { animNames: ['enemy_minoan'], isGrounded: true, mustJump: false },
 };
 const enemyListKeys = Object.keys(MegaManEnemyList);
 

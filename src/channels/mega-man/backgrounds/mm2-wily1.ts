@@ -8,7 +8,7 @@ import {
 import * as PIXI from 'pixi.js';
 import sheetTexture from '../assets/bg-mm2wily1.png';
 import sheetAtlas from '../assets/bg-mm2wily1.json';
-import MEGA_MAN_CONSTS from "../config";
+import MEGA_MAN_CONSTS from '../config';
 
 const factory: ScrollingBackgroundFactory = () => {
 	const WIDTH = 273;
@@ -85,7 +85,7 @@ const factory: ScrollingBackgroundFactory = () => {
 				for (let i = 0; i < BARREL_COUNT; i++) {
 					this.barrels[i].x = (Math.floor(Math.random() * (tileWidth - 5)) + 2) * 16;
 					this.barrels[i].height = Math.random() < 0.66 ? 16 : 32;
-					this.barrels[i].width = this.barrels[i].height === 32 || Math.random() < 0.66 ? 16 : 32;
+					this.barrels[i].width = this.barrels[i].height === 32 || Math.random() < 0.5 ? 16 : 32;
 					this.barrels[i].y = 48 - this.barrels[i].height;
 				}
 			}
