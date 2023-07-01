@@ -79,7 +79,6 @@ const factory: ScrollingBackgroundFactory = () => {
 			enter(): void {
 				super.enter();
 				const tileWidth = Math.floor(Math.random() * 64) + 32;
-				console.log(tileWidth);
 				this.fence.width = tileWidth * 16;
 
 				for (let i = 0; i < BARREL_COUNT; i++) {
@@ -141,7 +140,7 @@ const factory: ScrollingBackgroundFactory = () => {
 				new BackgroundMM2Wily1BuildingA(),
 				new BackgroundMM2Wily1BuildingB(),
 			]),
-			new ScrollingBackgroundRow(bg, 16, 0.75, [1120, 1600, WIDTH * 2], 16, false, [
+			new ScrollingBackgroundRow(bg, 16, 0.75, [1120, 1600, WIDTH * 4], 16, false, [
 				new BackgroundMM2Wily1Fence(),
 			]),
 		);

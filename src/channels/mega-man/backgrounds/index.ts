@@ -134,6 +134,13 @@ export class ScrollingBackgroundRow {
 		components.forEach((component) => this.addComponent(component));
 	}
 
+	/**
+	 *	Override this method to stop the row from entering new components in certain conditions.
+	 */
+	canEnter(): boolean {
+		return true;
+	}
+
 	tick(moveSpeed: number): void {
 		const multipliedMoveSpeed = moveSpeed * this.moveSpeedFactor;
 
@@ -150,7 +157,7 @@ export class ScrollingBackgroundRow {
 			this.restGap += this.tileSize;
 		}
 
-		if (this.restGap <= 0 && this.queue.length > 0) {
+		if (this.restGap <= 0 && this.queue.length > 0 && this.canEnter()) {
 			const component = this.spawnNextComponent(
 				this.widthWithTileSize + (this.restGap === 0 ? 0 : this.tileSize + this.restGap),
 			);
