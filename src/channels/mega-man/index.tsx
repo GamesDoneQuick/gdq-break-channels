@@ -18,6 +18,7 @@ import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
 import type { ScrollingBackground } from './backgrounds';
 import backgroundFactoryMM2Wily1 from './backgrounds/mm2-wily1';
 import backgroundFactoryMM3Gemini from './backgrounds/mm3-gemini';
+import backgroundFactoryMM4Cos4 from './backgrounds/mm4-cos4';
 
 registerChannel('Mega Man', 87, MegaMan, {
 	position: 'bottomLeft',
@@ -227,7 +228,7 @@ function MegaMan(props: ChannelProps) {
 		app.current.stage.addChild(container);
 		container.setTransform(0, 0, 4, 4);
 
-		[background.current] = backgroundFactoryMM3Gemini();
+		[background.current] = backgroundFactoryMM4Cos4();
 		container.addChild(background.current.getContainer());
 
 		spritesheet.current = new PIXI.Spritesheet(PIXI.BaseTexture.from(sheetTexture), sheetAtlas);

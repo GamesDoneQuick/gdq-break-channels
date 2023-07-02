@@ -110,7 +110,7 @@ export class ScrollingBackgroundRow {
 			return i;
 		});
 
-		if (this.components.length > 0) {
+		if (this.components.length > 0 && this.canEnter()) {
 			// If initial components are defined, immediately distribute them
 			let nextX: number = gap[2] ? gap[2] - gap[0] + this.randomGap() : -this.randomGap();
 			while (this.queue.length > 0 && nextX < this.widthWithTileSize) {
