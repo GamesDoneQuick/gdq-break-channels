@@ -13,6 +13,7 @@ import MEGA_MAN_CONSTS from '../config';
 const factory: ScrollingBackgroundFactory = () => {
 	const WIDTH = 273;
 	const BGCOLOR = 0x000000;
+	const NETBGCOLOR = 0x141210;
 	const TINTCOLOR = 0x888888;
 
 	const bg = new ScrollingBackground(WIDTH, MEGA_MAN_CONSTS.MOVE_SPEED_FOREGROUND);
@@ -158,8 +159,14 @@ const factory: ScrollingBackgroundFactory = () => {
 				this.bg.clear();
 				this.mask.clear();
 
-				this.bg.beginFill(BGCOLOR);
+				this.bg.beginFill(NETBGCOLOR);
 				this.bg.drawRect(0, 0, this.net.width, 64);
+				this.bg.drawRect(-5, 0, 3, 64);
+				this.bg.drawRect(-9, 0, 2, 64);
+				this.bg.drawRect(-12, 0, 1, 64);
+				this.bg.drawRect(this.net.width + 2, 0, 3, 64);
+				this.bg.drawRect(this.net.width + 7, 0, 2, 64);
+				this.bg.drawRect(this.net.width + 11, 0, 1, 64);
 				this.bg.endFill();
 
 				this.mask.beginFill(0xffffff);
@@ -240,7 +247,7 @@ const factory: ScrollingBackgroundFactory = () => {
 			}
 
 			canEnter(): boolean {
-				return this.blockers.every((c) => !c.isOnScreen());
+				return this.blockers && this.blockers.every((c) => !c.isOnScreen());
 			}
 		}
 
