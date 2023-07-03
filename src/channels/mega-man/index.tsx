@@ -3,6 +3,7 @@ import { ChannelProps, registerChannel } from '../channels';
 import { MegaManDonationQueueEntry, MegaManDonationState } from './types';
 import MEGA_MAN_CONSTS from './config';
 import { getRandomEnemy } from './enemies';
+import { getRandomBG } from './bgs';
 
 import { useListenFor } from 'use-nodecg';
 import styled from '@emotion/styled';
@@ -16,9 +17,6 @@ import sheetAtlas from './assets/atlas.json';
 import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
 
 import type { ScrollingBackground } from './backgrounds';
-import backgroundFactoryMM2Wily1 from './backgrounds/mm2-wily1';
-import backgroundFactoryMM3Gemini from './backgrounds/mm3-gemini';
-import backgroundFactoryMM4Cos4 from './backgrounds/mm4-cos4';
 
 registerChannel('Mega Man', 87, MegaMan, {
 	position: 'bottomLeft',
@@ -228,7 +226,7 @@ function MegaMan(props: ChannelProps) {
 		app.current.stage.addChild(container);
 		container.setTransform(0, 0, 4, 4);
 
-		[background.current] = backgroundFactoryMM4Cos4();
+		[background.current] = getRandomBG();
 		container.addChild(background.current.getContainer());
 
 		spritesheet.current = new PIXI.Spritesheet(PIXI.BaseTexture.from(sheetTexture), sheetAtlas);
