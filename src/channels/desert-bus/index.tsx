@@ -79,7 +79,7 @@ export function DesertBus(_: ChannelProps) {
 	const objects = useRef<Record<string, PIXI.DisplayObject> | null>(null);
 	const textures = useRef<Record<string, PIXI.Texture> | null>(null);
 
-	firstBus.value = true;
+	if (active) firstBus.value = true;
 
 	const [app, canvasRef] = usePIXICanvas({ width: 1092, height: 332 }, () => {
 		if (!objects.current) return;
