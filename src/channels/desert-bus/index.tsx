@@ -35,6 +35,7 @@ import mask from './images/sand_banks_mask.png';
 import bug from './images/bug.png';
 import splat from './images/splat.png';
 import TweenNumber from '@gdq/lib/components/TweenNumber';
+import { useActive } from '@gdq/lib/hooks/useActive';
 
 registerChannel('Desert Bus', 16, DesertBus, {
 	handle: 'VodBox',
@@ -57,11 +58,9 @@ const distanceRep = nodecg.Replicant<number>('desert-bus-distance', {
 
 let distance = 0;
 
-const layoutQuery = new URLSearchParams(window.location.search);
-const has = layoutQuery.has('layout');
-
 export function DesertBus(_: ChannelProps) {
 	const [total] = useReplicant<Total | null>('total', null);
+	const active = useActive();
 
 	useEffect(() => {
 		distance = distanceRep.value ?? 0;
@@ -272,7 +271,7 @@ export function DesertBus(_: ChannelProps) {
 		distance = distance + Math.max(speed.current, 0) / 60 / 60 / 60;
 		const distanceStr = (Math.floor(distance) + '').padStart(4, '0');
 
-		if (!has && speed.current > 0 && distanceRep.value !== undefined) {
+		if (active && speed.current > 0 && distanceRep.value !== undefined) {
 			distanceRep.value = distance;
 		}
 
