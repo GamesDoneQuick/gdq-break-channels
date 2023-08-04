@@ -14,6 +14,6 @@ import './dragon-warrior';
 import './ff-shop';
 import './template';
 import './papers-please';
-import './specter-knight';
+import './ewj';
 
 export * from './channels';
