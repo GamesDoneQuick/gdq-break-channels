@@ -4,14 +4,19 @@ import styled from '@emotion/styled';
 import TweenNumber from '@gdq/lib/components/TweenNumber';
 import { ChannelProps, registerChannel } from '../channels';
 import { useListenFor, useReplicant } from 'use-nodecg';
-import type { FormattedDonation, Total } from '@gdq/types/tracker';
+import type { Event, FormattedDonation, Total } from '@gdq/types/tracker';
 
 import { Face } from './Face';
 import { Tile, TileData } from './Tile';
 import { TILE_DIMENSION, GRID_COLUMNS, GRID_ROWS, TILE_MAP, MINE_CHANCE, mineNumberTiles } from './constants';
 import { createTileCluster, getMineCount, randomFromArray, splitTileIndex } from './utils';
+import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
+import { cloneDeep } from 'lodash';
 
-registerChannel('Minesweeper', 132, Minesweeper);
+registerChannel('Minesweeper', 132, Minesweeper, {
+	position: 'bottomRight',
+	handle: 'rshig',
+});
 
 type GridState = {
 	grid: TileData[][];
@@ -41,6 +46,11 @@ function generateInitialGridState(): GridState {
 	return state;
 }
 
+const stateReplicant = nodecg.Replicant<GridState>('minesweeper-state', {
+	defaultValue: generateInitialGridState(),
+	persistent: true,
+});
+
 const actions = {
 	RESET: 'reset',
 	FLAG_TILE: 'flag',
@@ -55,7 +65,9 @@ type GridAction =
 function gridReducer(state: GridState, action: GridAction) {
 	switch (action.type) {
 		case actions.RESET: {
-			return generateInitialGridState();
+			const newState = generateInitialGridState();
+			stateReplicant.value = newState;
+			return newState;
 		}
 		case actions.FLAG_TILE: {
 			if (state.mines.length > 0) {
@@ -76,7 +88,9 @@ function gridReducer(state: GridState, action: GridAction) {
 
 				const newMines = state.mines.filter((mineIndex) => mineIndex !== mineIndexStr);
 
-				return { ...state, grid: newGrid, mines: newMines };
+				const newState = { ...state, grid: newGrid, mines: newMines };
+				stateReplicant.value = newState;
+				return newState;
 			}
 			return state;
 		}
@@ -99,7 +113,9 @@ function gridReducer(state: GridState, action: GridAction) {
 
 				const nonMines = state.nonMines.filter((id) => !tiles.includes(id));
 
-				return { ...state, grid, nonMines };
+				const newState = { ...state, grid, nonMines };
+				stateReplicant.value = newState;
+				return newState;
 			}
 			return state;
 		}
@@ -110,9 +126,10 @@ function gridReducer(state: GridState, action: GridAction) {
 }
 
 export function Minesweeper(props: ChannelProps) {
+	const [currentEvent] = usePreloadedReplicant<Event>('currentEvent');
 	const [total] = useReplicant<Total | null>('total', null);
 
-	const [gridState, dispatch] = useReducer(gridReducer, undefined, generateInitialGridState);
+	const [gridState, dispatch] = useReducer(gridReducer, cloneDeep(stateReplicant.value!));
 
 	const [face, setFace] = useState<Face>('smile');
 	const faceChangeTImeout = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -156,7 +173,7 @@ export function Minesweeper(props: ChannelProps) {
 						css={css`
 							justify-content: flex-start;
 						`}>
-						<LCDText>SGDQ 2023</LCDText>
+						<LCDText>{currentEvent.shortname}</LCDText>
 					</LCDContainer>
 					<Face face={face} />
 					<LCDContainer
