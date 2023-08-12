@@ -2,7 +2,7 @@
     animation: 2s moveAround ease-in-out 1.6s 1;
 }
 @keyframes moveAround {
-    0% { opacity: 1; top: 150px; left: 175px; transform: rotate(0deg), scale(0.1); }
+    0% { opacity: 1; top: 150px; left: 175px; transform: rotate(0deg) scale(0.1); }
     12% { opacity: 1; transform: rotate(-22.5deg) scale(1.0); }
     25% { opacity: 1; top: 255px; left: 175px; transform: rotate(-45deg) scale(1); }
     75% { opacity: 1; top: 255px; left: 175px; transform: rotate(-45deg) scale(1); }
