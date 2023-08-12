@@ -2,11 +2,11 @@
     animation: 2s moveAround ease-in-out 1.6s 1;
 }
 @keyframes moveAround {
-    0% { opacity: 1; top: 150px; left: 175px; transform: rotate(0deg); scale: 0.1 }
-    12% { opacity: 1; scale: 1.0; }
-    25% { opacity: 1; top: 255px; left: 175px; transform: rotate(-45deg); }
-    75% { opacity: 1; top: 255px; left: 175px; transform: rotate(-45deg); }
-    100% { opacity: 1; top: 255px; left: 420px; transform: rotate(-90deg); }
+    0% { opacity: 1; top: 150px; left: 175px; transform: rotate(0deg), scale(0.1); }
+    12% { opacity: 1; transform: rotate(-22.5deg) scale(1.0); }
+    25% { opacity: 1; top: 255px; left: 175px; transform: rotate(-45deg) scale(1); }
+    75% { opacity: 1; top: 255px; left: 175px; transform: rotate(-45deg) scale(1); }
+    100% { opacity: 1; top: 255px; left: 420px; transform: rotate(-90deg) scale(1); }
 }
 .passportInnerMoveIn {
     animation: 1.5s moveIn ease-in-out 3.4s 1 forwards;
@@ -45,9 +45,9 @@
     animation: 1.6s personAppear ease-in-out 0s 1 forwards;
 }
 @keyframes personAppear {
-    0% { left: -250px; top: 15px; scale: .8; filter: brightness(0); }
-    80% { left: 44px; top: -5px; scale: 1; filter: brightness(0); }
-    100% { left: 44px; top: -5px; scale: 1; filter: brightness(1); }
+    0% { left: -250px; top: 15px; transform: scale(0.8); filter: brightness(0); }
+    80% { left: 44px; top: -5px; transform: scale(1); filter: brightness(0); }
+    100% { left: 44px; top: -5px; transform: scale(1); filter: brightness(1); }
 }
 .personLeave {
     left: 44px;
@@ -55,9 +55,9 @@
     animation: 2.1s personLeave ease-in-out 8.6s 1 forwards;
 }
 @keyframes personLeave {
-    0% { left: 44px; top: -5px ; scale: 1; filter: brightness(1); }
-    20% { left: 44px; top: -5px; scale: 1; filter: brightness(0); }
-    100% { left: 400px; top: 15px; scale: .7; filter: brightness(0); }
+    0% { left: 44px; top: -5px; transform: scale(1); filter: brightness(1); }
+    20% { left: 44px; top: -5px; transform: scale(1); filter: brightness(0); }
+    100% { left: 400px; top: 15px; transform: scale(0.7); filter: brightness(0); }
 }
 .showStamp {
     animation: 100ms ease-in-out 3.5s 1 forwards visible;
