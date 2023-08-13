@@ -378,12 +378,14 @@ const Container = styled.div`
 const TotalEl = styled.div`
 	font-family: gdqpixel;
 	font-size: 46px;
-	color: white;
+	color: #FFC;
 
 	position: absolute;
 
 	left: 97%;
 	top: 90%;
 	transform: translate(-100%, -100%);
+	
+	filter: drop-shadow(0px 0px 4px #0009);
 `;
 
