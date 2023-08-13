@@ -62,7 +62,7 @@ function CaveStory(props: ChannelProps) {
 			putRandomlyInDeck("Puppy");
 			decksInitializedYet.current = true;
 		}
-		var result:string = curDeck.current.shift()!;
+		let result:string = curDeck.current.shift()!;
 		putIntoBackHalfOfDeck(result);
 		if (curDeck.current.length == 0) {
 			curDeck.current = nextDeck.current;
@@ -74,8 +74,8 @@ function CaveStory(props: ChannelProps) {
 	useListenFor('donation', (donation: FormattedDonation) => {
 		if (!flyingDonations.current) return;
 		
-		var dollars = donation.rawAmount;
-		var character;
+		let dollars = donation.rawAmount;
+		let character;
 		if (dollars >= 100) {
 			character = getRandomCharacter();
 			if (character == "Quote") {
@@ -193,7 +193,7 @@ const sidewaysAnim = keyframes`
 `;
 const SidewaysMover = styled.div`
 	position: absolute;
-	animation: ${sidewaysAnim} 5s linear;
+	animation: ${sidewaysAnim} 5s linear forwards;
 `;
 
 const verticalAnim = keyframes`
