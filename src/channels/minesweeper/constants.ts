@@ -1,5 +1,5 @@
 export const FACE_DIMENSION = 24;
-export const FACE_ORDER = ['smile', 'smile_pressed', 'open_mouth', 'sunglasses'] as const;
+export const FACE_ORDER = ['smile', 'smile_pressed', 'open_mouth', 'sunglasses', 'heart_eyes'] as const;
 
 export const MINE_CHANCE = 0.15;
 

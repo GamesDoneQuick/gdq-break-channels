@@ -3,15 +3,15 @@ import { FACE_DIMENSION, FACE_ORDER } from './constants';
 
 import faces from './assets/faces.png';
 
-export type Face = (typeof FACE_ORDER)[number];
+export type FaceType = (typeof FACE_ORDER)[number];
 
-function getFaceOffset(face: Face) {
+function getFaceOffset(face: FaceType) {
 	const faceIndex = FACE_ORDER.indexOf(face);
 	return faceIndex * FACE_DIMENSION;
 }
 
 type FaceProps = {
-	face: Face;
+	face: FaceType;
 };
 
 export function Face({ face }: FaceProps) {

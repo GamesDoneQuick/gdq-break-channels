@@ -6,7 +6,7 @@ import { ChannelProps, registerChannel } from '../channels';
 import { useListenFor, useReplicant } from 'use-nodecg';
 import type { Event, FormattedDonation, Total } from '@gdq/types/tracker';
 
-import { Face } from './Face';
+import { Face, type FaceType } from './Face';
 import { Tile, TileData } from './Tile';
 import { TILE_DIMENSION, GRID_COLUMNS, GRID_ROWS, TILE_MAP, MINE_CHANCE, mineNumberTiles } from './constants';
 import { createTileCluster, getMineCount, random, randomFromArray, splitTileIndex } from './utils';
@@ -138,17 +138,21 @@ export function Minesweeper(props: ChannelProps) {
 
 	const [gridState, dispatch] = useReducer(gridReducer, cloneDeep(stateReplicant.value!));
 
-	const [face, setFace] = useState<Face>('smile');
-	const faceChangeTImeout = useRef<NodeJS.Timeout | undefined>(undefined);
+	const [face, setFace] = useState<FaceType>('smile');
+	const faceChangeTImeout = useRef<NodeJS.Timeout>();
+
+	function changeFace(face: FaceType) {
+		clearTimeout(faceChangeTImeout.current);
+		setFace(face);
+		faceChangeTImeout.current = setTimeout(() => setFace('smile'), 2_500);
+	}
 
 	useListenFor('donation', (donation: FormattedDonation) => {
 		/**
 		 * The magic numbers in here are sort of arbitrary placeholders since
 		 * I don't have much context for realistic donation behavior
 		 */
-		clearTimeout(faceChangeTImeout.current);
-		setFace(donation.rawAmount < 50 ? 'open_mouth' : 'sunglasses');
-		faceChangeTImeout.current = setTimeout(() => setFace('smile'), 2000);
+		changeFace(donation.rawAmount < 50 ? 'open_mouth' : 'sunglasses');
 
 		if (donation.rawAmount < 50 && gridState.mines.length > 0) {
 			dispatch({ type: actions.FLAG_TILE });
@@ -156,6 +160,10 @@ export function Minesweeper(props: ChannelProps) {
 			// TODO: figure out which reveal chances to set for certain donation ranges
 			dispatch({ type: actions.REVEAL_TILES, revealChance: 0.5 });
 		}
+	});
+
+	useListenFor('subscription', () => {
+		changeFace('heart_eyes');
 	});
 
 	useEffect(() => {
