@@ -1,7 +1,7 @@
 import { TileData } from './Tile';
 import { GRID_COLUMNS, GRID_ROWS, REVEAL_CHANCE_DECAY } from './constants';
 
-function random(min: number, max: number) {
+export function random(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min)) + min;
 }
 

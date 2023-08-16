@@ -9,7 +9,7 @@ import type { Event, FormattedDonation, Total } from '@gdq/types/tracker';
 import { Face } from './Face';
 import { Tile, TileData } from './Tile';
 import { TILE_DIMENSION, GRID_COLUMNS, GRID_ROWS, TILE_MAP, MINE_CHANCE, mineNumberTiles } from './constants';
-import { createTileCluster, getMineCount, randomFromArray, splitTileIndex } from './utils';
+import { createTileCluster, getMineCount, random, randomFromArray, splitTileIndex } from './utils';
 import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
 import { cloneDeep } from 'lodash';
 
@@ -55,12 +55,14 @@ const actions = {
 	RESET: 'reset',
 	FLAG_TILE: 'flag',
 	REVEAL_TILES: 'reveal',
+	QUESTION_TILE: 'question',
 } as const;
 
 type GridAction =
 	| { type: typeof actions.FLAG_TILE }
 	| { type: typeof actions.RESET }
-	| { type: typeof actions.REVEAL_TILES; revealChance: number };
+	| { type: typeof actions.REVEAL_TILES; revealChance: number }
+	| { type: typeof actions.QUESTION_TILE };
 
 function gridReducer(state: GridState, action: GridAction) {
 	switch (action.type) {
@@ -71,22 +73,13 @@ function gridReducer(state: GridState, action: GridAction) {
 		}
 		case actions.FLAG_TILE: {
 			if (state.mines.length > 0) {
-				const mineIndexStr = randomFromArray(state.mines);
-				const [rowIndex, tileIndex] = splitTileIndex(mineIndexStr);
+				const tileIndexStr = randomFromArray(state.mines);
+				const [rowIndex, tileIndex] = splitTileIndex(tileIndexStr);
 
-				const newGrid = state.grid.map((row, ri) => {
-					if (ri !== rowIndex) return row;
-					return row.map<TileData>((tile, ti) =>
-						ti === tileIndex
-							? {
-									...tile,
-									tileType: TILE_MAP.FLAGGED,
-							  }
-							: tile,
-					);
-				});
+				const newGrid = [...state.grid];
+				newGrid[rowIndex][tileIndex].tileType = TILE_MAP.FLAGGED;
 
-				const newMines = state.mines.filter((mineIndex) => mineIndex !== mineIndexStr);
+				const newMines = state.mines.filter((mineIndex) => mineIndex !== tileIndexStr);
 
 				const newState = { ...state, grid: newGrid, mines: newMines };
 				stateReplicant.value = newState;
@@ -96,13 +89,13 @@ function gridReducer(state: GridState, action: GridAction) {
 		}
 		case actions.REVEAL_TILES: {
 			if (state.nonMines.length > 0) {
-				const tileId = randomFromArray(state.nonMines);
-				const tiles = createTileCluster(state.grid, tileId, action.revealChance);
+				const tileIndexStr = randomFromArray(state.nonMines);
+				const tilesToReveal = createTileCluster(state.grid, tileIndexStr, action.revealChance);
 
 				const grid = state.grid.map((row) => {
-					return row.map<TileData>((tile) => {
+					return row.map((tile) => {
 						const mineCount = getMineCount(state.grid, tile.id);
-						return tiles.includes(tile?.id)
+						return tilesToReveal.includes(tile.id)
 							? {
 									...tile,
 									tileType: mineNumberTiles[mineCount],
@@ -111,9 +104,23 @@ function gridReducer(state: GridState, action: GridAction) {
 					});
 				});
 
-				const nonMines = state.nonMines.filter((id) => !tiles.includes(id));
+				const nonMines = state.nonMines.filter((id) => !tilesToReveal.includes(id));
 
 				const newState = { ...state, grid, nonMines };
+				stateReplicant.value = newState;
+				return newState;
+			}
+			return state;
+		}
+		case actions.QUESTION_TILE: {
+			if (state.mines.length > 0) {
+				const tileIndexStr = randomFromArray(state.mines);
+				const [rowIndex, tileIndex] = splitTileIndex(tileIndexStr);
+
+				const newGrid = [...state.grid];
+				newGrid[rowIndex][tileIndex].tileType = TILE_MAP.QUESTION_MARK;
+
+				const newState = { ...state, grid: newGrid };
 				stateReplicant.value = newState;
 				return newState;
 			}
@@ -157,6 +164,24 @@ export function Minesweeper(props: ChannelProps) {
 			dispatch({ type: actions.RESET });
 		}
 	}, [gridState.nonMines]);
+
+	const flagTimeoutRef = useRef<NodeJS.Timeout>();
+	useEffect(() => {
+		function flagTiles(timeoutMS: number) {
+			// Add a question mark every 5-10 seconds
+			const newTimeout = random(5_000, 10_000);
+			flagTimeoutRef.current = setTimeout(() => {
+				dispatch({ type: actions.QUESTION_TILE });
+				flagTiles(newTimeout);
+			}, timeoutMS);
+		}
+
+		flagTiles(5_000);
+
+		return () => {
+			clearTimeout(flagTimeoutRef.current);
+		};
+	}, []);
 
 	return (
 		<Container>

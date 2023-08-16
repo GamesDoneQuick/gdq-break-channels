@@ -20,6 +20,7 @@ export const TILE_MAP = {
 	EIGHT: [7, 1],
 	EMPTY: [1, 0],
 	FLAGGED: [2, 0],
+	QUESTION_MARK: [3, 0],
 } as const;
 
 export const mineNumberTiles = [
