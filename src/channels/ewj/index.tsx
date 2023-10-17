@@ -196,71 +196,10 @@ export function EarthwormJim(props: ChannelProps) {
 			jim.y = 158;
 			jim.play();
 			container.addChild(jim);
-
-			
-
-			// const crow = objects.current.crowAnim as PIXI.AnimatedSprite;
-			// crow.textures = spritesheet.current.animations.crow;
-			// crow.animationSpeed = 1/5;
-			// crow.scale.x = -1
-			// crow.x = 450;
-			// crow.y = 5;
-			// crow.play();
-			// container.addChild(crow);
-
-			// const fifi = objects.current.fifiAnim as PIXI.AnimatedSprite;
-			// fifi.textures = spritesheet.current.animations.fifimove;
-			// fifi.animationSpeed = 1/3;
-			// fifi.scale.x = -1;
-			// fifi.x = 1100;
-			// fifi.y = 125;
-			// fifi.play();
-			// container.addChild(fifi);
 		});
 
 	});
 	useListenFor('donation', (donation: FormattedDonation) => {
-		// const addCrow = () => {
-		// 	let xPos = (Math.random() * 600) + 100;
-		// 	const el = document.createElement('img');
-		// 	el.className = 'donationcrow';
-		// 	el.style.transform = 'scaleX(-1)'
-		// 	el.style.left = xPos +'px';
-		// 	el.style.top = '375px';
-		// 	if(donation.rawAmount >= 100) {
-		// 		el.src = crowGif;
-		// 	} else {
-		// 		el.src = crowGif;
-		// 	}
-		// 	containerRef.current?.appendChild(el);
-
-		// 	requestAnimationFrame(() =>
-		// 		requestAnimationFrame(() => {
-		// 			el.style.left = xPos +'px';
-		// 			el.style.top = `-${Math.random() * 100 + 116}px`;
-		// 			el.style.transform = `scale (2)`;
-		// 		}),
-		// 	);
-
-		// 	setTimeout(() => {
-		// 		el.style.transition = `transform 5s, top 4s, left 4s`;
-		// 		el.style.top = `${Math.random() * 10 + 50}px`;
-		// 		el.style.left = `${Math.random() * 10 + 150}px`;
-		// 	}, 1200);
-
-		// 	setTimeout(() => {
-		// 		el.style.top = `-1000px`;
-		// 		el.style.left = `350px`;
-		// 	}, 2400);
-
-		// 	setTimeout(() => {
-		// 		containerRef?.current?.removeChild(el);
-		// 	}, 3000);
-		// };
-
-		
-		// setTimeout(addCrow, (Math.random() * 60));
-		
 		
 		let enemyType;
 		if (donation.rawAmount > 100) {
@@ -290,11 +229,6 @@ const Container = styled.div`
 	height: 100%;
 	padding: 0;
 	margin: 0;
-
-	.donationcrow {
-		position: absolute;
-		transition: transform 5s, top 4s ease-in-out;
-	}
 `;
 
 const Canvas = styled.canvas`
