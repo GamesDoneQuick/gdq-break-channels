@@ -1,7 +1,7 @@
 export const FACE_DIMENSION = 24;
 export const FACE_ORDER = ['smile', 'smile_pressed', 'open_mouth', 'sunglasses', 'heart_eyes'] as const;
 
-export const MINE_CHANCE = 0.15;
+export const MINE_CHANCE = 0.17;
 
 export const GRID_ROWS = 16;
 export const GRID_COLUMNS = 67;
@@ -35,5 +35,8 @@ export const mineNumberTiles = [
 	TILE_MAP.EIGHT,
 ];
 
-// How much the reveal chance is lowered by each iteration
-export const REVEAL_CHANCE_DECAY = 0.05;
+export const MIN_REVEAL_DONATION = 20;
+/** maximum donation amount for determining reveal threshold */
+export const REVEAL_DONATION_CAP = 500;
+export const MIN_REVEALED_TILES = 1;
+export const MAX_REVEALED_TILES = 25;

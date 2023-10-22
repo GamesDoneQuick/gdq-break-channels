@@ -8,8 +8,8 @@ import type { Event, FormattedDonation, Total } from '@gdq/types/tracker';
 
 import { Face, type FaceType } from './Face';
 import { Tile, TileData } from './Tile';
-import { TILE_DIMENSION, GRID_COLUMNS, GRID_ROWS, TILE_MAP, MINE_CHANCE, mineNumberTiles } from './constants';
-import { createTileCluster, getMineCount, random, randomFromArray, splitTileIndex } from './utils';
+import { TILE_DIMENSION, GRID_COLUMNS, GRID_ROWS, TILE_MAP, MINE_CHANCE, MIN_REVEAL_DONATION } from './constants';
+import { createTileCluster, getTileRevealThreshold, random, randomFromArray, splitTileIndex } from './utils';
 import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
 import { cloneDeep } from 'lodash';
 
@@ -61,7 +61,7 @@ const actions = {
 type GridAction =
 	| { type: typeof actions.FLAG_TILE }
 	| { type: typeof actions.RESET }
-	| { type: typeof actions.REVEAL_TILES; revealChance: number }
+	| { type: typeof actions.REVEAL_TILES; donationAmount: number }
 	| { type: typeof actions.QUESTION_TILE };
 
 function gridReducer(state: GridState, action: GridAction) {
@@ -89,22 +89,33 @@ function gridReducer(state: GridState, action: GridAction) {
 		}
 		case actions.REVEAL_TILES: {
 			if (state.nonMines.length > 0) {
-				const tileIndexStr = randomFromArray(state.nonMines);
-				const tilesToReveal = createTileCluster(state.grid, tileIndexStr, action.revealChance);
+				const revealThreshold = Math.min(
+					// ensure the threashold doesn't exceed the number of nonMine tiles
+					getTileRevealThreshold(action.donationAmount),
+					state.nonMines.length,
+				);
 
-				const grid = state.grid.map((row) => {
-					return row.map((tile) => {
-						const mineCount = getMineCount(state.grid, tile.id);
-						return tilesToReveal.includes(tile.id)
-							? {
-									...tile,
-									tileType: mineNumberTiles[mineCount],
-							  }
-							: tile;
+				let revealedTiles: TileData[] = [];
+				let grid = [...state.grid];
+				let nonMines = [...state.nonMines];
+
+				// ensures that bigger donations reveal more tiles
+				while (revealedTiles.length < revealThreshold) {
+					const tileIndexStr = randomFromArray(nonMines);
+					const tilesToReveal = createTileCluster(grid, tileIndexStr);
+					revealedTiles = [...revealedTiles, ...tilesToReveal];
+
+					grid = grid.map((row) => {
+						return row.map((tile) => {
+							const tileInRevealList = tilesToReveal.find((tileToReveal) => tileToReveal.id === tile.id);
+							return tileInRevealList || tile;
+						});
 					});
-				});
 
-				const nonMines = state.nonMines.filter((id) => !tilesToReveal.includes(id));
+					// remove any revealed tiles from the nonMines list so they can't be selected again
+					const revealedTileIds = tilesToReveal.map((revealedTile) => revealedTile.id);
+					nonMines = nonMines.filter((id) => !revealedTileIds.includes(id));
+				}
 
 				const newState = { ...state, grid, nonMines };
 				stateReplicant.value = newState;
@@ -139,26 +150,21 @@ export function Minesweeper(props: ChannelProps) {
 	const [gridState, dispatch] = useReducer(gridReducer, cloneDeep(stateReplicant.value!));
 
 	const [face, setFace] = useState<FaceType>('smile');
-	const faceChangeTImeout = useRef<NodeJS.Timeout>();
+	const faceChangeTimeout = useRef<NodeJS.Timeout>();
 
 	function changeFace(face: FaceType) {
-		clearTimeout(faceChangeTImeout.current);
+		clearTimeout(faceChangeTimeout.current);
 		setFace(face);
-		faceChangeTImeout.current = setTimeout(() => setFace('smile'), 2_500);
+		faceChangeTimeout.current = setTimeout(() => setFace('smile'), 2_500);
 	}
 
 	useListenFor('donation', (donation: FormattedDonation) => {
-		/**
-		 * The magic numbers in here are sort of arbitrary placeholders since
-		 * I don't have much context for realistic donation behavior
-		 */
-		changeFace(donation.rawAmount < 50 ? 'open_mouth' : 'sunglasses');
+		changeFace(donation.rawAmount < MIN_REVEAL_DONATION ? 'open_mouth' : 'sunglasses');
 
-		if (donation.rawAmount < 50 && gridState.mines.length > 0) {
+		if (donation.rawAmount < MIN_REVEAL_DONATION && gridState.mines.length > 0) {
 			dispatch({ type: actions.FLAG_TILE });
 		} else {
-			// TODO: figure out which reveal chances to set for certain donation ranges
-			dispatch({ type: actions.REVEAL_TILES, revealChance: 0.5 });
+			dispatch({ type: actions.REVEAL_TILES, donationAmount: donation.rawAmount });
 		}
 	});
 
