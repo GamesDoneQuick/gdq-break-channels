@@ -37,7 +37,7 @@ import splat from './images/splat.png';
 import TweenNumber from '@gdq/lib/components/TweenNumber';
 import { useActive } from '@gdq/lib/hooks/useActive';
 
-registerChannel('Desert Bus', 16, DesertBus, {
+registerChannel('Desert Bus', 17, DesertBus, {
 	handle: 'VodBox',
 	position: 'bottomRight',
 	site: 'SupportClass',
