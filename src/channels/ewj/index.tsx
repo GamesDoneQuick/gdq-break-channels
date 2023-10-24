@@ -22,142 +22,134 @@ export type EnemyQueueEntry  = {
 	donoAmt: number;
 	enemy: string;
 	status: EnemyStatus;
+	enemySprite?: PIXI.AnimatedSprite;
 };
 
 export enum EnemyStatus {
 	WAITING,
 	STARTED,
-	DONE,
+	HIT,
 }
 
 export function EarthwormJim(props: ChannelProps) {
 	const [total] = useReplicant<Total | null>('total', null);
 	const containerRef = useRef<HTMLDivElement>(null);
+	const donationCountdown = useRef<number>(0);
 	const jim = useRef<PIXI.AnimatedSprite>(null);
 	const muzzle = useRef<PIXI.AnimatedSprite>(null);
 	const spritesheet = useRef<PIXI.Spritesheet | null>(null);
 	const enemyQueue = useRef<EnemyQueueEntry[]>([]);
+	const liveDonations = useRef<EnemyQueueEntry[]>([]);
+
 	const objects = useRef<Record<string, PIXI.DisplayObject> | null>(null);
-	
-	// let line = new PIXI.Graphics()
-	// 		.lineStyle(1.0, 0xaaaaaa, 1)
-	// 		.moveTo(1500, 115)
-	// 		.lineTo(600, 150)
-	// 		.lineTo(420, 115)
-	// 		.endFill();
-	
-	// 	line.geometry.updateBatches();
-	// 	let points = line.geometry.graphicsData[0].points;
+
+	let yCount = 0;
+	let drawCount = 0;
 
 	const [app, canvasRef] = usePIXICanvas({ width: 1092, height: 332 }, () => {
+		if (!objects.current || !spritesheet.current) return;
+		drawCount++;
 		const jim = objects.current!.jimAnim as PIXI.AnimatedSprite;
 		const muzzle = objects.current!.muzzleAnim as PIXI.AnimatedSprite;
 		
-		
+		donationCountdown.current--;
+		if (donationCountdown.current <= 0 && enemyQueue.current.length > 0) {
+			liveDonations.current.push(enemyQueue.current.shift()!);
+			donationCountdown.current = 250;
+		}
+		const container = objects.current.container as PIXI.Container;
 
-		for(const enemy of enemyQueue.current) {
-			if (!objects.current || !spritesheet.current ) return;
-		
-			const container = objects.current.container as PIXI.Container;
-			//container.addChild(line);
+		for(const enemy of liveDonations.current) {	
+			if (enemy.status === EnemyStatus.WAITING) {	
+				enemy.status = EnemyStatus.STARTED;
+				console.log("Inside enemy spawner loop")
+				let enemyObject = enemy;
 
-			let enemySprite;
-			if(enemyQueue.current.length > 0){
-				let enemyObject = enemyQueue.current.pop();
 				if (enemyObject!.enemy == 'crow') {
-					enemySprite = new PIXI.AnimatedSprite(spritesheet.current.animations.crow);
-					enemySprite.x = 1500;
-					enemySprite.y = 105;
-					enemySprite.scale.x = -1;
-					enemySprite.animationSpeed = 1/5;
-					enemySprite.play();
-					container.addChild(enemySprite);
+					enemy.enemySprite = new PIXI.AnimatedSprite(spritesheet.current.animations["crow"]);
+					enemy.enemySprite.x = 1500;
+					enemy.enemySprite.y = 105;
+					enemy.enemySprite.scale.x = -1;
+					enemy.enemySprite.animationSpeed = 1/5;
+					enemy.enemySprite.play();
+					container.addChild(enemy.enemySprite);
+					yCount = 0;
 					
 				} else {
-					enemySprite = new PIXI.AnimatedSprite(spritesheet.current.animations.fifimove);
-					enemySprite.x = 1500;
-					enemySprite.y = 105;
-					enemySprite.scale.x = -1;
-					enemySprite.animationSpeed = 1/5;
-					enemySprite.play();
-					container.addChild(enemySprite);
+					enemy.enemySprite = new PIXI.AnimatedSprite(spritesheet.current.animations["fifimove"]);
+					enemy.enemySprite.x = 1500;
+					enemy.enemySprite.y = 105;
+					enemy.enemySprite.scale.x = -1;
+					enemy.enemySprite.animationSpeed = 1/5;
+					enemy.enemySprite.play();
+					container.addChild(enemy.enemySprite);
 				}
-				 
-				let gotHit = false;
-				let yCount = 0;
+			} else if (enemy.status === EnemyStatus.STARTED) {
 
-				let drawCount = 0;
-
-				const renderer = app.current!.renderer as any;
-				const drawElements = renderer.gl.drawElements;
-				renderer.gl.drawElements = (...args: any[]) => {
-				drawElements.call(renderer.gl, ...args);
-				drawCount++;
-				};
-
-				app.current!.ticker.add(delta => {
-					drawCount = 0;
-					const speed = 5;
-					
-					if(!gotHit) {
-						enemySprite!.x = (enemySprite!.x - (speed) * delta);
-						if(enemyObject!.enemy =='fifi') {
-							if(drawCount % 25 == 0) {
-								enemySprite!.y = enemySprite!.y + 0.20;
-							}
-						}
-					} else {
-						enemySprite!.x = (enemySprite!.x + (speed*2) * delta);
-						if(enemyObject!.enemy == 'crow') {
-							enemySprite!.y = (enemySprite!.y + delta + yCount);
-							yCount = yCount + 1;
-
-						} else {
-							if(drawCount % 25 == 0) {
-								enemySprite!.y = enemySprite!.y - 0.40;
-							}
-						}
-					}	
-					if (enemySprite!.x < 615 && !gotHit) {
-						
-						jim.textures = spritesheet.current!.animations.jimshoot;
-						jim.play();
-						muzzle.textures = spritesheet.current!.animations.muzzle;
-						muzzle.x = 200;
-						muzzle.y = 150;
-						muzzle.animationSpeed = 1/4;
-						muzzle.play();
-						container.addChild(muzzle);
-						setTimeout(() => {
-							jim.textures = spritesheet.current!.animations.tile;
-							jim.animationSpeed = 1/4;
-							jim.play();
-							container.removeChild(muzzle);
-						}, 500);
-					}
-					if (enemySprite!.x < 575) {
-						gotHit = true;
-						if(enemyObject!.enemy =='crow') {
-							enemySprite!.scale.x *= -1;
-							enemySprite!.textures = spritesheet.current!.animations.hurt;
-							setTimeout(() => {
-								enemySprite!.textures = spritesheet.current!.animations.crow;
-								enemySprite!.play();
-							}, 200);
-						} else {
-							enemySprite!.scale.x *= -1;
-							enemySprite!.textures = spritesheet.current!.animations.fifibark;
-							setTimeout(() => {
-								enemySprite!.textures = spritesheet.current!.animations.fifimove;
-								enemySprite!.play();
-							}, 200);
-						}
-
-					}
-					
-				});
+				const speed = 5;
 				
+				enemy.enemySprite!.x = (enemy.enemySprite!.x - (speed));
+				if(enemy.enemy =='fifi') {
+					if(drawCount % 5 == 0) {
+						enemy.enemySprite!.y = enemy.enemySprite!.y + 1;
+					}
+				}
+
+				if (enemy.enemySprite!.x < 615) {
+					
+					jim.textures = spritesheet.current!.animations.jimshoot;
+					jim.play();
+					muzzle.textures = spritesheet.current!.animations.muzzle;
+					muzzle.x = 200;
+					muzzle.y = 150;
+					muzzle.animationSpeed = 1/4;
+					muzzle.play();
+					container.addChild(muzzle);
+					setTimeout(() => {
+						jim.textures = spritesheet.current!.animations.tile;
+						jim.animationSpeed = 1/4;
+						jim.play();
+						container.removeChild(muzzle);
+					}, 500);
+				}
+				if (enemy.enemySprite!.x < 575) {
+					enemy.status = EnemyStatus.HIT;
+					if(enemy.enemy =='crow') {
+						enemy.enemySprite!.scale.x *= -1;
+						enemy.enemySprite!.textures = spritesheet.current!.animations.hurt;
+						setTimeout(() => {
+							enemy.enemySprite!.textures = spritesheet.current!.animations.crow;
+							enemy.enemySprite!.play();
+						}, 200);
+					} else {
+						enemy.enemySprite!.scale.x *= -1;
+						enemy.enemySprite!.textures = spritesheet.current!.animations.fifibark;
+						setTimeout(() => {
+							enemy.enemySprite!.textures = spritesheet.current!.animations.fifimove;
+							enemy.enemySprite!.play();
+						}, 200);
+					}
+
+				}
+			} else {
+				const speed = 5;
+				enemy.enemySprite!.x = (enemy.enemySprite!.x + (speed*2));
+				if(enemy.enemy == 'crow') {
+					enemy.enemySprite!.y = (enemy.enemySprite!.y + yCount);
+					yCount = yCount + 1;
+
+				} else {
+					if(drawCount % 5 == 0) {
+						enemy.enemySprite!.y = enemy.enemySprite!.y - 2;
+					}
+				}
+				if (enemy.enemySprite!.x > 2000 || enemy.enemySprite!.y > 1000) {
+					enemy.enemySprite!.destroy();
+					liveDonations.current.shift();
+
+				}
 			}
+			
 		}
 		
 	});
@@ -212,7 +204,7 @@ export function EarthwormJim(props: ChannelProps) {
 	});
 
 	return (
-		<Container ref={containerRef}>
+		<Container>
 			<Canvas width={1092} height={332} ref={canvasRef} />
 			<TotalEl>
 				<span>
@@ -229,6 +221,7 @@ const Container = styled.div`
 	height: 100%;
 	padding: 0;
 	margin: 0;
+
 `;
 
 const Canvas = styled.canvas`
