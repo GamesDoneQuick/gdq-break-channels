@@ -33,10 +33,7 @@ export enum EnemyStatus {
 
 export function EarthwormJim(props: ChannelProps) {
 	const [total] = useReplicant<Total | null>('total', null);
-	const containerRef = useRef<HTMLDivElement>(null);
 	const donationCountdown = useRef<number>(0);
-	const jim = useRef<PIXI.AnimatedSprite>(null);
-	const muzzle = useRef<PIXI.AnimatedSprite>(null);
 	const spritesheet = useRef<PIXI.Spritesheet | null>(null);
 	const enemyQueue = useRef<EnemyQueueEntry[]>([]);
 	const liveDonations = useRef<EnemyQueueEntry[]>([]);
@@ -55,14 +52,13 @@ export function EarthwormJim(props: ChannelProps) {
 		donationCountdown.current--;
 		if (donationCountdown.current <= 0 && enemyQueue.current.length > 0) {
 			liveDonations.current.push(enemyQueue.current.shift()!);
-			donationCountdown.current = 250;
+			donationCountdown.current = 125;
 		}
 		const container = objects.current.container as PIXI.Container;
 
 		for(const enemy of liveDonations.current) {	
 			if (enemy.status === EnemyStatus.WAITING) {	
 				enemy.status = EnemyStatus.STARTED;
-				console.log("Inside enemy spawner loop")
 				let enemyObject = enemy;
 
 				if (enemyObject!.enemy == 'crow') {
@@ -190,7 +186,7 @@ export function EarthwormJim(props: ChannelProps) {
 			container.addChild(jim);
 		});
 
-	});
+	}, [app]);
 	useListenFor('donation', (donation: FormattedDonation) => {
 		
 		let enemyType;
