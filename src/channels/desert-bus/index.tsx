@@ -6,7 +6,6 @@ import type { FormattedDonation, Total } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
 
 import { useEffect, useRef } from 'react';
-import { useRafLoop } from 'react-use';
 import styled from '@emotion/styled';
 import { useListenFor, useReplicant } from 'use-nodecg';
 import { usePIXICanvas } from '@gdq/lib/hooks/usePIXICanvas';
@@ -14,6 +13,7 @@ import * as PIXI from 'pixi.js';
 import { Sprite2d, TilingSprite2d } from 'pixi-projection';
 import TweenNumber from '@gdq/lib/components/TweenNumber';
 import { useActive } from '@gdq/lib/hooks/useActive';
+import { useRafCapped } from '@gdq/lib/hooks/useRafCapped';
 
 import {
 	Sprites,
@@ -196,7 +196,7 @@ export function DesertBus(_: ChannelProps) {
 
 	const { timeDay, objects } = useObjects(app);
 
-	useRafLoop(() => {
+	useRafCapped(() => {
 		if (!busRef.current || !wheelRef.current || !speedoRef.current || !odometerRef.current) return;
 
 		const t = distance * 50;

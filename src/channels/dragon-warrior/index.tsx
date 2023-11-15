@@ -259,7 +259,7 @@ function DragonWarrior(props: ChannelProps) {
 	});
 
 	useEffect(() => {
-		if (!app || !app.current?.stage) return;
+		if (!app.current) return;
 
 		// Load Sprite Sheets
 		battle_bg.current = new PIXI.Spritesheet(PIXI.BaseTexture.from(battle_bgImage), {
@@ -367,7 +367,7 @@ function DragonWarrior(props: ChannelProps) {
 		container.addChild(redSlime.current);
 		container.addChild(metalSlime.current);
 
-		app.current?.stage.addChild(container);
+		app.current.stage.addChild(container);
 
 		return () => {
 			if (!map_left.current?.destroyed) map_left.current?.destroy();

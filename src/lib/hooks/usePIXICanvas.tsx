@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import * as PIXI from 'pixi.js';
 
+PIXI.Ticker.shared.maxFPS = 60;
+
 export function usePIXICanvas(
 	{ width, height, transparent }: { width: number; height: number; transparent?: boolean } = {
 		width: 1092,
@@ -32,6 +34,8 @@ export function usePIXICanvas(
 		app.ticker.add((time) => {
 			rafRef.current(time);
 		});
+
+		app.ticker.maxFPS = 60;
 
 		return () => {
 			app.destroy(false, true);

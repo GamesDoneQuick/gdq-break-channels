@@ -73,3 +73,15 @@
 	font-family: minesweeper;
 	src: url('fonts/Minesweeper.woff2') format('woff2');
 }
+
+@font-face {
+	font-family: 'Open Sans';
+	src: url('fonts/Open_Sans/OpenSans-ExtraBold.ttf') format('truetype');
+	font-weight: 800;
+}
+
+@font-face {
+	font-family: 'Cabin';
+	src: url('fonts/Cabin/Cabin-Medium.ttf') format('truetype');
+	font-weight: 500;
+}

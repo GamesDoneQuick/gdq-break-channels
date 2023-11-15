@@ -462,7 +462,7 @@ export function TRexRunner(props: ChannelProps) {
 	});
 
 	useEffect(() => {
-		if (!app) return;
+		if (!app.current) return;
 
 		spritesheet.current = new PIXI.Spritesheet(PIXI.BaseTexture.from(spriteSheetImage), {
 			frames: SPRITE_DEFINITIONS,
@@ -524,7 +524,7 @@ export function TRexRunner(props: ChannelProps) {
 		container.addChild(trexDuck);
 		container.addChild(donationTotal);
 
-		app.current?.stage.addChild(container);
+		app.current.stage.addChild(container);
 
 		container.setTransform(0, 0, 2, 2);
 

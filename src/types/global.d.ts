@@ -2,6 +2,10 @@ declare module '*.png' {
 	export default '' as string;
 }
 
+declare module '*.jpg' {
+	export default '' as string;
+}
+
 declare module '*.gif' {
 	export default '' as string;
 }
@@ -26,9 +30,17 @@ declare module '*.woff2' {
 	export default '' as string;
 }
 
-declare module "*.json" {
+declare module '*.json' {
 	const value: any;
 	export default value;
+}
+
+declare module '*?raw' {
+	export default '' as string;
+}
+
+declare module '*?url' {
+	export default '' as string;
 }
 
 declare module '*.aac';
