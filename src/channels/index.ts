@@ -15,5 +15,6 @@ import './dragon-warrior';
 import './ff-shop';
 import './template';
 import './papers-please';
+import './dance';
 
 export * from './channels';
