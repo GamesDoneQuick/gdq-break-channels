@@ -150,10 +150,10 @@ export function Minesweeper(props: ChannelProps) {
 	const [gridState, dispatch] = useReducer(gridReducer, cloneDeep(stateReplicant.value!));
 
 	const [face, setFace] = useState<FaceType>('smile');
-	const faceChangeTimeout = useRef<NodeJS.Timeout>();
+	const faceChangeTimeout = useRef<ReturnType<typeof setTimeout>>();
 
 	function changeFace(face: FaceType) {
-		clearTimeout(faceChangeTimeout.current);
+		clearTimeout(faceChangeTimeout.current!);
 		setFace(face);
 		faceChangeTimeout.current = setTimeout(() => setFace('smile'), 2_500);
 	}
@@ -179,7 +179,7 @@ export function Minesweeper(props: ChannelProps) {
 		}
 	}, [gridState.nonMines]);
 
-	const flagTimeoutRef = useRef<NodeJS.Timeout>();
+	const flagTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 	useEffect(() => {
 		function flagTiles(timeoutMS: number) {
 			// Add a question mark every 5-10 seconds
@@ -193,7 +193,7 @@ export function Minesweeper(props: ChannelProps) {
 		flagTiles(5_000);
 
 		return () => {
-			clearTimeout(flagTimeoutRef.current);
+			clearTimeout(flagTimeoutRef.current!);
 		};
 	}, []);
 
