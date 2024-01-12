@@ -6,7 +6,7 @@ import { ChannelProps, registerChannel } from '../channels';
 import { useListenFor, useReplicant } from 'use-nodecg';
 import type { Event, FormattedDonation, Total } from '@gdq/types/tracker';
 
-import { Face, type FaceType } from './Face';
+import { Face, FaceType } from './Face';
 import { Tile, TileData } from './Tile';
 import { TILE_DIMENSION, GRID_COLUMNS, GRID_ROWS, TILE_MAP, MINE_CHANCE, MIN_REVEAL_DONATION } from './constants';
 import { createTileCluster, getTileRevealThreshold, random, randomFromArray, splitTileIndex } from './utils';

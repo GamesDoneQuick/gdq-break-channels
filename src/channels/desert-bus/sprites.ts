@@ -1,17 +1,3 @@
-type SpritePaths = {
-	bus: string;
-
-	wheel1: string;
-	wheel2: string;
-
-	numbersWhite: string;
-
-	sand: string;
-	lightSand: string;
-
-	busStop: string;
-};
-
 export const Sprites = {
 	day: {
 		bus: busDay,
@@ -21,7 +7,8 @@ export const Sprites = {
 		sand: sandDay,
 		lightSand: lightSandDay,
 		busStop: busStopDay,
-	} satisfies SpritePaths,
+	},
+
 	dusk: {
 		bus: busDusk,
 		wheel1: wheel1Day,
@@ -30,7 +17,8 @@ export const Sprites = {
 		sand: sandDusk,
 		lightSand: lightSandDusk,
 		busStop: busStopDusk,
-	} satisfies SpritePaths,
+	},
+
 	night: {
 		bus: busNight,
 		wheel1: wheel1Night,
@@ -39,7 +27,8 @@ export const Sprites = {
 		sand: sandNight,
 		lightSand: lightSandNight,
 		busStop: busStopNight,
-	} satisfies SpritePaths,
+	},
+
 	dawn: {
 		bus: busDawn,
 		wheel1: wheel1Dawn,
@@ -48,7 +37,7 @@ export const Sprites = {
 		sand: sandDawn,
 		lightSand: lightSandDawn,
 		busStop: busStopDawn,
-	} satisfies SpritePaths,
+	},
 };
 
 import busDay from './images/day/bus.png';
