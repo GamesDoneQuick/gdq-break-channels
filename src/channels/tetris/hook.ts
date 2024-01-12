@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { GameManager, SerializedGameManager } from './tetrisai/gdq/game_manager';
+import { useActive } from '@gdq/lib/hooks/useActive';
 
 const tetrisRep = nodecg.Replicant<SerializedGameManager | null>('tetris-game', {
 	defaultValue: null,
@@ -7,6 +8,8 @@ const tetrisRep = nodecg.Replicant<SerializedGameManager | null>('tetris-game', 
 });
 
 export function useGameManager() {
+	const active = useActive();
+
 	const manager = useMemo(() => {
 		if (tetrisRep.value) return GameManager.deserialize(tetrisRep.value);
 		else return new GameManager();
@@ -16,16 +19,16 @@ export function useGameManager() {
 		if (!manager) return;
 
 		manager.endTurnCb = () => {
-			tetrisRep.value = manager.serialize();
+			if (active) tetrisRep.value = manager.serialize();
 		};
 
 		manager.startTurn();
 
 		return () => {
-			tetrisRep.value = manager.serialize();
+			if (active) tetrisRep.value = manager.serialize();
 			manager.stop();
 		};
-	}, [manager]);
+	}, [manager, active]);
 
 	return manager;
 }

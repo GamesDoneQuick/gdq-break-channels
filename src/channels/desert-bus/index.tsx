@@ -11,32 +11,29 @@ import styled from '@emotion/styled';
 import { useListenFor, useReplicant } from 'use-nodecg';
 import { usePIXICanvas } from '@gdq/lib/hooks/usePIXICanvas';
 import * as PIXI from 'pixi.js';
-import { TilingSprite2d } from 'pixi-projection';
-
-import bus from './images/bus.png';
-import tree from './images/tree.gif';
-import wheel1 from './images/wheel1.png';
-import wheel2 from './images/wheel2.png';
-import line1 from './images/line1.png';
-import line2 from './images/line2.png';
-import line3 from './images/line3.png';
-import line4 from './images/line4.png';
-import line5 from './images/line5.png';
-import line6 from './images/line6.png';
-import line7 from './images/line7.png';
-
-import numbersBlack from './images/numbers_black.png';
-import numbersWhite from './images/numbers_white.png';
-
-import sand from './images/sand_texture.png';
-import lightSand from './images/light_sand_texture.png';
-import mask from './images/sand_banks_mask.png';
-
-import bug from './images/bug.png';
-import splat from './images/splat.png';
+import { Sprite2d, TilingSprite2d } from 'pixi-projection';
 import TweenNumber from '@gdq/lib/components/TweenNumber';
+import { useActive } from '@gdq/lib/hooks/useActive';
 
-registerChannel('Desert Bus', 16, DesertBus, {
+import {
+	Sprites,
+	bug,
+	headlights,
+	line1,
+	line2,
+	line3,
+	line4,
+	line5,
+	line6,
+	line7,
+	numbersBlack,
+	splat,
+	tree,
+} from './sprites';
+import { useObjects } from './useObjects';
+import { Palettes } from './palettes';
+
+registerChannel('Desert Bus', 17, DesertBus, {
 	handle: 'VodBox',
 	position: 'bottomRight',
 	site: 'SupportClass',
@@ -57,11 +54,9 @@ const distanceRep = nodecg.Replicant<number>('desert-bus-distance', {
 
 let distance = 0;
 
-const layoutQuery = new URLSearchParams(window.location.search);
-const has = layoutQuery.has('layout');
-
 export function DesertBus(_: ChannelProps) {
 	const [total] = useReplicant<Total | null>('total', null);
+	const active = useActive();
 
 	useEffect(() => {
 		distance = distanceRep.value ?? 0;
@@ -70,6 +65,7 @@ export function DesertBus(_: ChannelProps) {
 	const frame = useRef(0);
 
 	const busRef = useRef<HTMLDivElement>(null);
+	const headlightsRef = useRef<HTMLImageElement>(null);
 	const wheelRef = useRef<HTMLImageElement>(null);
 	const speedoRef = useRef<HTMLImageElement>(null);
 	const odometerRef = useRef<HTMLDivElement>(null);
@@ -77,10 +73,8 @@ export function DesertBus(_: ChannelProps) {
 	const speed = useRef<number>(firstBus.value ? 45 : -10);
 	const left = useRef<number>(10);
 	const steer = useRef<number>(1);
-	const objects = useRef<Record<string, PIXI.DisplayObject> | null>(null);
-	const textures = useRef<Record<string, PIXI.Texture> | null>(null);
 
-	firstBus.value = true;
+	if (active) firstBus.value = true;
 
 	const [app, canvasRef] = usePIXICanvas({ width: 1092, height: 332 }, () => {
 		if (!objects.current) return;
@@ -91,43 +85,44 @@ export function DesertBus(_: ChannelProps) {
 		const background = objects.current.background as PIXI.Graphics;
 		background.clear();
 
-		background.beginFill(0x42cfce);
+		background.beginFill(Palettes[timeDay].sky);
 		background.drawRect(0, 0, 546, 166);
 		background.endFill();
 
-		background.beginFill(0x8cefce);
+		background.beginFill(Palettes[timeDay].horizonSky);
 		background.drawRect(0, 43, 546, 1);
 		background.endFill();
 
-		background.beginFill(0xceaa8c);
+		background.beginFill(Palettes[timeDay].horizonSky);
 		background.drawRect(0, 44, 546, 1);
 		background.endFill();
 
-		background.beginFill(0xce8a21);
+		background.beginFill(Palettes[timeDay].ground);
 		background.drawRect(0, 46, 546, 120);
 		background.endFill();
 
 		const x = 442 + left.current * 20;
 
 		const desert = objects.current.desert as TilingSprite2d;
-		desert.tilePosition.y = distance * 500;
-		desert.tileScale.x = 0.5;
-		desert.tileScale.y = 0.1;
+		desert.tilePosition.y = (distance * 275 * 0.75) % 166;
+		desert.tileScale.x = 2;
+		desert.tileScale.y = 0.05;
+		desert.width = 2048;
 		desert.proj.mapSprite(desert, [
 			{
-				x: 182 + left.current - 100,
+				x: 182 + left.current - 5,
 				y: 46,
 			},
 			{
-				x: 182 + left.current + 100,
+				x: 182 + left.current + 5,
 				y: 46,
 			},
 			{
-				x: x + 2300,
+				x: x + 100,
 				y: 166,
 			},
 			{
-				x: x - 2680,
+				x: x - 480,
 				y: 166,
 			},
 		]);
@@ -135,7 +130,7 @@ export function DesertBus(_: ChannelProps) {
 		const road = objects.current.road as PIXI.Graphics;
 		road.clear();
 
-		road.beginFill(0x636563);
+		road.beginFill(Palettes[timeDay].road);
 		road.drawPolygon([182 + left.current, 46, x + 10, 166, x - 490, 166]);
 		road.endFill();
 
@@ -145,8 +140,8 @@ export function DesertBus(_: ChannelProps) {
 		);
 
 		const sandPits = objects.current.sandPits as TilingSprite2d;
-		sandPits.tilePosition.y = distance * 330;
-		sandPits.tileScale.y = 0.04;
+		sandPits.tilePosition.y = (distance * 275 * 0.75) % 166;
+		sandPits.tileScale.y = 0.02;
 		sandPits.alpha = 1;
 		sandPits.proj.mapSprite(sandPits, [
 			{
@@ -170,8 +165,8 @@ export function DesertBus(_: ChannelProps) {
 		const meridian = objects.current.meridian as PIXI.Graphics;
 		meridian.clear();
 
-		meridian.beginFill(0xefcf42);
-		meridian.drawPolygon([182 + left.current, 46, x - 230, 166, x - 250, 166]);
+		meridian.beginFill(Palettes[timeDay].meridian);
+		meridian.drawPolygon([182 + left.current, 46, x - 232, 166, x - 248, 166]);
 		meridian.endFill();
 
 		const meridianMask = objects.current.meridianMask as PIXI.Graphics;
@@ -180,75 +175,31 @@ export function DesertBus(_: ChannelProps) {
 		meridianMask.beginFill(0xffffff);
 
 		for (let i = 0, l = 14; i < l; ++i) {
-			const d = Math.pow(((distance * 60) / 4 + i / l) % 1, 6);
-			meridianMask.drawRect(0, 46 + d * 120, 546, d * 35);
+			const d = Math.pow(((distance * 50 * 0.85) / 4 + i / l) % 1, 6);
+			if (timeDay === 'night') meridianMask.drawRect(0, 56 + d * 120, 546, d * 15);
+			else meridianMask.drawRect(0, 46 + d * 120, 546, d * 35);
 		}
 		meridianMask.endFill();
+
+		const dStop = Math.pow(((distance * 20 * 0.85) / 4) % 3, 6);
+		const busStop = objects.current.busStop as Sprite2d;
+		busStop.position.x = (184 + left.current) * (1 - dStop) + dStop * (x + 145);
+		busStop.position.y = 46 + dStop * 120;
+		busStop.scale.set(dStop * 1.6);
+
+		const dBanner = Math.pow((((distance + 1) * 20 * 0.85) / 4) % 3, 6);
+		const banner = objects.current.banner as Sprite2d;
+		banner.position.x = (184 + left.current) * (1 - dBanner) + dBanner * (x + 145);
+		banner.position.y = 46 + dBanner * 120;
+		banner.scale.set(dBanner * 1.6);
 	});
 
-	useEffect(() => {
-		if (!app) return;
-
-		textures.current = {
-			sandMask: PIXI.Texture.from(mask),
-			sand: PIXI.Texture.from(sand),
-			lightSand: PIXI.Texture.from(lightSand),
-		};
-
-		objects.current = {
-			background: new PIXI.Graphics(),
-			desert: new TilingSprite2d(textures.current.lightSand, 546, 166),
-			road: new PIXI.Graphics(),
-			sandPitsMask: new PIXI.Sprite(textures.current.sandMask),
-			sandPits: new TilingSprite2d(textures.current.sand, 546, 166),
-			lights: new PIXI.Graphics(),
-			meridianMask: new PIXI.Graphics(),
-			meridian: new PIXI.Graphics(),
-		};
-
-		//(objects.current.sandPits as TilingSprite2d).convertTo2s();
-
-		const container = new PIXI.Container();
-		const filter = new PIXI.filters.AlphaFilter(1);
-		filter.resolution = 0.5;
-
-		container.filters = [filter];
-
-		container.addChild(objects.current.background);
-		container.addChild(objects.current.desert);
-		container.addChild(objects.current.road);
-		container.addChild(objects.current.sandPits);
-		container.addChild(objects.current.sandPitsMask);
-		container.addChild(objects.current.lights);
-		container.addChild(objects.current.meridian);
-		container.addChild(objects.current.meridianMask);
-
-		objects.current.sandPits.mask = objects.current.sandPitsMask as PIXI.Graphics;
-		objects.current.meridian.mask = objects.current.meridianMask as PIXI.Graphics;
-
-		app.current?.stage.addChild(container);
-
-		container.setTransform(0, 0, 2, 2);
-
-		return () => {
-			for (const key in objects.current) {
-				const obj = objects.current[key];
-				if (!obj.destroyed) obj.destroy(true);
-			}
-			for (const key in textures.current) {
-				const tex = textures.current[key];
-				tex.destroy(true);
-			}
-
-			filter.destroy();
-			if (!container.destroyed) container.destroy(true);
-		};
-	}, [app]);
+	const { timeDay, objects } = useObjects(app);
 
 	useRafLoop(() => {
 		if (!busRef.current || !wheelRef.current || !speedoRef.current || !odometerRef.current) return;
 
-		const t = distance * 60;
+		const t = distance * 50;
 		const p = 1;
 
 		speed.current = Math.min(speed.current + 0.05, 45);
@@ -266,13 +217,17 @@ export function DesertBus(_: ChannelProps) {
 			speedoRef.current.style.transform = 'translate(-4px, 4px) scale(-1, -1)';
 		}
 
+		if (headlightsRef.current) {
+			headlightsRef.current.style.animationDuration = 46.35 - speed.current + 's';
+		}
+
 		const prevDistance = distanceRep.value ?? 0;
 		const prevDistanceStr = (Math.floor(prevDistance) + '').padStart(4, '0');
 
 		distance = distance + Math.max(speed.current, 0) / 60 / 60 / 60;
 		const distanceStr = (Math.floor(distance) + '').padStart(4, '0');
 
-		if (!has && speed.current > 0 && distanceRep.value !== undefined) {
+		if (active && speed.current > 0 && distanceRep.value !== undefined) {
 			distanceRep.value = distance;
 		}
 
@@ -280,29 +235,29 @@ export function DesertBus(_: ChannelProps) {
 
 		if (speed.current < 10) {
 			steer.current = 1;
-			wheelRef.current.src = wheel1;
+			wheelRef.current.src = Sprites[timeDay].wheel1;
 			wheelRef.current.style.transform = '';
 		} else if (r < 0.015) {
 			steer.current = -4;
-			wheelRef.current.src = wheel1;
+			wheelRef.current.src = Sprites[timeDay].wheel1;
 			wheelRef.current.style.transform = 'translate(42px, 0) scale(-1, 1)';
 		} else if (r < 0.02) {
 			steer.current = 4;
-			wheelRef.current.src = wheel2;
+			wheelRef.current.src = Sprites[timeDay].wheel2;
 			wheelRef.current.style.transform = '';
 		} else if (r < 0.05) {
 			steer.current = 1;
-			wheelRef.current.src = wheel1;
+			wheelRef.current.src = Sprites[timeDay].wheel1;
 			wheelRef.current.style.transform = '';
 		}
 
 		if (left.current > 10) {
 			steer.current = 1;
-			wheelRef.current.src = wheel1;
+			wheelRef.current.src = Sprites[timeDay].wheel1;
 			wheelRef.current.style.transform = '';
 		} else if (left.current < -5) {
 			steer.current = -4;
-			wheelRef.current.src = wheel1;
+			wheelRef.current.src = Sprites[timeDay].wheel1;
 			wheelRef.current.style.transform = 'translate(42px, 0) scale(-1, 1)';
 		}
 
@@ -369,24 +324,55 @@ export function DesertBus(_: ChannelProps) {
 		<Container>
 			<Canvas width={1092} height={332} ref={canvasRef} />
 			<BusContainer ref={busRef}>
+				{timeDay === 'night' && <Headlights ref={headlightsRef} src={headlights} />}
 				<TotalText>
 					$<TweenNumber value={Math.floor(total?.raw ?? 0)} />
 				</TotalText>
-				<Bus src={bus} />
+				<Bus src={Sprites[timeDay].bus} />
 				<Tree src={tree} />
 				<Speedo src={line1} ref={speedoRef} />
-				<Odometer ref={odometerRef}>
-					<Number src={numbersWhite} />
-					<Number src={numbersWhite} />
-					<Number src={numbersWhite} />
-					<Number src={numbersWhite} />
+				<Odometer timeDay={timeDay} ref={odometerRef}>
+					<Number src={Sprites[timeDay].numbersWhite} />
+					<Number src={Sprites[timeDay].numbersWhite} />
+					<Number src={Sprites[timeDay].numbersWhite} />
+					<Number src={Sprites[timeDay].numbersWhite} />
 					<Number src={numbersBlack} />
 				</Odometer>
-				<Wheel src={wheel1} ref={wheelRef} />
+				<Wheel src={Sprites[timeDay].wheel1} ref={wheelRef} />
 			</BusContainer>
 		</Container>
 	);
 }
+
+const Headlights = styled.img`
+	opacity: 0.5;
+	position: absolute;
+	top: 170px;
+	left: 260px;
+
+	animation: anim 1s steps(2, end) infinite;
+	@keyframes anim {
+		0% {
+			transform: translate(0, 0);
+		}
+
+		20% {
+			transform: translate(2px, 4px);
+		}
+
+		40% {
+			transform: translate(0, 8px);
+		}
+
+		60% {
+			transform: translate(-2px, 4px);
+		}
+
+		80% {
+			transform: translate(0, 0);
+		}
+	}
+`;
 
 const TotalText = styled.div`
 	font-family: gdqpixel;
@@ -450,7 +436,7 @@ const Speedo = styled.img`
 	transform-origin: top right;
 `;
 
-const Odometer = styled.div`
+const Odometer = styled.div<{ timeDay: 'night' | 'dawn' | 'day' | 'dusk' }>`
 	position: absolute;
 	top: 294px;
 	left: 361px;
@@ -458,7 +444,13 @@ const Odometer = styled.div`
 	width: 54px;
 	height: 16px;
 
-	background: linear-gradient(to right, black 0px, black 42px, white 42px, white 54px);
+	background: linear-gradient(
+		to right,
+		black 0px,
+		black 42px,
+		${(p) => (p.timeDay === 'dawn' ? '#88aaaa' : p.timeDay === 'night' ? '#002244' : 'white')} 42px,
+		${(p) => (p.timeDay === 'dawn' ? '#88aaaa' : p.timeDay === 'night' ? '#002244' : 'white')} 54px
+	);
 
 	overflow: hidden;
 
