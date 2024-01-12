@@ -16,5 +16,6 @@ import './ff-shop';
 import './template';
 import './papers-please';
 import './minesweeper';
+import './galaga';
 
 export * from './channels';
