@@ -29,6 +29,10 @@ const currentEventRep = nodecg.Replicant<Event>('currentEvent', {
 	},
 });
 
-NodeCG.waitForReplicants(breakChannel, totalRep, currentEventRep).then(() => {
+const timezone = nodecg.Replicant<string>('timezone', {
+	defaultValue: 'America/New_York',
+});
+
+NodeCG.waitForReplicants(breakChannel, totalRep, currentEventRep, timezone).then(() => {
 	ReactDOM.render(<App />, document.getElementById('root'));
 });

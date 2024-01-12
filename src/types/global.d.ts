@@ -26,6 +26,11 @@ declare module '*.woff2' {
 	export default '' as string;
 }
 
+declare module "*.json" {
+	const value: any;
+	export default value;
+}
+
 declare module '*.aac';
 declare module '*.flac';
 declare module '*.ogg';

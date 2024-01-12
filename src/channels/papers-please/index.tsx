@@ -256,9 +256,16 @@ export function PapersPlease(props: ChannelProps) {
 				</TotalEl>
 				<SupplementaryText style={{ ...currentCountry.supplementTextLocation }}>
 					<div>{goalAmount}</div>
-					<div>{event.shortname}</div>
+					{/*
+					 * GDQ shortnames are typically 8 characters, except for Frame Fatales events.
+					 * Since FF events extend beyond the bounds, but shortname still needs the year,
+					 * we truncate the shortname to 12 characters to omit the year in this case.
+					 *
+					 * This should be looked at again in the future to see if there's a better solution.
+					*/}
+					<div>{event.shortname.slice(0, 12)}</div>
 					<div>{event.beneficiaryShort}</div>
-					<div>06/05/2023 {/* TEMP DATE! Should add this to the event obj */}</div>
+					<div>2023/08/21 {/* TEMP DATE! Should add this to the event obj */}</div>
 				</SupplementaryText>
 				<FullWidthImage src={currentCountry.passportInner} />
 			</Passport>
