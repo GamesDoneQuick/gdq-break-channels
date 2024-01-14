@@ -1,6 +1,9 @@
 import type { FormattedDonation, Total } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
-import { MegaManCloudRow, MegaManDonationQueueEntry, MegaManDonationState, MegaManEnemyList } from './types';
+import { MegaManDonationQueueEntry, MegaManDonationState } from './types';
+import MEGA_MAN_CONSTS from './config';
+import { getRandomEnemy } from './enemies';
+import { getRandomBG } from './bgs';
 
 import { useListenFor } from 'use-nodecg';
 import styled from '@emotion/styled';
@@ -10,30 +13,16 @@ import { usePIXICanvas } from '@gdq/lib/hooks/usePIXICanvas';
 import * as PIXI from 'pixi.js';
 
 import sheetTexture from './assets/atlas.png';
-import { atlas as sheetAtlas } from './assets/atlas';
+import sheetAtlas from './assets/atlas.json';
 import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
+
+import type { ScrollingBackground } from './backgrounds';
 
 registerChannel('Mega Man', 87, MegaMan, {
 	position: 'bottomLeft',
 	site: 'GitHub',
 	handle: 'Suyooo',
 });
-
-const MEGA_MAN_CONSTS = {
-	QUEUE_INTERVAL: 55,
-	MAX_QUEUE_LENGTH: 1,
-	LARGE_PICKUP_DONATION_THRESHOLD: 100,
-	MOVE_SPEED_CLOUDS: 0.25,
-	MOVE_SPEED_BUILDING: 0.5,
-	MOVE_SPEED_FOREGROUND: 1,
-	MOVE_SPEED_ENEMY: 2,
-	MOVE_SPEED_BULLET: 4,
-	MOVE_SPEED_TELEPORT: 4,
-	JUMP_MEGA_MAN_INITIAL: -4,
-	JUMP_MEGA_MAN_GRAVITY: 0.25,
-	JUMP_PICKUP_INITIAL: -2,
-	JUMP_PICKUP_GRAVITY: 0.25,
-};
 
 function MegaMan(props: ChannelProps) {
 	const [shownTotal, setShownTotal] = useState<number>(
@@ -46,36 +35,12 @@ function MegaMan(props: ChannelProps) {
 
 	const megaManYSpeed = useRef<number>(0);
 
+	const background = useRef<ScrollingBackground | null>(null);
 	const objects = useRef<Record<string, PIXI.DisplayObject> | null>(null);
-	const cloudRows = useRef<MegaManCloudRow[]>([]);
 	const spritesheet = useRef<PIXI.Spritesheet | null>(null);
 
 	const [app, canvasRef] = usePIXICanvas({ width: 1092, height: 332 }, () => {
 		if (!objects.current || !spritesheet.current) return;
-
-		// We must enter the cloudRow updates even if the intro is running, to set up initial cloud positions
-		for (const cloudRow of cloudRows.current) {
-			if (!introRunning.current) {
-				cloudRow.minNextX -= MEGA_MAN_CONSTS.MOVE_SPEED_CLOUDS;
-			}
-			for (const cloud of cloudRow.clouds) {
-				if (cloud.right.x <= -16) {
-					// When setting up initial cloud positions, allow them to be placed on-screen
-					const rightSide = cloudRow.initialDist ? Math.floor(Math.random() * 8) * 16 : 288;
-					cloud.left.x = Math.floor(Math.random() * 8) * 16 + Math.max(rightSide, cloudRow.minNextX);
-					cloud.middle.x = cloud.left.x + 16;
-					cloud.middle.width = Math.floor(Math.random() * 5) * 16;
-					cloud.right.x = cloud.middle.x + cloud.middle.width;
-					cloudRow.minNextX = cloud.right.x + 16;
-				}
-				if (!introRunning.current) {
-					cloud.left.x -= MEGA_MAN_CONSTS.MOVE_SPEED_CLOUDS;
-					cloud.middle.x -= MEGA_MAN_CONSTS.MOVE_SPEED_CLOUDS;
-					cloud.right.x -= MEGA_MAN_CONSTS.MOVE_SPEED_CLOUDS;
-				}
-			}
-			cloudRow.initialDist = false;
-		}
 
 		const megaMan = objects.current.megaMan as PIXI.AnimatedSprite;
 
@@ -106,15 +71,11 @@ function MegaMan(props: ChannelProps) {
 					};
 				}
 			}
+			// Return here so during the intro, all other sprites are paused
 			return;
 		}
 
-		if (objects.current.building.x <= -64) {
-			objects.current.building.x += (Math.floor(Math.random() * 32) + 32) * 16 + 288;
-		}
-		objects.current.building.x -= MEGA_MAN_CONSTS.MOVE_SPEED_BUILDING;
-
-		(objects.current.ground as PIXI.TilingSprite).tilePosition.x -= MEGA_MAN_CONSTS.MOVE_SPEED_FOREGROUND;
+		background.current?.tick();
 
 		donationCountdown.current--;
 		if (donationCountdown.current <= 0 && donationQueue.current.length > 0) {
@@ -128,14 +89,15 @@ function MegaMan(props: ChannelProps) {
 			if (dono.state === MegaManDonationState.WAITING) {
 				// Beginning to handle a new donation: Create the enemy sprite
 				dono.state = MegaManDonationState.STARTED;
-				dono.sprEnemy = new PIXI.AnimatedSprite(spritesheet.current.animations[dono.enemy.animName]);
+				const animIdx = Math.floor(Math.random() * dono.enemy.animNames.length);
+				dono.sprEnemy = new PIXI.AnimatedSprite(spritesheet.current.animations[dono.enemy.animNames[animIdx]]);
 				dono.sprEnemy.play();
 				dono.sprEnemy.x = 288;
 				dono.sprEnemy.animationSpeed = 1 / 8;
 				if (dono.enemy.isGrounded) {
-					dono.sprEnemy.y = 65 - dono.sprEnemy.height;
+					dono.sprEnemy.y = 65 - dono.sprEnemy.height + (dono.enemy.yOffset ?? 0);
 				} else {
-					dono.sprEnemy.y = 25 - dono.sprEnemy.height / 2;
+					dono.sprEnemy.y = 25 - dono.sprEnemy.height / 2 + (dono.enemy.yOffset ?? 0);
 				}
 				container.addChild(dono.sprEnemy);
 			} else if (dono.state === MegaManDonationState.STARTED || dono.state === MegaManDonationState.FIRED) {
@@ -180,12 +142,8 @@ function MegaMan(props: ChannelProps) {
 						dono.sprDestroy.pivot.x = dono.sprDestroy.width / 2;
 						dono.sprDestroy.pivot.y = dono.sprDestroy.height / 2;
 						dono.sprDestroy.x = dono.sprEnemy!.x + dono.sprEnemy!.width / 2;
-						dono.sprDestroy.y = dono.sprEnemy!.y + dono.sprEnemy!.height / 2;
-						if (dono.enemy == MegaManEnemyList.BLOCKY) {
-							dono.sprDestroy.y -= 8;
-						} else if (dono.enemy == MegaManEnemyList.BATTON) {
-							dono.sprDestroy.y -= 6;
-						}
+						dono.sprDestroy.y =
+							dono.sprEnemy!.y + dono.sprEnemy!.height / 2 + (dono.enemy.dropYOffset ?? 0);
 						dono.sprDestroy.loop = false;
 						dono.sprDestroy.onComplete = () => dono.sprDestroy!.destroy();
 						dono.sprDestroy.animationSpeed = 1 / 4;
@@ -233,8 +191,8 @@ function MegaMan(props: ChannelProps) {
 					}
 				}
 
-				// Check for pickup x Mega Man collision
-				if (dono.sprPickup!.x <= 52) {
+				// Check for collision between the pickup and Mega Man
+				if (dono.sprPickup!.x <= 52 && megaMan.y >= 33 - dono.sprPickup!.height) {
 					dono.sprPickup!.destroy();
 					liveDonations.current.shift();
 
@@ -268,55 +226,18 @@ function MegaMan(props: ChannelProps) {
 		app.current.stage.addChild(container);
 		container.setTransform(0, 0, 4, 4);
 
+		[background.current] = getRandomBG();
+		container.addChild(background.current.getContainer());
+
 		spritesheet.current = new PIXI.Spritesheet(PIXI.BaseTexture.from(sheetTexture), sheetAtlas);
 		spritesheet.current.parse().then(() => {
 			if (!spritesheet.current) return;
 
 			objects.current = {
 				container,
-				background: new PIXI.Graphics(),
-				building: new PIXI.Sprite(spritesheet.current.textures.building),
-				ground: new PIXI.TilingSprite(spritesheet.current.textures.ground, 273, 19),
 				megaMan: new PIXI.AnimatedSprite([spritesheet.current.textures.teleport1]),
 				ready: new PIXI.Sprite(spritesheet.current.textures.ready),
 			};
-
-			const background = objects.current.background as PIXI.Graphics;
-			background.beginFill(0x183c5c);
-			background.drawRect(0, 0, 273, 83);
-			background.endFill();
-			container.addChild(objects.current.background);
-
-			function createCloudRow(cloudCount: number, y: number) {
-				if (!spritesheet.current) return;
-
-				const row: MegaManCloudRow = { initialDist: true, minNextX: 0, clouds: [] };
-				for (let i = 0; i < cloudCount; i++) {
-					const cloud = {
-						left: new PIXI.Sprite(spritesheet.current.textures.cloud_left),
-						middle: new PIXI.TilingSprite(spritesheet.current.textures.cloud_middle, 16, 16),
-						right: new PIXI.Sprite(spritesheet.current.textures.cloud_right),
-					};
-
-					cloud.left.x = cloud.middle.x = cloud.right.x = -16;
-					cloud.left.y = cloud.middle.y = cloud.right.y = y;
-					container.addChild(cloud.left);
-					container.addChild(cloud.middle);
-					container.addChild(cloud.right);
-					row.clouds.push(cloud);
-				}
-				cloudRows.current.push(row);
-			}
-
-			createCloudRow(3, -8);
-			createCloudRow(2, 8);
-			createCloudRow(1, 24);
-
-			objects.current.building.x = -64;
-			container.addChild(objects.current.building);
-
-			objects.current.ground.y = 64;
-			container.addChild(objects.current.ground);
 
 			// Intro animation: Mega Man starts in the teleport sprite
 			// Placed far above the camera frame, so he drops in the exact right moment
@@ -348,17 +269,10 @@ function MegaMan(props: ChannelProps) {
 		});
 
 		return () => {
+			background.current?.destroy();
 			for (const key in objects.current) {
 				const obj = objects.current[key];
 				if (!obj.destroyed) obj.destroy(true);
-			}
-
-			for (const cloudRow of cloudRows.current) {
-				for (const cloud of cloudRow.clouds) {
-					if (!cloud.left.destroyed) cloud.left.destroy(true);
-					if (!cloud.middle.destroyed) cloud.middle.destroy(true);
-					if (!cloud.right.destroyed) cloud.right.destroy(true);
-				}
 			}
 
 			donationQueue.current = [];
@@ -380,29 +294,10 @@ function MegaMan(props: ChannelProps) {
 			latestDonation.newTotal = donation.rawNewTotal;
 			latestDonation.bigPickup = true;
 		} else {
-			let enemy;
-			switch (Math.floor(Math.random() * 5)) {
-				case 0:
-					enemy = MegaManEnemyList.METTOOL;
-					break;
-				case 1:
-					enemy = MegaManEnemyList.SCWORM;
-					break;
-				case 2:
-					enemy = MegaManEnemyList.BLOCKY;
-					break;
-				case 3:
-					enemy = MegaManEnemyList.BATTON;
-					break;
-				default:
-					enemy = MegaManEnemyList.TELLY;
-					break;
-			}
-
 			donationQueue.current.push({
 				state: MegaManDonationState.WAITING,
 				newTotal: donation.rawNewTotal,
-				enemy,
+				enemy: getRandomEnemy(),
 				bigPickup: donation.rawAmount >= MEGA_MAN_CONSTS.LARGE_PICKUP_DONATION_THRESHOLD,
 			});
 		}
@@ -411,9 +306,6 @@ function MegaMan(props: ChannelProps) {
 	return (
 		<Container>
 			<Canvas width={1092} height={332} ref={canvasRef} />
-			<TotalShadow>
-				$<TweenNumber value={Math.floor(shownTotal)} />
-			</TotalShadow>
 			<TotalEl>
 				$<TweenNumber value={Math.floor(shownTotal)} />
 			</TotalEl>
@@ -435,17 +327,6 @@ const Canvas = styled.canvas`
 	height: 100% !important;
 `;
 
-const TotalShadow = styled.div`
-	font-family: gdqpixel;
-	font-size: 46px;
-	color: black;
-
-	position: absolute;
-
-	left: 32px;
-	top: 36px;
-`;
-
 const TotalEl = styled.div`
 	font-family: gdqpixel;
 	font-size: 46px;
@@ -455,4 +336,5 @@ const TotalEl = styled.div`
 
 	left: 32px;
 	top: 32px;
+	filter: drop-shadow(0 4px 0 black);
 `;

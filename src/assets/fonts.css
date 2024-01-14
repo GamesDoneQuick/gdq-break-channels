@@ -73,3 +73,8 @@
 	font-family: rct2;
 	src: url('fonts/rct2.ttf') format('truetype');
 }
+
+@font-face {
+	font-family: minesweeper;
+	src: url('fonts/Minesweeper.woff2') format('woff2');
+}

@@ -32,7 +32,11 @@ const Donation: FC<Props> = ({ donation, offset }: Props) => {
 		gsap.to(text.current, { y: offset * 50 });
 	}, [offset]);
 
-	return <DonationText ref={text}>{donation.amount}</DonationText>;
+	return (
+		<DonationText ref={text}>
+			${Math.floor(donation.rawAmount).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+		</DonationText>
+	);
 };
 
 const DonationText = styled.div`

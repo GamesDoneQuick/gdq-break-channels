@@ -1,6 +1,7 @@
 import './channels';
 
 import './breakout';
+import './cave-story';
 import './desert-bus';
 import './mega-man';
 import './mgs3';
@@ -15,5 +16,6 @@ import './ff-shop';
 import './template';
 import './papers-please';
 import './rct2';
+import './minesweeper';
 
 export * from './channels';
