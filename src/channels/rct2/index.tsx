@@ -84,7 +84,7 @@ function RCT2(props: ChannelProps) {
 			el.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
 			el.style.left = `${Math.random() * 1100}px`;
 			el.style.top = '350px';
-			el.style.scale = '1';
+			el.style.scale = '2	';
 			el.style.imageRendering = 'pixelated';
 			el.src = balloon;
 
@@ -288,7 +288,7 @@ const Container = styled.div`
 
 	.awardText {
 		font-family: rct2;
-		font-size: 16px;
+		font-size: 24px;
 		color: #FFB76B;
 
 		position: absolute;
@@ -303,7 +303,7 @@ const Container = styled.div`
 
 	.researchText {
 		font-family: rct2;
-		font-size: 16px;
+		font-size: 24px;
 		color: #8FD3F3;
 
 		position: absolute;
@@ -330,7 +330,7 @@ const Menus = styled.div`
 
 const EventText = styled.div`
 	font-family: rct2;
-	font-size: 16px;
+	font-size: 24px;
 	color: #CFF3DF;
 
 	position: absolute;
@@ -343,7 +343,7 @@ const EventText = styled.div`
 
 const TotalEl = styled.div`
 	font-family: rct2;
-	font-size: 16px;
+	font-size: 24px;
 	color: #CFF3DF;
 
 	position: absolute;
