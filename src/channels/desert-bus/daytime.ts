@@ -43,8 +43,8 @@ export function shiftTime(): 'zeta' | 'dawn' | 'alpha' | 'night' | 'omega' {
 
 	const hour = datetime.hour;
 
-	if (hour > 18) return 'night';
-	if (hour > 12) return 'alpha';
-	if (hour > 6) return 'dawn';
+	if (hour >= 18) return 'night';
+	if (hour >= 12) return 'alpha';
+	if (hour >= 6) return 'dawn';
 	return 'zeta';
 }
