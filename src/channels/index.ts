@@ -17,5 +17,6 @@ import './ff-shop';
 import './papers-please';
 import './minesweeper';
 import './qwop';
+import './laser-sunset';
 
 export * from './channels';

@@ -1,0 +1,284 @@
+
+.Container {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	background-color: #000;
+}
+
+.TotalEl {
+	font-family: gdqpixel;
+	font-size: 46px;
+	color: #eee;
+	text-shadow: 1px 1px 4px indigo;
+	opacity: 0.9;
+	position: absolute;
+	left: 3%;
+	top: 50%;
+	margin-top: -23px;
+	z-index: 101;
+}
+
+.DonationsList {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.Donation {
+	position: absolute;
+	left: 0;
+	top: 0;
+	font-family: gdqpixel;
+	font-size: 28px;
+	text-wrap: nowrap;
+	color: magenta;
+	text-shadow: 4px 2px indigo;
+	transform: translate(-50%, 0%);
+	z-index: 69;
+}
+
+.Donation.reflection {
+	opacity: 0.3;
+	transform: translate(-50%, 0%) rotateX(-230deg);
+	z-index: initial;
+}
+
+.SubscriptionsList {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.Subscription {
+	position: absolute;
+	left: 0;
+	top: 0;
+	font-family: gdqpixel;
+	font-size: 28px;
+	color: magenta;
+	text-shadow: 4px 2px indigo;
+	transform: translate(-50%, 0%);
+	z-index: 69;
+}
+
+.Subscription.reflection {
+	opacity: 0.3;
+	transform: translate(-8px, 0) rotateX(-230deg);
+	z-index: initial;
+}
+
+.Sky {
+	position: absolute;
+	width: 100%;
+	height: 50%;
+	background: linear-gradient(
+		to bottom,
+		rgba(222, 33, 111, .0) 0%,
+		rgba(222, 33, 111, .2) 80%,
+		rgba(222, 33, 111, .5) 90%,
+		rgba(222, 33, 111, 1) 100%
+	);
+}
+
+.Stars {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	opacity: 0.7;
+}
+
+.Stars.reflection {
+	transform: rotateX(-180deg);
+	opacity: 0.4;
+}
+
+.Star {
+	font-family: gdqpixel;
+	font-size: 10px;
+	color: #eee;
+	position: absolute;
+	left: 10%;
+	top: 10%;
+	transition: opacity .6s ease-in-out;
+}
+
+.Clouds {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.Clouds:after {
+	transform: perspective(200px) rotateX(-38deg) scale(2,1) translateZ(0);
+	content: "";
+	display: block;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: 100%;
+	height: 100vh;
+	-webkit-background-clip: content-box;
+	background-clip: content-box;
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+	outline: 1px solid transparent;
+	transform-origin: bottom center;
+	will-change: transform;
+}
+
+.Clouds:after {
+	background-position: center bottom;
+	background-size: 110px 110px;
+	background-image:
+	linear-gradient(to right, magenta 2px, transparent 0);
+}
+
+.Cloud {
+	transform: perspective(200px) rotateX(-38deg) scale(2,1) translateZ(0);
+	position: absolute;
+	z-index: 42;
+}
+
+.CloudReflections {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.Cloud.reflection {
+	transform: perspective(200px) rotateX(38deg) scale(2,1) translateZ(0);
+	opacity: 0.4;
+}
+
+.Sun {
+	position: absolute;
+	left: 50%;
+	top: 69%;
+	width: 200px;
+	height: 200px;
+	border-radius: 100px;
+	box-shadow: 0 0 32px 0 #f09000;
+	background-color: #f09000;
+	transform: translate(-50%, -35%);
+}
+
+.Sun-top {
+	clip-path: inset(-50px -50px 166px -50px);
+}
+
+.Sun-middle-top {
+	clip-path: inset(38px -50px 150px -50px);
+}
+
+.Sun-middle {
+	clip-path: inset(56px -50px 126px -50px);
+}
+
+.Sun-middle-bottom {
+	clip-path: inset(82px -50px 97px -50px);
+}
+
+.Sun-bottom {
+	clip-path: inset(112px -50px -50px -50px);
+}
+
+.Ocean {
+	position: absolute;
+	bottom: 0%;
+	width: 100%;
+	height: 50%;
+	overflow: hidden;
+	background: #000;
+}
+
+.Ocean-background {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(
+		to bottom,
+		rgba(0, 215, 215, .7) 0%,
+		rgba(0, 215, 215, .1) 20%,
+		rgba(0, 215, 215, 0) 100%
+	);
+}
+
+.Lasers {
+	position: absolute;
+	overflow: hidden;
+	width: 200%;
+	height: 100%;
+	left: 50%;
+	transform: translate(-50%, 0%);
+}
+
+/* Laser grid background effect, taken from https://stackoverflow.com/questions/53416334/css-80s-tron-grid */
+.Lasers:after {
+	transform: perspective(200px) rotateX(38deg) scale(2,1) translateZ(0);
+	content: "";
+	display: block;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: 100%;
+	height: 100vh;
+	-webkit-background-clip: content-box;
+	background-clip: content-box;
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+	outline: 1px solid transparent;
+	transform-origin: bottom center;
+	will-change: transform;
+}
+
+.Lasers:after {
+	background-position: center bottom;
+	background-size: 120px 120px;
+	background-image:
+	linear-gradient(to right, cyan 10px, transparent 0),
+	linear-gradient(to bottom, cyan 16px, transparent 0);
+}
+
+.Lasers-horizon {
+	position: absolute;
+	width: 100%;
+	top: 0;
+	height: 100%;
+	background: linear-gradient(to bottom,rgba(0,0,0,0.4) 0%,rgba(0,0,0,0.2) 50%,rgba(0,0,0,0) 100%);
+}
+
+.SunReflections {
+	position: absolute;
+	top: 3%;
+	width: 100%;
+	left: 50%;
+	transform: translate(-50%, 0%);
+}
+
+.SunReflection {
+	position: relative;
+	left: 50%;
+	margin: 6px 0;
+	width: 20%;
+	height: 5px;
+	box-shadow: 0 0 16px 1px #f09000;
+	background-color: #f09000ad;
+	transform: translate(-50%, 0%);
+	transition: width 1s cubic-bezier(0, .3, .5, 1), left 1s cubic-bezier(0, .3, .5, 1), margin-top 1s ease-in-out;
+}
+
+.Lamps {
+	position: absolute;
+	right: 2%;
+	bottom: 10%;
+}
