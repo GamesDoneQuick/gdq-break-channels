@@ -14,7 +14,7 @@ import logoFile from './gdq.svg';
 registerChannel('DVD', 42, DVDChannel, {
 	position: 'bottomLeft',
 	site: 'Twitch',
-	handle: 'Willow Bohlen',
+	handle: 'squiddotmid',
 });
 
 type DVDLogo = {
