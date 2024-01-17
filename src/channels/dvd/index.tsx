@@ -13,8 +13,8 @@ import logoFile from './gdq.svg';
 
 registerChannel('DVD', 42, DVDChannel, {
 	position: 'bottomLeft',
-	site: 'GitHub',
-	handle: 'squiddotmid',
+	site: 'Twitch',
+	handle: 'Willow Bohlen',
 });
 
 type DVDLogo = {
