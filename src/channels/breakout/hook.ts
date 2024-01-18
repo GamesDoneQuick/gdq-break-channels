@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { Breakout, BreakoutState } from './game/breakout';
 import { Bounds, Paddle } from './game/model';
+import { useActive } from '@gdq/lib/hooks/useActive';
 
 const rep = nodecg.Replicant<BreakoutState | null>('breakout-game', {
 	defaultValue: null,
@@ -8,6 +9,8 @@ const rep = nodecg.Replicant<BreakoutState | null>('breakout-game', {
 });
 
 export function useBreakout(bounds: Bounds, paddle: Paddle) {
+	const active = useActive();
+
 	const breakout = useMemo(() => {
 		if (rep.value) {
 			return Breakout.deserialize(rep.value);
@@ -19,17 +22,17 @@ export function useBreakout(bounds: Bounds, paddle: Paddle) {
 		if (!breakout) return;
 
 		const saveInterval = setInterval(() => {
-			rep.value = breakout.serialize();
+			if (active) rep.value = breakout.serialize();
 		}, 1000);
 
 		breakout.start();
 
 		return () => {
-			rep.value = breakout.serialize();
+			if (active) rep.value = breakout.serialize();
 			breakout.stop();
 			clearInterval(saveInterval);
 		};
-	}, [breakout]);
+	}, [breakout, active]);
 
 	return breakout;
 }
