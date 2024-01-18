@@ -74,7 +74,7 @@ export function EarthwormJim(props: ChannelProps) {
 				} else {
 					enemy.enemySprite = new PIXI.AnimatedSprite(spritesheet.current.animations["fifimove"]);
 					enemy.enemySprite.x = 1500;
-					enemy.enemySprite.y = 105;
+					enemy.enemySprite.y = 175;
 					enemy.enemySprite.scale.x = -1;
 					enemy.enemySprite.animationSpeed = 1/5;
 					enemy.enemySprite.play();
@@ -82,7 +82,7 @@ export function EarthwormJim(props: ChannelProps) {
 				}
 			} else if (enemy.status === EnemyStatus.STARTED) {
 
-				const speed = 5;
+				const speed = 10;
 				
 				enemy.enemySprite!.x = (enemy.enemySprite!.x - (speed));
 				if(enemy.enemy =='fifi') {
@@ -96,8 +96,8 @@ export function EarthwormJim(props: ChannelProps) {
 					jim.textures = spritesheet.current!.animations.jimshoot;
 					jim.play();
 					muzzle.textures = spritesheet.current!.animations.muzzle;
-					muzzle.x = 200;
-					muzzle.y = 150;
+					muzzle.x = 265;
+					muzzle.y = 115;
 					muzzle.animationSpeed = 1/4;
 					muzzle.play();
 					container.addChild(muzzle);
@@ -175,13 +175,16 @@ export function EarthwormJim(props: ChannelProps) {
 		
 
 			const background = PIXI.Sprite.from(ewjbackground);
+			background.scale.set(2,2);
+			background.x = -650;
+			background.y = -100;
 			container.addChild(background);
 
 			const jim = objects.current.jimAnim as PIXI.AnimatedSprite;
 			jim.textures = spritesheet.current.animations.tile;
 			jim.animationSpeed = 1/4;
-			jim.x = 138;
-			jim.y = 158;
+			jim.x = 142;
+			jim.y = 128;
 			jim.play();
 			container.addChild(jim);
 		});
@@ -236,12 +239,12 @@ const TotalEl = styled.div`
 	top: 80%;
 	transform: translate(0, -50%);
 	span {
-		background: linear-gradient(#ffffff, #555555);
+		background: linear-gradient(#ffffff, #aaaaaa);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
-		filter: drop-shadow(3px 3px #6a560a);
+		filter: drop-shadow(3px 3px #000000);
 	}
-	filter: drop-shadow(2px 2px 10px #3f200b) drop-shadow(2px 2px 30px #3f200b);
+	filter: drop-shadow(2px 2px 10px #000000) drop-shadow(2px 2px 30px #000000);
 `;
 
 const Jim = styled.img`

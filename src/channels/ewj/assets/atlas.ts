@@ -205,6 +205,6 @@ export const atlas: ISpritesheetData = {
 	"tile": ["tile000","tile001","tile002","tile003","tile004","tile005"]
 },
 "meta": {
-	"scale": "0.75",
+	"scale": "0.40",
 }
 }
