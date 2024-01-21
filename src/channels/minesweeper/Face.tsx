@@ -1,9 +1,9 @@
 import { css } from '@emotion/react';
+
 import { FACE_DIMENSION, FACE_ORDER } from './constants';
+import type { FaceType } from './types';
 
 import faces from './assets/faces.png';
-
-export type FaceType = (typeof FACE_ORDER)[number];
 
 function getFaceOffset(face: FaceType) {
 	const faceIndex = FACE_ORDER.indexOf(face);

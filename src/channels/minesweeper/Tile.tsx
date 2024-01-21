@@ -1,13 +1,9 @@
 import { css } from '@emotion/react';
+
 import { TILE_DIMENSION } from './constants';
+import type { TileData } from './types';
 
 import tiles from './assets/tiles.png';
-
-export type TileData = {
-	id: string;
-	tileType: readonly [number, number];
-	isMine: boolean;
-};
 
 export function Tile({ tileType }: TileData) {
 	const [x, y] = tileType;
