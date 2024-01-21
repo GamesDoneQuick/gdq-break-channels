@@ -1,12 +1,14 @@
-export const FACE_DIMENSION = 24;
+import type { TileData } from './types';
+
+export const FACE_DIMENSION = 36;
 export const FACE_ORDER = ['smile', 'smile_pressed', 'open_mouth', 'sunglasses', 'heart_eyes'] as const;
 
 export const MINE_CHANCE = 0.17;
 
 export const GRID_ROWS = 16;
-export const GRID_COLUMNS = 67;
+export const GRID_COLUMNS = 66;
 
-export const TILE_DIMENSION = 16;
+export const TILE_DIMENSION = 16.24;
 
 export const TILE_MAP = {
 	HIDDEN: [0, 0],
@@ -21,7 +23,7 @@ export const TILE_MAP = {
 	EMPTY: [1, 0],
 	FLAGGED: [2, 0],
 	QUESTION_MARK: [3, 0],
-} as const;
+} satisfies Record<string, TileData['tileType']>;
 
 export const mineNumberTiles = [
 	TILE_MAP.EMPTY,
@@ -35,8 +37,8 @@ export const mineNumberTiles = [
 	TILE_MAP.EIGHT,
 ];
 
-export const MIN_REVEAL_DONATION = 20;
+export const MIN_REVEAL_DONATION = 25;
 /** maximum donation amount for determining reveal threshold */
 export const REVEAL_DONATION_CAP = 500;
 export const MIN_REVEALED_TILES = 1;
-export const MAX_REVEALED_TILES = 25;
+export const MAX_REVEALED_TILES = 15;

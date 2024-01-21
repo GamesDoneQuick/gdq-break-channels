@@ -177,8 +177,8 @@ export function Minesweeper(props: ChannelProps) {
 	const flagTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 	useEffect(() => {
 		function flagTiles(timeoutMS: number) {
-			// Add a question mark every 5-10 seconds
-			const newTimeout = random(5_000, 10_000);
+			// Add a question mark every 10-20 seconds
+			const newTimeout = random(10_000, 20_000);
 			flagTimeoutRef.current = setTimeout(() => {
 				dispatch({ type: actions.QUESTION_TILE });
 				flagTiles(newTimeout);
@@ -243,11 +243,11 @@ const Container = styled.div`
 const Wrapper = styled.div`
 	position: relative;
 	display: flex;
-	gap: 5px;
+	gap: 4px;
 	flex-direction: column;
 	height: 100%;
 	background-color: #bdbdbd;
-	padding: 5px;
+	padding: 4px 5px;
 	border-left: 3px solid #fff;
 	border-top: 3px solid #fff;
 `;
@@ -256,7 +256,7 @@ const Header = styled.header`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 0 5px;
+	padding: 0 4px;
 	height: 50px;
 	border: 2px solid;
 	border-color: #7d7d7d #fff #fff #7d7d7d;
@@ -279,11 +279,13 @@ const LCDContainer = styled.div`
 
 const LCDText = styled.div`
 	font-family: minesweeper;
-	font-size: 32px;
+	font-size: 38px;
 	text-transform: uppercase;
-	color: #ea3323;
+	color: hsl(4.82deg 82.57% 58%);
 	background: #000;
 	border: 1px solid;
 	border-color: #808080 #fff #fff #808080;
-	padding: 1px;
+	padding: 4px;
+	line-height: 0.8;
+	letter-spacing: 0.025rem;
 `;
