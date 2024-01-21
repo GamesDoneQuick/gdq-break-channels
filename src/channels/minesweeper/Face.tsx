@@ -5,6 +5,9 @@ import type { FaceType } from './types';
 
 import faces from './assets/faces.png';
 
+const SPRITES_PER_ROW = 5;
+const SPRITESHEET_ROWS = 1;
+
 function getFaceOffset(face: FaceType) {
 	const faceIndex = FACE_ORDER.indexOf(face);
 	return faceIndex * FACE_DIMENSION;
@@ -18,11 +21,11 @@ export function Face({ face }: FaceProps) {
 	return (
 		<div
 			css={css`
-				transform: scale(1.25);
 				width: ${FACE_DIMENSION}px;
 				height: ${FACE_DIMENSION}px;
 				background: url(${faces}) no-repeat;
 				background-position: -${getFaceOffset(face)}px;
+				background-size: ${FACE_DIMENSION * SPRITES_PER_ROW}px ${FACE_DIMENSION * SPRITESHEET_ROWS}px;
 			`}
 		/>
 	);
