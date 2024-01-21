@@ -6,23 +6,18 @@ import { ChannelProps, registerChannel } from '../channels';
 import { useListenFor, useReplicant } from 'use-nodecg';
 import type { Event, FormattedDonation, Total } from '@gdq/types/tracker';
 
-import { Face, FaceType } from './Face';
-import { Tile, TileData } from './Tile';
+import { Face } from './Face';
+import { Tile } from './Tile';
 import { TILE_DIMENSION, GRID_COLUMNS, GRID_ROWS, TILE_MAP, MINE_CHANCE, MIN_REVEAL_DONATION } from './constants';
 import { createTileCluster, getTileRevealThreshold, random, randomFromArray, splitTileIndex } from './utils';
 import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
 import { cloneDeep } from 'lodash';
+import type { FaceType, GridState, TileData } from './types';
 
 registerChannel('Minesweeper', 132, Minesweeper, {
 	position: 'bottomRight',
 	handle: 'rshig',
 });
-
-type GridState = {
-	grid: TileData[][];
-	mines: string[];
-	nonMines: string[];
-};
 
 function generateInitialGridState(): GridState {
 	const state: GridState = { grid: [], mines: [], nonMines: [] };
