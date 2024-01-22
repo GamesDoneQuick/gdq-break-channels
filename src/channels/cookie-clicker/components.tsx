@@ -171,34 +171,34 @@ export let FormattedText = styled.div`
         line-height: 1.5;
         font-size: 45%;
     }
-
-    & > store{
-        position: absolute;
-        top: 9px;
-        font-size: 95%;
-        text-align: left;
-        right: 2.5%;
-        width: calc(100% - 64px);
-    }
-
-    & > price{
-        position: absolute;
-        text-shadow: 0px 1px 3px black;
-        text-align: left;
-        color: #66ff66;
-        font-size: 45%;
-        right: 2.5%;
-        top:32px;
-        width: calc(100% - 64px);
-    }
-
-    & > total{
-        position: absolute;
-        text-align: right;
-        font-size: 230%;
-        right: 0;
-        width: 100%;
-        color: black;
-        opacity: 0.4;
-    }
 `;
+
+export let TotalText = styled.div`
+    position: absolute;
+    text-align: right;
+    font-size: 230%;
+    right: 0;
+    width: 100%;
+    color: black;
+    opacity: 0.4;
+`
+
+export let Price = styled.div`
+    position: absolute;
+    text-shadow: 0px 1px 3px black;
+    text-align: left;
+    color: #66ff66;
+    font-size: 45%;
+    right: 2.5%;
+    top:32px;
+    width: calc(100% - 64px);
+`
+
+export let Store = styled.div`
+    position: absolute;
+    top: 9px;
+    font-size: 95%;
+    text-align: left;
+    right: 2.5%;
+    width: calc(100% - 64px);
+`
