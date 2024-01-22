@@ -17,7 +17,7 @@ import './main.css';
 import {grandma, farm, mine, factory, bank, temple, tower, shipment, lab, portal, timeMachine, antimCondenser, prism} from './buildings';
 let buildings = [prism, antimCondenser, timeMachine, portal, lab, shipment, tower, temple, bank, factory, mine, farm, grandma];
 import {Container, VerticalSection, HorizontalSection, StoreWindow, StoreIcon, Cookie, CookieGlow, CookieParticle, 
-    FloatText, AnnouncementSection, FormattedText} from './components'
+    FloatText, AnnouncementSection, FormattedText, TotalText, Price, Store} from './components'
 
 registerChannel('Cookie Clicker', 10, cookieClicker, {
 	position: 'bottomLeft',
@@ -57,7 +57,7 @@ export function cookieClicker(props: ChannelProps){
 
                 setTimeout(() => {
                     let announcementIndex = random(0, flavorText.length - 1);
-                    announcementRef.current.innerHTML = flavorText[announcementIndex]
+                    if(announcementRef.current)announcementRef.current.innerHTML = flavorText[announcementIndex]
 
                     usedFlavorText.push(flavorText[announcementIndex]);
                     flavorText.splice(announcementIndex, 1);
@@ -90,9 +90,9 @@ export function cookieClicker(props: ChannelProps){
             <StoreWindow ref={building.storeRef} id={`${building.id}`}>
                 <StoreIcon id={`${building.id}`}/>
                 <FormattedText> 
-                    <total>{building.total}</total>
-                    <store>{building.name}</store>
-                    <price>&gt; ${building.price} Donation</price>
+                    <TotalText>{building.total}</TotalText>
+                    <Store>{building.name}</Store>
+                    <Price>&gt; ${building.price} Donation</Price>
                 </FormattedText>
             </StoreWindow>
             {storeSection}
