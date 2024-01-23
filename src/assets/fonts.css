@@ -85,3 +85,8 @@
 	src: url('fonts/Cabin/Cabin-Medium.ttf') format('truetype');
 	font-weight: 500;
 }
+
+@font-face{
+	font-family: Merriweather;
+	src: url('fonts/Merriweather-Black.ttf') format('woff2');
+}

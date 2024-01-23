@@ -1,0 +1,45 @@
+/* Animations: */
+.cookieClicked{
+    animation-name: click;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+
+@keyframes click{
+    from{
+        transform: scale(1)
+    }
+    15%{
+        transform: scale(0.9)
+    }
+    25%{
+        transform: scale(1)
+    }
+    65%{
+        transform: scale(0.95)
+    }
+    to{
+        transform: scale(1)
+    }
+}
+
+.announcementFade{
+    animation-name: staticFadeUp;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+
+@keyframes staticFadeUp{
+    from{
+        top: 25%;
+        opacity: 1;
+    }
+    90%{
+        top: 0%;
+        opacity: 0;
+    }
+    to{
+        top: 0%;
+        opacity: 0;
+    }
+}
