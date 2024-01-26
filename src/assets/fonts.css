@@ -85,3 +85,14 @@
 	src: url('fonts/Cabin/Cabin-Medium.ttf') format('truetype');
 	font-weight: 500;
 }
+
+@font-face {
+	font-family: NikoDialogue;
+	src: url('fonts/NikoDialogue.ttf') format('truetype');
+	font-weight: 500;
+}
+
+@font-face {
+	font-family: NikoTamagotchi;
+	src: url('fonts/NikoTamagotchi.ttf') format('truetype');
+}

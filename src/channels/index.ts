@@ -17,5 +17,6 @@ import './ff-shop';
 import './papers-please';
 import './minesweeper';
 import './qwop';
+import './here-comes-niko';
 
 export * from './channels';
