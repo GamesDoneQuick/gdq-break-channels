@@ -1,7 +1,7 @@
 import PinballWasm from './bin/SpaceCadetPinball.wasm?url';
 //@ts-expect-error
 import SpaceCadetPinball from './bin/SpaceCadetPinball.mjs';
-import type { MainModule } from './bin/SpaceCadetPinball.d.ts';
+import type { MainModule } from './bin/SpaceCadetPinball';
 
 export const offscreen = new OffscreenCanvas(600, 416) as OffscreenCanvas & {
 	style: Record<string, any>;
