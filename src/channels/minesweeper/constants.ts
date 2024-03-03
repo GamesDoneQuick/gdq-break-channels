@@ -23,7 +23,7 @@ export const TILE_MAP = {
 	EMPTY: [1, 0],
 	FLAGGED: [2, 0],
 	QUESTION_MARK: [3, 0],
-} satisfies Record<string, TileData['tileType']>;
+} as const;
 
 export const mineNumberTiles = [
 	TILE_MAP.EMPTY,
