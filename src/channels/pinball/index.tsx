@@ -193,7 +193,8 @@ keysRep.on('change', (newKeys) => {
 	});
 });
 
-window.addEventListener('pinballScore', (event) => {
+window.addEventListener('pinballScore', (ev) => {
+	const event = ev as CustomEvent<{ score: number }>;
 	if (pinballHighScore.status === 'declaring') return;
 	if ((pinballHighScore.value ?? 0) < event.detail.score) pinballHighScore.value = event.detail.score;
 });

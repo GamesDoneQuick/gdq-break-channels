@@ -17,7 +17,7 @@ const Module = new Promise<MainModule>((res, rej) => {
 });
 
 export function loadPinball(dataUrl: URL) {
-	fetch(dataUrl, { method: 'HEAD' }).then((res) => {
+	fetch(dataUrl.toString(), { method: 'HEAD' }).then((res) => {
 		if (!res.ok) {
 			reject();
 			return;
