@@ -1,4 +1,3 @@
-import { TileData } from './Tile';
 import {
 	REVEAL_DONATION_CAP,
 	GRID_COLUMNS,
@@ -8,6 +7,7 @@ import {
 	MIN_REVEALED_TILES,
 	mineNumberTiles,
 } from './constants';
+import type { TileData } from './types';
 
 export function random(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min)) + min;

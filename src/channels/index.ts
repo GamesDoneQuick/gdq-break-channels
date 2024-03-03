@@ -18,5 +18,6 @@ import './papers-please';
 import './minesweeper';
 import './qwop';
 import './laser-sunset';
+import './here-comes-niko';
 
 export * from './channels';
