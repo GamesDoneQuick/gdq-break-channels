@@ -106,14 +106,14 @@ function Niko(props: ChannelProps) {
 
 				//Play dialogue
 				await playDialogue[DLG_TO_PLAY](dlg, donation.amount);
-				setCurrentSprite((FROG_CURRENT_SPRITE) => frogHandsome);
-				setFontSize((FONT_SIZE) => '50px');
-				enableVignette((VIGNETTE_STATE) => true);
+				setCurrentSprite(frogHandsome);
+				setFontSize('50px');
+				enableVignette(true);
 
 				await playPunchline[DLG_TO_PLAY](dlg, donation.amount);
-				setCurrentSprite((FROG_CURRENT_SPRITE) => frogNormal);
-				setFontSize((FONT_SIZE) => '45px');
-				enableVignette((VIGNETTE_STATE) => false);
+				setCurrentSprite(frogNormal);
+				setFontSize('45px');
+				enableVignette(false);
 
 				PREVIOUS_DLG_TO_PLAY = DLG_TO_PLAY;
 				DIALOGUE_COUNTER = DIALOGUE_COUNTER + 1;
@@ -129,51 +129,51 @@ function Niko(props: ChannelProps) {
 				TAMAGOTCHI_ACTIVE = true;
 				props.lock();
 
-				setCurrentSprite((FROG_CURRENT_SPRITE) => frogGaming);
+				setCurrentSprite(frogGaming);
 				setSnailSprite(snailSad);
-				enableTamagotchi((TAMAGOTCHI_STATE) => true);
+				enableTamagotchi(true);
 
 				await delay(1100);
 				showSnailSpeechCenter(true);
 				await dialog(tdlg, `I am hungry!`, 2000, 0);
 
 				//Move Snail to Left
-				showSnailCenter((SNAIL_CENTER) => false);
-				showSnailSpeechCenter((SNAIL_SPEECH_CENTER) => false);
-				moveSnailLeft((SNAIL_LEFT) => true);
-				moveFoodRightToCenter((SNAIL_FOOD_RIGHT_TO_CENTER) => true);
-				moveKitchenRightToCenter((SNAIL_KITCHEN_RIGHT_TO_CENTER) => true);
+				showSnailCenter(false);
+				showSnailSpeechCenter(false);
+				moveSnailLeft(true);
+				moveFoodRightToCenter(true);
+				moveKitchenRightToCenter(true);
 
 				await delay(1000);
-				moveFoodRightToCenter((SNAIL_FOOD_RIGHT_TO_CENTER) => false);
-				moveKitchenRightToCenter((SNAIL_KITCHEN_RIGHT_TO_CENTER) => false);
-				showFoodCenter((SNAIL_FOOD_CENTER) => true);
-				showKitchenCenter((SNAIL_KITCHEN_CENTER) => true);
-				moveSnailLeft((SNAIL_LEFT) => false);
+				moveFoodRightToCenter(false);
+				moveKitchenRightToCenter(false);
+				showFoodCenter(true);
+				showKitchenCenter(true);
+				moveSnailLeft(false);
 
 				await delay(500);
 				setSpriteFoodBowl(snailFoodFull);
 				setSnailSprite(snailPet);
 
 				await delay(2000);
-				moveFoodCenterToRight((SNAIL_FOOD_CENTER_TO_RIGHT) => true);
-				moveKitchenCenterToRight((SNAIL_KITCHEN_CENTER_TO_RIGHT) => true);
-				showFoodCenter((SNAIL_FOOD_CENTER) => false);
-				showKitchenCenter((SNAIL_KITCHEN_CENTER) => false);
-				moveSnailRight((SNAIL_RIGHT) => true);
+				moveFoodCenterToRight(true);
+				moveKitchenCenterToRight(true);
+				showFoodCenter(false);
+				showKitchenCenter(false);
+				moveSnailRight(true);
 
 				await delay(1000);
-				moveFoodCenterToRight((SNAIL_FOOD_CENTER_TO_RIGHT) => false);
-				moveKitchenCenterToRight((SNAIL_KITCHEN_CENTER_TO_RIGHT) => false);
-				moveSnailRight((SNAIL_RIGHT) => false);
-				showSnailCenter((SNAIL_CENTER) => true);
-				showSnailSpeechCenter((SNAIL_SPEECH_CENTER) => true);
+				moveFoodCenterToRight(false);
+				moveKitchenCenterToRight(false);
+				moveSnailRight(false);
+				showSnailCenter(true);
+				showSnailSpeechCenter(true);
 				await dialog(tdlg, `Hello friend!`, 2000, 0);
 
 				setSpriteFoodBowl(snailFoodEmpty);
 				showSnailSpeechCenter(false);
-				enableTamagotchi((TAMAGOTCHI_STATE) => false);
-				setCurrentSprite((FROG_CURRENT_SPRITE) => frogNormal);
+				enableTamagotchi(false);
+				setCurrentSprite(frogNormal);
 				TAMAGOTCHI_ACTIVE = false;
 				DIALOGUE_COUNTER = 0;
 				props.unlock();
@@ -183,7 +183,7 @@ function Niko(props: ChannelProps) {
 
 	return (
 		<Container>
-			<BG></BG>
+			<BG />
 			<Frog src={FROG_CURRENT_SPRITE} />
 			<Vignette VIGNETTE_STATE={VIGNETTE_STATE} />
 			<Glimmer src={glimmer_02} VIGNETTE_STATE={VIGNETTE_STATE} POS_LEFT="25%" POS_TOP="15%" />
