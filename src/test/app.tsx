@@ -7,6 +7,9 @@ import styled from '@emotion/styled';
 import tw, { css } from 'twin.macro';
 import { Global } from '@emotion/react';
 
+import { loadPinball } from '@gdq/channels/pinball/import';
+loadPinball(new URL('../channels/pinball/bin/SpaceCadetPinball.data', import.meta.url));
+
 const totalRep = nodecg.Replicant<Total>('total', {
 	defaultValue: {
 		raw: 0,
