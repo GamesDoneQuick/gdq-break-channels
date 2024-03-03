@@ -386,9 +386,8 @@ const TotalEl = styled.div`
 	text-shadow: -3px 0 black, 0 -3px black, 3px 0 black, 0 3px black, -3px -3px black, -3px 3px black, 3px -3px black,
 		3px 3px black;
 
-	left: 87%;
-	top: 85%;
-	transform: translate(-50%, -50%);
+	right: 30px;
+	bottom: 30px;
 `;
 
 //Handsome Frog
