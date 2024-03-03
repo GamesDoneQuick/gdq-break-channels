@@ -4,7 +4,6 @@ By: Naomi @ twitch.tv/naomiiiplays
 With permission from: Frog Vibes
 */
 
-
 //Import Defaults
 import type { FormattedDonation, Total } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
@@ -62,10 +61,9 @@ let TAMAGOTCHI_ACTIVE = false;
 let PREVIOUS_DLG_TO_PLAY = -1;
 
 function Niko(props: ChannelProps) {
-	
 	//Donation Total
 	const [total] = useReplicant<Total | null>('total', null);
-	
+
 	//Dialogue
 	const dlg = useRef<HTMLSpanElement>(null);
 	const tdlg = useRef<HTMLSpanElement>(null);
@@ -74,7 +72,7 @@ function Niko(props: ChannelProps) {
 	const [FROG_CURRENT_SPRITE, setCurrentSprite] = useState(frogNormal);
 	const [FONT_SIZE, setFontSize] = useState('45px');
 	const [VIGNETTE_STATE, enableVignette] = useState(false);
-	
+
 	//Tamagotchi UseStates
 	const [TAMAGOTCHI_STATE, enableTamagotchi] = useState(false);
 	const [SNAIL_PET, setSnailSprite] = useState(snailSad);
@@ -89,34 +87,33 @@ function Niko(props: ChannelProps) {
 	const [SNAIL_KITCHEN_CENTER, showKitchenCenter] = useState(false);
 	const [SNAIL_KITCHEN_RIGHT_TO_CENTER, moveKitchenRightToCenter] = useState(false);
 	const [SNAIL_KITCHEN_CENTER_TO_RIGHT, moveKitchenCenterToRight] = useState(false);
-	
+
 	useListenFor('donation', (donation: FormattedDonation) => {
-		
-		if (!DIALOGUE_ACTIVE && !TAMAGOTCHI_ACTIVE && Math.random() > 0.1 && DIALOGUE_COUNTER < 3){
+		if (!DIALOGUE_ACTIVE && !TAMAGOTCHI_ACTIVE && Math.random() > 0.1 && DIALOGUE_COUNTER < 3) {
 			(async () => {
 				//Lock dialogue, displays the dialogue box
 				DIALOGUE_ACTIVE = true;
 				props.lock();
-				
+
 				let DLG_TO_PLAY = Math.floor(Math.random() * playDialogue.length);
 
 				//Don't play the same dialogue twice in succession
-				if(DLG_TO_PLAY == PREVIOUS_DLG_TO_PLAY){
-					while(DLG_TO_PLAY == PREVIOUS_DLG_TO_PLAY){
+				if (DLG_TO_PLAY == PREVIOUS_DLG_TO_PLAY) {
+					while (DLG_TO_PLAY == PREVIOUS_DLG_TO_PLAY) {
 						DLG_TO_PLAY = Math.floor(Math.random() * playDialogue.length);
-					};
-				};
+					}
+				}
 
 				//Play dialogue
 				await playDialogue[DLG_TO_PLAY](dlg, donation.amount);
-				setCurrentSprite(FROG_CURRENT_SPRITE => frogHandsome);
-				setFontSize(FONT_SIZE => '50px');
-				enableVignette(VIGNETTE_STATE => true);
-				
+				setCurrentSprite((FROG_CURRENT_SPRITE) => frogHandsome);
+				setFontSize((FONT_SIZE) => '50px');
+				enableVignette((VIGNETTE_STATE) => true);
+
 				await playPunchline[DLG_TO_PLAY](dlg, donation.amount);
-				setCurrentSprite(FROG_CURRENT_SPRITE => frogNormal);
-				setFontSize(FONT_SIZE => '45px');
-				enableVignette(VIGNETTE_STATE => false);
+				setCurrentSprite((FROG_CURRENT_SPRITE) => frogNormal);
+				setFontSize((FONT_SIZE) => '45px');
+				enableVignette((VIGNETTE_STATE) => false);
 
 				PREVIOUS_DLG_TO_PLAY = DLG_TO_PLAY;
 				DIALOGUE_COUNTER = DIALOGUE_COUNTER + 1;
@@ -124,59 +121,59 @@ function Niko(props: ChannelProps) {
 				props.unlock();
 			})();
 		}
-		
+
 		//If no dialogue is triggered, Handsome Frog opens the Tamagotchi, cares for its snail, then returns to charming.
 		//This is guaranteed to happen after 3 dialogues have been triggered
-		if (!DIALOGUE_ACTIVE && !TAMAGOTCHI_ACTIVE){
-			(async() => {
+		if (!DIALOGUE_ACTIVE && !TAMAGOTCHI_ACTIVE) {
+			(async () => {
 				TAMAGOTCHI_ACTIVE = true;
 				props.lock();
 
-				setCurrentSprite(FROG_CURRENT_SPRITE => frogGaming);
+				setCurrentSprite((FROG_CURRENT_SPRITE) => frogGaming);
 				setSnailSprite(snailSad);
-				enableTamagotchi(TAMAGOTCHI_STATE => true);
+				enableTamagotchi((TAMAGOTCHI_STATE) => true);
 
 				await delay(1100);
 				showSnailSpeechCenter(true);
 				await dialog(tdlg, `I am hungry!`, 2000, 0);
 
 				//Move Snail to Left
-				showSnailCenter(SNAIL_CENTER => false);
-				showSnailSpeechCenter(SNAIL_SPEECH_CENTER => false);
-				moveSnailLeft(SNAIL_LEFT => true);
-				moveFoodRightToCenter(SNAIL_FOOD_RIGHT_TO_CENTER => true);
-				moveKitchenRightToCenter(SNAIL_KITCHEN_RIGHT_TO_CENTER => true);
+				showSnailCenter((SNAIL_CENTER) => false);
+				showSnailSpeechCenter((SNAIL_SPEECH_CENTER) => false);
+				moveSnailLeft((SNAIL_LEFT) => true);
+				moveFoodRightToCenter((SNAIL_FOOD_RIGHT_TO_CENTER) => true);
+				moveKitchenRightToCenter((SNAIL_KITCHEN_RIGHT_TO_CENTER) => true);
 
 				await delay(1000);
-				moveFoodRightToCenter(SNAIL_FOOD_RIGHT_TO_CENTER => false);
-				moveKitchenRightToCenter(SNAIL_KITCHEN_RIGHT_TO_CENTER => false);
-				showFoodCenter(SNAIL_FOOD_CENTER => true);
-				showKitchenCenter(SNAIL_KITCHEN_CENTER => true);
-				moveSnailLeft(SNAIL_LEFT => false);
-				
+				moveFoodRightToCenter((SNAIL_FOOD_RIGHT_TO_CENTER) => false);
+				moveKitchenRightToCenter((SNAIL_KITCHEN_RIGHT_TO_CENTER) => false);
+				showFoodCenter((SNAIL_FOOD_CENTER) => true);
+				showKitchenCenter((SNAIL_KITCHEN_CENTER) => true);
+				moveSnailLeft((SNAIL_LEFT) => false);
+
 				await delay(500);
 				setSpriteFoodBowl(snailFoodFull);
 				setSnailSprite(snailPet);
 
-				await delay (2000);
-				moveFoodCenterToRight(SNAIL_FOOD_CENTER_TO_RIGHT => true);
-				moveKitchenCenterToRight(SNAIL_KITCHEN_CENTER_TO_RIGHT => true);
-				showFoodCenter(SNAIL_FOOD_CENTER => false);
-				showKitchenCenter(SNAIL_KITCHEN_CENTER => false);
-				moveSnailRight(SNAIL_RIGHT => true);
+				await delay(2000);
+				moveFoodCenterToRight((SNAIL_FOOD_CENTER_TO_RIGHT) => true);
+				moveKitchenCenterToRight((SNAIL_KITCHEN_CENTER_TO_RIGHT) => true);
+				showFoodCenter((SNAIL_FOOD_CENTER) => false);
+				showKitchenCenter((SNAIL_KITCHEN_CENTER) => false);
+				moveSnailRight((SNAIL_RIGHT) => true);
 
 				await delay(1000);
-				moveFoodCenterToRight(SNAIL_FOOD_CENTER_TO_RIGHT => false);
-				moveKitchenCenterToRight(SNAIL_KITCHEN_CENTER_TO_RIGHT => false);
-				moveSnailRight(SNAIL_RIGHT => false);
-				showSnailCenter(SNAIL_CENTER => true);
-				showSnailSpeechCenter(SNAIL_SPEECH_CENTER => true);
+				moveFoodCenterToRight((SNAIL_FOOD_CENTER_TO_RIGHT) => false);
+				moveKitchenCenterToRight((SNAIL_KITCHEN_CENTER_TO_RIGHT) => false);
+				moveSnailRight((SNAIL_RIGHT) => false);
+				showSnailCenter((SNAIL_CENTER) => true);
+				showSnailSpeechCenter((SNAIL_SPEECH_CENTER) => true);
 				await dialog(tdlg, `Hello friend!`, 2000, 0);
 
 				setSpriteFoodBowl(snailFoodEmpty);
 				showSnailSpeechCenter(false);
-				enableTamagotchi(TAMAGOTCHI_STATE => false);
-				setCurrentSprite(FROG_CURRENT_SPRITE => frogNormal);
+				enableTamagotchi((TAMAGOTCHI_STATE) => false);
+				setCurrentSprite((FROG_CURRENT_SPRITE) => frogNormal);
 				TAMAGOTCHI_ACTIVE = false;
 				DIALOGUE_COUNTER = 0;
 				props.unlock();
@@ -189,56 +186,71 @@ function Niko(props: ChannelProps) {
 			<BG></BG>
 			<Frog src={FROG_CURRENT_SPRITE} />
 			<Vignette VIGNETTE_STATE={VIGNETTE_STATE} />
-			<Glimmer src={glimmer_02} VIGNETTE_STATE={VIGNETTE_STATE} POS_LEFT='25%' POS_TOP='15%' />
-			<Glimmer src={glimmer_01} VIGNETTE_STATE={VIGNETTE_STATE} POS_LEFT='4%' POS_TOP='55%' />
+			<Glimmer src={glimmer_02} VIGNETTE_STATE={VIGNETTE_STATE} POS_LEFT="25%" POS_TOP="15%" />
+			<Glimmer src={glimmer_01} VIGNETTE_STATE={VIGNETTE_STATE} POS_LEFT="4%" POS_TOP="55%" />
 			<DialogBox src={dialogueBox} DIALOGUE_ACTIVE={DIALOGUE_ACTIVE} />
 			<DialogueWrapper FONT_SIZE={FONT_SIZE}>
 				<DialogueText ref={dlg}></DialogueText>
 			</DialogueWrapper>
-			
+
 			<TamagotchiActiveWrapper TAMAGOTCHI_ACTIVE={TAMAGOTCHI_STATE}>
 				<TamagotchiBody src={tamagotchiBody}></TamagotchiBody>
 				<TamagotchiKeychain src={tamagotchiKC01}></TamagotchiKeychain>
 				<TamagotchiKeychain src={tamagotchiKC02}></TamagotchiKeychain>
-				<TamagotchiLRButton src={tamagotchiLRButton} POS_LEFT='15%' POS_TOP='68%' TRANSFORM='translate(50%, 50%) scaleX(1)'></TamagotchiLRButton>
-				<TamagotchiLRButton src={tamagotchiLRButton} POS_LEFT='55%' POS_TOP='68%' TRANSFORM='translate(50%, 50%) scaleX(-1)'></TamagotchiLRButton>
+				<TamagotchiLRButton
+					src={tamagotchiLRButton}
+					POS_LEFT="15%"
+					POS_TOP="68%"
+					TRANSFORM="translate(50%, 50%) scaleX(1)"></TamagotchiLRButton>
+				<TamagotchiLRButton
+					src={tamagotchiLRButton}
+					POS_LEFT="55%"
+					POS_TOP="68%"
+					TRANSFORM="translate(50%, 50%) scaleX(-1)"></TamagotchiLRButton>
 				<TamagotchiMainButton src={tamagotchiMainButton}></TamagotchiMainButton>
 				<TamagotchiGameScreen>
-					<SnailPetCenter src={SNAIL_PET} VISIBLE={SNAIL_CENTER}/>
-					<SnailPetLeft src={SNAIL_PET} VISIBLE={SNAIL_LEFT}/>
-					<SnailPetRight src={SNAIL_PET} VISIBLE={SNAIL_RIGHT}/>
-					<SpeechBubbleCenter src={speechBubble} VISIBLE={SNAIL_SPEECH_CENTER}/>
-					<FoodCenter src={SNAIL_FOOD} VISIBLE={SNAIL_FOOD_CENTER}/>
-					<FoodCenterToRight src={SNAIL_FOOD} VISIBLE={SNAIL_FOOD_CENTER_TO_RIGHT}/>
-					<FoodRightToCenter src={SNAIL_FOOD} VISIBLE={SNAIL_FOOD_RIGHT_TO_CENTER}/>
-					<TamagotchiKitchenCenter src={snailKitchen} VISIBLE={SNAIL_KITCHEN_CENTER}/>
-					<TamagotchiKitchenCenterToRight src={snailKitchen} VISIBLE={SNAIL_KITCHEN_CENTER_TO_RIGHT}/>
-					<TamagotchiKitchenRightToCenter src={snailKitchen} VISIBLE={SNAIL_KITCHEN_RIGHT_TO_CENTER}/>
+					<SnailPetCenter src={SNAIL_PET} VISIBLE={SNAIL_CENTER} />
+					<SnailPetLeft src={SNAIL_PET} VISIBLE={SNAIL_LEFT} />
+					<SnailPetRight src={SNAIL_PET} VISIBLE={SNAIL_RIGHT} />
+					<SpeechBubbleCenter src={speechBubble} VISIBLE={SNAIL_SPEECH_CENTER} />
+					<FoodCenter src={SNAIL_FOOD} VISIBLE={SNAIL_FOOD_CENTER} />
+					<FoodCenterToRight src={SNAIL_FOOD} VISIBLE={SNAIL_FOOD_CENTER_TO_RIGHT} />
+					<FoodRightToCenter src={SNAIL_FOOD} VISIBLE={SNAIL_FOOD_RIGHT_TO_CENTER} />
+					<TamagotchiKitchenCenter src={snailKitchen} VISIBLE={SNAIL_KITCHEN_CENTER} />
+					<TamagotchiKitchenCenterToRight src={snailKitchen} VISIBLE={SNAIL_KITCHEN_CENTER_TO_RIGHT} />
+					<TamagotchiKitchenRightToCenter src={snailKitchen} VISIBLE={SNAIL_KITCHEN_RIGHT_TO_CENTER} />
 					<TamagotchiDlgWrapper>
 						<TamagotchiDlgText ref={tdlg}></TamagotchiDlgText>
 					</TamagotchiDlgWrapper>
 				</TamagotchiGameScreen>
 			</TamagotchiActiveWrapper>
-			
+
 			<TamagotchiInactiveWrapper TAMAGOTCHI_ACTIVE={TAMAGOTCHI_STATE}>
 				<TamagotchiBody src={tamagotchiBody}></TamagotchiBody>
 				<TamagotchiKeychain src={tamagotchiKC01}></TamagotchiKeychain>
 				<TamagotchiKeychain src={tamagotchiKC02}></TamagotchiKeychain>
-				<TamagotchiLRButton src={tamagotchiLRButton} POS_LEFT='15%' POS_TOP='68%' TRANSFORM='translate(50%, 50%) scaleX(1)'></TamagotchiLRButton>
-				<TamagotchiLRButton src={tamagotchiLRButton} POS_LEFT='55%' POS_TOP='68%' TRANSFORM='translate(50%, 50%) scaleX(-1)'></TamagotchiLRButton>
+				<TamagotchiLRButton
+					src={tamagotchiLRButton}
+					POS_LEFT="15%"
+					POS_TOP="68%"
+					TRANSFORM="translate(50%, 50%) scaleX(1)"></TamagotchiLRButton>
+				<TamagotchiLRButton
+					src={tamagotchiLRButton}
+					POS_LEFT="55%"
+					POS_TOP="68%"
+					TRANSFORM="translate(50%, 50%) scaleX(-1)"></TamagotchiLRButton>
 				<TamagotchiMainButton src={tamagotchiMainButton}></TamagotchiMainButton>
 				<TamagotchiGameScreen>
-					<SnailPetCenter src={SNAIL_PET} VISIBLE={SNAIL_CENTER}/>
+					<SnailPetCenter src={SNAIL_PET} VISIBLE={SNAIL_CENTER} />
 				</TamagotchiGameScreen>
 			</TamagotchiInactiveWrapper>
-			
+
 			<TotalEl>
 				$<TweenNumber value={Math.floor(total?.raw ?? 0)} />
 			</TotalEl>
 		</Container>
 	);
 }
-
 
 //Display handsome dialogue
 const dialog = (
@@ -248,24 +260,20 @@ const dialog = (
 	delay: number,
 ): Promise<void> => {
 	return new Promise((resolve) => {
-		
 		setTimeout(() => {
 			const ref = dlg.current;
 			if (ref) ref.innerText = text;
-			
+
 			setTimeout(() => {
 				const ref = dlg.current;
 				if (ref) ref.innerText = '';
 				resolve();
-			}, duration)
+			}, duration);
 		}, delay);
 	});
 };
 
-const playDialogue: ((
-	dlg: React.RefObject<HTMLSpanElement>,
-	amount: string,
-) => Promise<void>)[] = [
+const playDialogue: ((dlg: React.RefObject<HTMLSpanElement>, amount: string) => Promise<void>)[] = [
 	async (dlg, amount) => {
 		await dialog(dlg, `Wow! A ${amount} donation!`, 4000, 0);
 		await dialog(dlg, `There is a special name for a person who donates.`, 4000, 0);
@@ -310,10 +318,7 @@ const playDialogue: ((
 	},
 ];
 
-const playPunchline: ((
-	dlg: React.RefObject<HTMLSpanElement>,
-	amount: string,
-) => Promise<void>)[] = [
+const playPunchline: ((dlg: React.RefObject<HTMLSpanElement>, amount: string) => Promise<void>)[] = [
 	async (dlg, amount) => {
 		await dialog(dlg, 'QT!', 4000, 0);
 	},
@@ -347,7 +352,7 @@ const playPunchline: ((
 ];
 
 function delay(ms: number) {
-    return new Promise( resolve => setTimeout(resolve, ms) );
+	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 //Styled Elements
@@ -379,7 +384,7 @@ const TotalEl = styled.div`
 
 	position: absolute;
 	text-shadow: -3px 0 black, 0 -3px black, 3px 0 black, 0 3px black, -3px -3px black, -3px 3px black, 3px -3px black,
-	3px 3px black;
+		3px 3px black;
 
 	left: 87%;
 	top: 85%;
@@ -405,7 +410,7 @@ const DialogBox = styled.img<{ DIALOGUE_ACTIVE: boolean }>`
 
 const DialogueWrapper = styled.div<{ FONT_SIZE: string }>`
 	font-family: NikoDialogue;
-	font-size: ${({ FONT_SIZE }) => (FONT_SIZE || '38px' )};
+	font-size: ${({ FONT_SIZE }) => FONT_SIZE || '38px'};
 	line-height: 38px;
 	position: absolute;
 	width: 100%;
@@ -417,7 +422,7 @@ const DialogueWrapper = styled.div<{ FONT_SIZE: string }>`
 `;
 
 const DialogueText = styled.span`
-	color: #4C3573;
+	color: #4c3573;
 	display: inline-block;
 	text-align: center;
 	padding-right: 500px;
@@ -436,12 +441,12 @@ const Vignette = styled.img<{ VIGNETTE_STATE: boolean }>`
 	display: ${({ VIGNETTE_STATE }) => (VIGNETTE_STATE ? 'block' : 'none')};
 `;
 
-const Glimmer = styled.img<{ VIGNETTE_STATE: boolean, POS_LEFT: string, POS_TOP: string }>`
+const Glimmer = styled.img<{ VIGNETTE_STATE: boolean; POS_LEFT: string; POS_TOP: string }>`
 	position: absolute;
 	height: 128px;
 	width: 128px;
-	left: ${({ POS_LEFT }) => (POS_LEFT || '100%' )};
-	top: ${({ POS_TOP }) => (POS_TOP || '100%' )};
+	left: ${({ POS_LEFT }) => POS_LEFT || '100%'};
+	top: ${({ POS_TOP }) => POS_TOP || '100%'};
 	display: ${({ VIGNETTE_STATE }) => (VIGNETTE_STATE ? 'block' : 'none')};
 `;
 
@@ -460,7 +465,7 @@ const TamagotchiActiveWrapper = styled.div<{ TAMAGOTCHI_ACTIVE: boolean }>`
 	transform: translate(-128px, -128px);
 	display: ${({ TAMAGOTCHI_ACTIVE }) => (TAMAGOTCHI_ACTIVE ? 'block' : 'none')};
 	animation: ${slideUp} 1s;
-	animation-timing-function: cubic-bezier(0,-2,0.8,2);
+	animation-timing-function: cubic-bezier(0, -2, 0.8, 2);
 `;
 
 const TamagotchiInactiveWrapper = styled.div<{ TAMAGOTCHI_ACTIVE: boolean }>`
@@ -473,7 +478,7 @@ const TamagotchiInactiveWrapper = styled.div<{ TAMAGOTCHI_ACTIVE: boolean }>`
 	display: ${({ TAMAGOTCHI_ACTIVE }) => (TAMAGOTCHI_ACTIVE ? 'none' : 'block')};
 	animation: ${slideUp} 1s;
 	animation-direction: reverse;
-	animation-timing-function: cubic-bezier(0,-2,0.8,2);
+	animation-timing-function: cubic-bezier(0, -2, 0.8, 2);
 `;
 
 const TamagotchiBody = styled.img`
@@ -490,13 +495,13 @@ const TamagotchiKeychain = styled.img`
 	top: 48%;
 `;
 
-const TamagotchiLRButton = styled.img<{ POS_LEFT: string, POS_TOP: string, TRANSFORM: string }>`
+const TamagotchiLRButton = styled.img<{ POS_LEFT: string; POS_TOP: string; TRANSFORM: string }>`
 	position: absolute;
 	height: 44px;
 	width: 59px;
-	left: ${({ POS_LEFT }) => (POS_LEFT || '15%' )};
-	top: ${({ POS_TOP }) => (POS_TOP || '70%' )};
-	transform: ${({ TRANSFORM }) => (TRANSFORM || 'translate(50%, 50%) scaleX(1)' )};
+	left: ${({ POS_LEFT }) => POS_LEFT || '15%'};
+	top: ${({ POS_TOP }) => POS_TOP || '70%'};
+	transform: ${({ TRANSFORM }) => TRANSFORM || 'translate(50%, 50%) scaleX(1)'};
 `;
 
 const TamagotchiMainButton = styled.img`
@@ -512,7 +517,7 @@ const TamagotchiMainButton = styled.img`
 //Game Screen - acts as wrapper for the game
 const TamagotchiGameScreen = styled.div`
 	position: absolute;
-	background-color: #90C3A9;
+	background-color: #90c3a9;
 	height: 160px;
 	width: 160px;
 	left: 63%;
@@ -534,7 +539,7 @@ const TamagotchiDlgWrapper = styled.div`
 `;
 
 const TamagotchiDlgText = styled.span`
-	color: #20453B;
+	color: #20453b;
 	display: inline-block;
 	text-align: center;
 	padding-right: 0px;
@@ -597,7 +602,7 @@ const SpeechBubbleCenter = styled.img<{ VISIBLE: boolean }>`
 	width: 100%;
 	left: 0%;
 	top: 20%;
-	display: ${({ VISIBLE }) => (VISIBLE ? 'block' : 'none')}
+	display: ${({ VISIBLE }) => (VISIBLE ? 'block' : 'none')};
 `;
 
 //Screen 02, Snail Pet Food
@@ -619,7 +624,7 @@ const FoodCenterToRight = styled.img<{ VISIBLE: boolean }>`
 	display: ${({ VISIBLE }) => (VISIBLE ? 'block' : 'none')};
 	animation: ${screenSlideRightToCenter} linear 1s;
 	animation-direction: reverse;
-	`;
+`;
 
 const FoodRightToCenter = styled.img<{ VISIBLE: boolean }>`
 	position: absolute;
@@ -629,7 +634,7 @@ const FoodRightToCenter = styled.img<{ VISIBLE: boolean }>`
 	top: 34%;
 	display: ${({ VISIBLE }) => (VISIBLE ? 'block' : 'none')};
 	animation: ${screenSlideRightToCenter} linear 1s;
-	`;
+`;
 
 const TamagotchiKitchenCenter = styled.img<{ VISIBLE: boolean }>`
 	position: absolute;
@@ -649,7 +654,7 @@ const TamagotchiKitchenCenterToRight = styled.img<{ VISIBLE: boolean }>`
 	display: ${({ VISIBLE }) => (VISIBLE ? 'block' : 'none')};
 	animation: ${screenSlideRightToCenter} linear 1s;
 	animation-direction: reverse;
-	`;
+`;
 
 const TamagotchiKitchenRightToCenter = styled.img<{ VISIBLE: boolean }>`
 	position: absolute;
@@ -659,4 +664,4 @@ const TamagotchiKitchenRightToCenter = styled.img<{ VISIBLE: boolean }>`
 	top: 5%;
 	display: ${({ VISIBLE }) => (VISIBLE ? 'block' : 'none')};
 	animation: ${screenSlideRightToCenter} linear 1s;
-	`;
+`;
