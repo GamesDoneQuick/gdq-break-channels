@@ -15,6 +15,7 @@ import './t-rex-runner';
 import './dragon-warrior';
 import './ff-shop';
 import './papers-please';
+import './rct2';
 import './minesweeper';
 import './qwop';
 import './laser-sunset';
