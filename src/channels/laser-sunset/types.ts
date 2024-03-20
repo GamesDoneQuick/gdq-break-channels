@@ -1,6 +1,8 @@
 import type { FormattedDonation } from '@gdq/types/tracker';
 
-export type StarVisual = { left: number; top: number; text: string; color: string; opacity: number };
+export type RGB = { r: number; g: number; b: number };
+
+export type StarVisual = { left: number; top: number; text: string; color: RGB; opacity: number };
 
 export type SunReflectionLine = { xPosition: number; marginTop: number; width: number };
 
@@ -25,4 +27,10 @@ export type SubscriptionVisual = {
 	radius: number;
 	color: string;
 	received: Date;
+};
+
+export type Static = {
+	spawnDate: Date;
+	maxAge: number;
+	height: number;
 };
