@@ -4,9 +4,15 @@
 
 Break screen channels for displaying and reacting to donations and donation totals during mainline Games Done Quick and Frame Fatales broadcasts.
 
+It is recommended to use `corepack` if it's available in your Node.js installation.
+
+- Check if it is available with `corepack --version`
+- Enable it with `corepack enable npm yarn pnpm`.
+
 ## Requirements
 
 - Node v14
+- npm@6.x.x
 
 While other Node versions may work for this project, we use and deploy against Node v14 due to some dependencies of our current layout system (Pratchett).
 
