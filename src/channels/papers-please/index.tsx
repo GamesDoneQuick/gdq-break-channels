@@ -265,7 +265,7 @@ export function PapersPlease(props: ChannelProps) {
 					*/}
 					<div>{event.shortname.slice(0, 12)}</div>
 					<div>{event.beneficiaryShort}</div>
-					<div>2024/01/21 {/* TEMP DATE! Should add this to the event obj */}</div>
+					<div>2024/07/06 {/* TEMP DATE! Should add this to the event obj */}</div>
 				</SupplementaryText>
 				<FullWidthImage src={currentCountry.passportInner} />
 			</Passport>
