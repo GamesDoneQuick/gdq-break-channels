@@ -22,7 +22,7 @@ const Times: [number, 'night' | 'dawn' | 'day' | 'dusk'][] = [
  * i.e. The Checkpoint.
  * Change time to reflect event schedule before event.
  */
-const OmegaShift = [2024, 1, 20, 21, 7, 0] as const;
+const OmegaShift = [2024, 7, 6, 4, 26, 0] as const;
 
 export function dayTime() {
 	const datetime = DateTime.local({ zone: timezone.value });
