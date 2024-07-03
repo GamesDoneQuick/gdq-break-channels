@@ -20,5 +20,6 @@ import './qwop';
 import './laser-sunset';
 import './here-comes-niko';
 import './pinball';
+import './installer';
 
 export * from './channels';
