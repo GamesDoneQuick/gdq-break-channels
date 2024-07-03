@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface Props {
 	donationAmount: string;
 	eventShortTitle: string;

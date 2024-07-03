@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface Props {
 	newSubscriber: string;
 	donationTotal: string;
@@ -14,10 +12,6 @@ export const InstallerBackground = (props: Props) => {
 	const progressBarFullPosition = 196.639;
 	const progressBarCurrentPosition =
 		progressBarStartPosition + (progressBarFullPosition - progressBarStartPosition) * progress;
-
-	const maskBarStartPosition = 483.071;
-	const maskBarFullPosition = 1102.656;
-	const maskBarCurrentPosition = maskBarStartPosition + (maskBarFullPosition - progressBarStartPosition) * progress;
 
 	return (
 		<svg
