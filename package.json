@@ -4,6 +4,11 @@
   "description": "Donation Total Channels for GDQ Broadcasts",
   "author": "",
   "license": "Apache-2.0",
+  "packageManager": "npm@6.14.18",
+  "engines": {
+    "node": "^14.19.0",
+    "npm": "6"
+  },
   "files": [
     "src/",
     "tsconfig.json"
