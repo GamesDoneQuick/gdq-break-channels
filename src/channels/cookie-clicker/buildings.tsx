@@ -14,7 +14,7 @@ import prismBackground from './assets/bgPrism.png'
 import { RefObject } from 'react';
 
 export type Building = {
-    id: number;
+    index: number; // gives location of building on sprite sheets 
     name: string;
     total: number;
     price: number;
@@ -25,8 +25,8 @@ export type Building = {
     yRandomization: number;
 }
 
-// export let cursor: Building = {
-//     id: 0,
+// let cursor: Building = {
+//     index: 0,
 //     name: "Cursor",
 //     total: 0,
 //     price: 1,
@@ -37,8 +37,8 @@ export type Building = {
 //     yRandomization: 0,
 // }
 
-export let grandma: Building = {
-    id: 1,
+let grandma: Building = {
+    index: 1,
     name: "Grandma",
     total: 0,
     price: 1,
@@ -49,8 +49,8 @@ export let grandma: Building = {
     yRandomization: 10,
 }
 
-export let farm: Building = {
-    id: 2,
+let farm: Building = {
+    index: 2,
     name: "Farm",
     total: 0,
     price: 5,
@@ -61,8 +61,8 @@ export let farm: Building = {
     yRandomization: 8,
 }
 
-export let mine: Building = {
-    id: 3,
+let mine: Building = {
+    index: 3,
     name: "Mine",
     total: 0,
     price: 10,
@@ -73,8 +73,8 @@ export let mine: Building = {
     yRandomization: 8,
 }
 
-export let factory: Building = {
-    id: 4,
+let factory: Building = {
+    index: 4,
     name: "Factory",
     total: 0,
     price: 15,
@@ -85,8 +85,8 @@ export let factory: Building = {
     yRandomization: 0,
 }
 
-export let bank: Building = {
-    id: 5,
+let bank: Building = {
+    index: 5,
     name: "Bank",
     total: 0,
     price: 30,
@@ -97,8 +97,8 @@ export let bank: Building = {
     yRandomization: 4,
 }
 
-export let temple: Building = {
-    id: 6,
+let temple: Building = {
+    index: 6,
     name: "Temple",
     total: 0,
     price: 50,
@@ -109,8 +109,8 @@ export let temple: Building = {
     yRandomization: 2,
 }
 
-export let tower: Building = {
-    id: 7,
+let tower: Building = {
+    index: 7,
     name: "Wizard Tower",
     total: 0,
     price: 75,
@@ -121,8 +121,8 @@ export let tower: Building = {
     yRandomization: 5,
 }
 
-export let shipment: Building = {
-    id: 8,
+let shipment: Building = {
+    index: 8,
     name: "Shipment",
     total: 0,
     price: 100,
@@ -133,8 +133,8 @@ export let shipment: Building = {
     yRandomization: 3,
 }
 
-export let lab: Building = {
-    id: 9,
+let lab: Building = {
+    index: 9,
     name: "Alchemy Lab",
     total: 0,
     price: 125,
@@ -145,8 +145,8 @@ export let lab: Building = {
     yRandomization: 4,
 }
 
-export let portal: Building = {
-    id: 10,
+let portal: Building = {
+    index: 10,
     name: "Portal",
     total: 0,
     price: 150,
@@ -157,8 +157,8 @@ export let portal: Building = {
     yRandomization: 4,
 }
 
-export let timeMachine: Building = {
-    id: 11,
+let timeMachine: Building = {
+    index: 11,
     name: "Time Machine",
     total: 0,
     price: 175,
@@ -169,8 +169,8 @@ export let timeMachine: Building = {
     yRandomization: 5,
 }
 
-export let antimCondenser: Building = {
-    id: 12,
+let antimCondenser: Building = {
+    index: 12,
     name: "Antimatter",
     total: 0,
     price: 200,
@@ -181,8 +181,8 @@ export let antimCondenser: Building = {
     yRandomization: 8,
 }
 
-export let prism: Building = {
-    id: 13,
+let prism: Building = {
+    index: 13,
     name: "Prism",
     total: 0,
     price: 250,
@@ -193,4 +193,4 @@ export let prism: Building = {
     yRandomization: 1,
 }
 
-export let buildings = [prism, antimCondenser, timeMachine, portal, lab, shipment, tower, temple, bank, factory, mine, farm, grandma];
+export let buildings = [grandma, farm, mine, factory, bank, temple, tower, shipment, lab, portal, timeMachine, antimCondenser, prism];

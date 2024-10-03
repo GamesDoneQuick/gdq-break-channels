@@ -1,8 +1,10 @@
 import { useRef, FC } from 'react';
-import { css } from '@emotion/react';
+import { css, keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 import { Building } from './buildings';
+import { random } from 'lodash';
 
+// images
 import background from './assets/bgBlue.png';
 import vignette from './assets/shadedBordersSoft.png';
 import panelVertical from './assets/panelVertical.png';
@@ -12,6 +14,7 @@ import cookieShadow from './assets/cookieShadow.png';
 import perfectCookie from './assets/perfectCookie.png';
 import cookieParticle from './assets/cookieParticle.png'
 
+// sprite sheets
 import storeBackground from './assets/storeTile.png'
 import buildingIcons from './assets/buildingIcons.png'
 
@@ -32,8 +35,8 @@ export let StoreSection: FC<{buildingObject : Building}> = ({buildingObject}) =>
     buildingObject.storeRef = useRef<HTMLDivElement>(null)
 
     return <>
-        <div css={css`${StoreWindow}; background: url('${storeBackground}') 0 ${(buildingObject.id % 4) * 64}px;`} ref={buildingObject.storeRef}>
-            <div css={css`${StoreIcon}; background: url('${buildingIcons}') 0 ${-buildingObject.id * 64}px;`}/>
+        <div css={css`${StoreWindow}; background: url('${storeBackground}') 0 ${(buildingObject.index % 4) * 64}px;`} ref={buildingObject.storeRef}>
+            <div css={css`${StoreIcon}; background: url('${buildingIcons}') 0 ${-buildingObject.index * 64}px;`}/>
             <FormattedText> 
                 <TotalText>{buildingObject.total}</TotalText>
                 <Store>{buildingObject.name}</Store>
@@ -101,27 +104,103 @@ let Price = styled.div`
     width: calc(100% - 64px);
 `
 
-export let FloatText = (locationX : number, locationY : number) => {
+export function ParticleAnimation(locationX : number, locationY : number){
+    let flipped = (random(0,1) == 0) ? 1 : -1;
+
+    return (
+    keyframes`
+        from{
+            left: ${locationX}%;
+            top: ${locationY}%;
+            transform: rotate(0);
+            opacity: 1;
+        }
+        20%{
+            left: ${locationX + (1 * flipped)}%;
+            top: ${locationY - 2}%;
+            transform: rotate(5deg);
+            opacity: 0.8;
+        }
+        40%{
+            left: ${locationX + (2.5 * flipped)}%;
+            top: ${locationY - 3}%;
+            transform: rotate(10deg);
+            opacity: 0.6;
+        }
+        60%{
+            left: ${locationX + (4 * flipped)}%;
+            top: ${locationY - 2}%;
+            transform: rotate(15deg);
+            opacity: 0.4;
+        }
+        80%{
+            left: ${locationX + (5 * flipped)}%;
+            top: ${locationY}%;
+            transform: rotate(20deg);
+            opacity: 0.2;
+        }
+        100%:{
+            left: ${locationX + (6 * flipped)}%;
+            top: ${locationY + 3}%
+            transform: rotate(20deg);
+            opacity: 0;
+    }`);
+}
+
+export let FadeUpAnimation = (locationY: number) => {
+    return keyframes`
+        from{
+            top: ${locationY}%;
+            opacity: 1;
+        }
+        to{
+            top: ${locationY - 10}%;
+            opacity: 0;
+        }`;
+}
+
+export let FloatText = (locationX : number) => {
     return css`
         position: absolute;
         font-family: Merriweather;
         font-size: 100%;
         text-shadow: 0px 1px 5px black;
         left: ${locationX + "%"};
-    
-        animation: fadeUp 1.5s linear;
-        @keyframes fadeUp{
-            from{
-                top: ${locationY}%;
-                opacity: 1;
-            }
-            to{
-                top: ${locationY - 10}%;
-                opacity: 0;
-            };
-        }
     `;
 }
+
+export let CookieClicked = keyframes`
+    from{
+        transform: scale(1)
+    }
+    15%{
+        transform: scale(0.9)
+    }
+    25%{
+        transform: scale(1)
+    }
+    65%{
+        transform: scale(0.95)
+    }
+    to{
+        transform: scale(1)
+    }
+`;
+
+export let staticFadeUp = keyframes`
+    from{
+        top: 25%;
+        opacity: 1;
+    }
+    90%{
+        top: 25%;
+        opacity: 1;
+    }
+    to{
+        top: 0%;
+        opacity: 0;
+    }
+`
 
 export let CookieParticle = styled.img`
     position: absolute;

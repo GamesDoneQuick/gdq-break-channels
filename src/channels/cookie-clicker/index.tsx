@@ -1,11 +1,10 @@
-import { AnimationEventHandler, ReactElement, RefObject, useEffect, useReducer, useRef, useState } from 'react';
-import {css, keyframes } from '@emotion/react';
+import { useRef, useState } from 'react';
+import { css } from '@emotion/react';
 import TweenNumber from '@gdq/lib/components/TweenNumber';
 import { random } from 'lodash';
 import { ChannelProps, registerChannel } from '../channels';
 import { useListenFor, useReplicant, } from 'use-nodecg';
 import type { Event, FormattedDonation, Total } from '@gdq/types/tracker';
-import { render, unmountComponentAtNode } from 'react-dom';
 
 // sprite sheets
 import buildingIcons from './assets/buildingIcons.png'
@@ -13,11 +12,9 @@ let htmlBuildingIcons = new Image()
 htmlBuildingIcons.src = `${buildingIcons}`;
 
 // local imports
-import './main.css';
-import {grandma, farm, mine, factory, bank, temple, tower, shipment, lab, portal, timeMachine, antimCondenser, prism} from './buildings';
-let buildings = [prism, antimCondenser, timeMachine, portal, lab, shipment, tower, temple, bank, factory, mine, farm, grandma];
+import {buildings} from './buildings';
 import {Container, VerticalSection, Cookie, CookieGlow, CookieParticle, FloatText, AnnouncementSection, FormattedText, 
-    AnnouncementText, BuildingSection, StoreSection} from './components'
+    AnnouncementText, BuildingSection, StoreSection, ParticleAnimation, FadeUpAnimation, CookieClicked, staticFadeUp} from './components'
 import { EmotionJSX } from '@emotion/react/types/jsx-namespace';
 
 registerChannel('Cookie Clicker', 10, cookieClicker, {
@@ -37,6 +34,7 @@ let flavorText = [
 ]
 
 let usedFlavorText = Array<string>();
+let sequentialKey  = 0; // to give unique keys to array elements
 
 export function cookieClicker(props: ChannelProps){
     const [total] = useReplicant<Total | null>('total', null);
@@ -44,17 +42,17 @@ export function cookieClicker(props: ChannelProps){
     
     let cookieRef = useRef<HTMLDivElement>(null);
     let announcementRef = useRef<HTMLDivElement>(null);
-    let [announcementText, setAnnouncementText] = useState('');
-    let particles = Array<EmotionJSX.Element>();
+    let [announcementText, setAnnouncementText] = useState<string>('');
+    let [particles, setParticles] = useState<Array<EmotionJSX.Element>>([]);
 
     // init announcement ticker
-    if(announcementRef.current)
-        cssAnimate(announcementRef.current, "announcementFade");
+    cssAnimate(announcementRef.current!);
     
     // donations
     useListenFor('donation', (donation: FormattedDonation) => {
-        cssAnimate(cookieRef.current!, "cookieClicked");
-        processDonation(donation, particles);
+        cssAnimate(cookieRef.current!);
+        drawBuilding(donation);
+        drawParticle(donation, setParticles);
 	});
 
     //JSX
@@ -66,8 +64,8 @@ export function cookieClicker(props: ChannelProps){
                 <CookieGlow/>
                 <CookieGlow style={{animation: "rotate 8s infinite linear reverse"}}/>
 
-                <Cookie ref={cookieRef}>
-                    <Particles/>
+                <Cookie css={css`animation: ${CookieClicked} 1s; animation-iteration-count: 1;`} ref={cookieRef}>
+                    {particles}
                 </Cookie>
 
                 <FormattedText>
@@ -79,41 +77,22 @@ export function cookieClicker(props: ChannelProps){
             {/* Buildings */}
             <VerticalSection style={{left: "calc(30% + 16px)", width: "45%", bottom: "0"}}>
                 <AnnouncementSection>
-                        <AnnouncementText ref={announcementRef} onAnimationEnd={() => announcementTicker(setAnnouncementText)}>
+                        <AnnouncementText css={css`animation: ${staticFadeUp} 5s; animation-iteration-count: 1;`} 
+                            ref={announcementRef} onAnimationEnd={() => announcementTicker(setAnnouncementText)}>
                             {announcementText}
                         </AnnouncementText>
                 </AnnouncementSection>
-
-                <BuildingSection buildingObject={grandma}/>
-                <BuildingSection buildingObject={farm}/>
-                <BuildingSection buildingObject={mine}/>
-                <BuildingSection buildingObject={factory}/>
-                <BuildingSection buildingObject={bank}/>
-                <BuildingSection buildingObject={temple}/>
-                <BuildingSection buildingObject={tower}/>
-                <BuildingSection buildingObject={shipment}/>
-                <BuildingSection buildingObject={lab}/>
-                <BuildingSection buildingObject={portal}/>
-                <BuildingSection buildingObject={timeMachine}/>
-                <BuildingSection buildingObject={antimCondenser}/>
-                <BuildingSection buildingObject={prism}/>
+                
+                {buildings.map((building) => {
+                    return <BuildingSection buildingObject={building}/>
+                })}
             </VerticalSection>
 
             {/* Store */}
             <VerticalSection style={{left: "calc(75% + 32px)", width: "calc(25% - 32px)", border: "0px"}}>
-                <StoreSection buildingObject={grandma}/>
-                <StoreSection buildingObject={farm}/>
-                <StoreSection buildingObject={mine}/>
-                <StoreSection buildingObject={factory}/>
-                <StoreSection buildingObject={bank}/>
-                <StoreSection buildingObject={temple}/>
-                <StoreSection buildingObject={tower}/>
-                <StoreSection buildingObject={shipment}/>
-                <StoreSection buildingObject={lab}/>
-                <StoreSection buildingObject={portal}/>
-                <StoreSection buildingObject={timeMachine}/>
-                <StoreSection buildingObject={antimCondenser}/>
-                <StoreSection buildingObject={prism}/>
+                {buildings.map((building) => {
+                    return <StoreSection buildingObject={building}/>
+                })}
             </VerticalSection>
 
         </Container>
@@ -133,14 +112,17 @@ function announcementTicker(setText: Function){
     }
 }
 
-function processDonation(donation: FormattedDonation, particles: Array<EmotionJSX.Element>){
+function drawBuilding(donation: FormattedDonation){
     // buying building
-    for (let building of buildings){
+    for (let i = buildings.length - 1; i >= 0; i--){
+        let building = buildings[i];
+
         if(donation.rawAmount > building.price){
             let context = building.canvasRef?.current?.getContext("2d");
 
-            //drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
-            context?.drawImage(htmlBuildingIcons, 128, 64 * building.id, 64, 64, (building.total % 10) * random(53, 60), 
+            // drawing image by cropping out the building icon from the sprite sheet
+            // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+            context?.drawImage(htmlBuildingIcons, 128, 64 * building.index, 64, 64, (building.total % 10) * random(53, 60), 
                 ((building.total % 2) == 0) ? random(70 - building.yRandomization, 70) : random(85 - building.yRandomization, 85), 64, 64);
 
             building.savedCanvas = context?.getImageData(0, 0, building.canvasRef!.current!.width, building.canvasRef!.current!.height);
@@ -152,104 +134,32 @@ function processDonation(donation: FormattedDonation, particles: Array<EmotionJS
             break;
         }
     }
-
-    //drawing cookie particle
-    // let particleLocationX = random(15,70);
-    // let particleLocationY = random(35, 65);
-
-    // particles.push(
-    //     <div onAnimationEnd={() => particles.splice(0,1)}>
-    //             <div css={css`${FloatText(particleLocationX, particleLocationY)};`}>
-    //                 + {donation.amount}
-    //             </div>
-    //             <CookieParticle css={css`animation: ${returnParticleAnimation(particleLocationX, particleLocationY)} 1.5s ease-out;`}/>
-    //     </div>
-    // );
-
-    // setParticles((particles: Array<EmotionJSX.Element>) =>
-    //     particles.unshift(
-    //         <div onAnimationEnd={setParticles((particles: Array<EmotionJSX.Element>) => particles.splice(0,1))}>
-    //             <div css={css`${FloatText(particleLocationX, particleLocationY)};`}>
-    //                 + {donation.amount}
-    //             </div>
-    //             <CookieParticle css={css`animation: ${returnParticleAnimation(particleLocationX, particleLocationY)} 1.5s ease-out;`}/>
-    //         </div>
-    //     )
-    // );
-
-    // if(particleRef.current) particleRef.current.onanimationend = () => {
-    //     console.log("ihfgidhfgojio");
-    //     if(particleRef.current) particleRef.current.remove();
-    // }
 }
 
-function Particles(){
-    let particles: Array<EmotionJSX.Element> = [];
+function drawParticle(donation : FormattedDonation, setParticles: Function){
     let particleLocationX = random(15,70);
     let particleLocationY = random(35, 65);
-    
-    useListenFor('donation', (donation: FormattedDonation) => {
-        particles.push(
-            <div onAnimationEnd={() => particles.splice(0,1)}>
-                <div css={css`${FloatText(particleLocationX, particleLocationY)};`}>
-                    + {donation.amount}
-                </div>
-                <CookieParticle css={css`animation: ${returnParticleAnimation(particleLocationX, particleLocationY)} 1.5s ease-out;`}/>
-            </div>
-        )
-	});
 
-    return <>{particles}</>;
+    setParticles((prevParticles : Array<EmotionJSX.Element>) => [...prevParticles, 
+        <div key={++sequentialKey} onAnimationEnd={() => {removeParticle(setParticles);}}>
+            <CookieParticle css={css`
+                animation: ${ParticleAnimation(particleLocationX, particleLocationY)} 2s ease-out; animation-fill-mode: forwards;`}/>
+
+            <div css={css`${FloatText(particleLocationX)}; animation: ${FadeUpAnimation(particleLocationY)} 1.5s linear;`}>
+                + {donation.amount}
+            </div>
+        </div>
+    ]);
 }
 
-function cssAnimate(element: HTMLElement, animationClass: string){
-    // Copied from papers-please index.tsx
+function removeParticle(setParticles : Function){
+    setParticles((prevParticles : Array<Object>) => prevParticles.slice(1, prevParticles.length));
+}
+
+function cssAnimate(element: HTMLElement){
+    // mostly Copied from papers-please index.tsx
+    if (!element) return;
     element.style.animation = 'none';
     element.offsetHeight; /* trigger reflow */
     element.style.removeProperty('animation');
-    element.classList.add(animationClass)
-}
-
-function returnParticleAnimation(locationX : number, locationY : number){
-    let flipped
-    (random(0,1) == 0) ? flipped = 1 : flipped = -1;
-
-    return (
-    keyframes`
-        from{
-            left: ${locationX}%;
-            top: ${locationY}%;
-            transform: rotate(0);
-            opacity: 1;
-        }
-        20%{
-            left: ${locationX + (1 * flipped)}%;
-            top: ${locationY - 2}%;
-            transform: rotate(5deg);
-            opacity: 0.8;
-        }
-        40%{
-            left: ${locationX + (2.5 * flipped)}%;
-            top: ${locationY - 3}%;
-            transform: rotate(10deg);
-            opacity: 0.6;
-        }
-        60%{
-            left: ${locationX + (4 * flipped)}%;
-            top: ${locationY - 2}%;
-            transform: rotate(15deg);
-            opacity: 0.4;
-        }
-        80%{
-            left: ${locationX + (5 * flipped)}%;
-            top: ${locationY}%;
-            transform: rotate(20deg);
-            opacity: 0.2;
-        }
-        to:{
-            left: ${locationX + (6 * flipped)}%;
-            top: ${locationY + 2.7}%
-            trnasform: rotate(20deg);
-            opacity: 0;
-    }`);
 }
