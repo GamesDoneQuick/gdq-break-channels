@@ -25,7 +25,7 @@
 
 .announcementFade{
     animation-name: staticFadeUp;
-    animation-duration: 1s;
+    animation-duration: 5s;
     animation-iteration-count: 1;
 }
 
@@ -35,8 +35,8 @@
         opacity: 1;
     }
     90%{
-        top: 0%;
-        opacity: 0;
+        top: 25%;
+        opacity: 1;
     }
     to{
         top: 0%;

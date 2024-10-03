@@ -1,4 +1,7 @@
+import { useRef, FC } from 'react';
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { Building } from './buildings';
 
 import background from './assets/bgBlue.png';
 import vignette from './assets/shadedBordersSoft.png';
@@ -7,11 +10,124 @@ import panelHorizontal from './assets/panelHorizontal.png'
 import cookieGlow from './assets/shine.png';
 import cookieShadow from './assets/cookieShadow.png';
 import perfectCookie from './assets/perfectCookie.png';
-import cursorImage from './assets/cursor.png';
 import cookieParticle from './assets/cookieParticle.png'
 
 import storeBackground from './assets/storeTile.png'
 import buildingIcons from './assets/buildingIcons.png'
+
+export let BuildingSection: FC<{buildingObject : Building}> = ({buildingObject}) => {
+    buildingObject.canvasRef = useRef<HTMLCanvasElement>(null)
+
+    // pasting saved building canvas
+    let context = buildingObject.canvasRef.current?.getContext("2d");
+    if(buildingObject.savedCanvas) context?.putImageData(buildingObject.savedCanvas, 0, 0);
+
+    return <>
+        <canvas height="150%" width="600%" css={css`${HorizontalSection}; background: repeat-x url('${buildingObject.background}') top/25%;`} 
+            ref={buildingObject.canvasRef}/> 
+    </>
+}
+
+export let StoreSection: FC<{buildingObject : Building}> = ({buildingObject}) => {
+    buildingObject.storeRef = useRef<HTMLDivElement>(null)
+
+    return <>
+        <div css={css`${StoreWindow}; background: url('${storeBackground}') 0 ${(buildingObject.id % 4) * 64}px;`} ref={buildingObject.storeRef}>
+            <div css={css`${StoreIcon}; background: url('${buildingIcons}') 0 ${-buildingObject.id * 64}px;`}/>
+            <FormattedText> 
+                <TotalText>{buildingObject.total}</TotalText>
+                <Store>{buildingObject.name}</Store>
+                <Price>&gt; ${buildingObject.price} Donation</Price>
+            </FormattedText>
+        </div>
+    </>;
+}
+
+let HorizontalSection = css`
+    position: relative;
+    image-rendering: pixelated;
+    vertical-align: top;
+    border-image: url('${panelHorizontal}') 16 round;
+    border-bottom-width: 16px;
+    border-bottom-style: solid;
+    width: 110%;
+    height: 128px;
+`
+let Store = styled.div`
+    position: absolute;
+    top: 9px;
+    font-size: 95%;
+    text-align: left;
+    right: 2.5%;
+    width: calc(100% - 64px);
+`
+
+let StoreWindow = css`
+    position: relative;
+    vertical-align: top;
+    width: 100%;
+    height: 64px;
+
+    background: ;
+`
+
+let StoreIcon = css`
+    position absolute;
+    image-rendering: pixelated;
+    left: 0;
+    width: 64px;
+    height: 64px;
+    filter: drop-shadow(0 0 5px black);
+`
+
+let TotalText = styled.div`
+    position: absolute;
+    text-align: right;
+    font-size: 230%;
+    right: 0;
+    width: 100%;
+    color: black;
+    opacity: 0.4;
+`
+
+let Price = styled.div`
+    position: absolute;
+    text-shadow: 0px 1px 3px black;
+    text-align: left;
+    color: #66ff66;
+    font-size: 45%;
+    right: 2.5%;
+    top:32px;
+    width: calc(100% - 64px);
+`
+
+export let FloatText = (locationX : number, locationY : number) => {
+    return css`
+        position: absolute;
+        font-family: Merriweather;
+        font-size: 100%;
+        text-shadow: 0px 1px 5px black;
+        left: ${locationX + "%"};
+    
+        animation: fadeUp 1.5s linear;
+        @keyframes fadeUp{
+            from{
+                top: ${locationY}%;
+                opacity: 1;
+            }
+            to{
+                top: ${locationY - 10}%;
+                opacity: 0;
+            };
+        }
+    `;
+}
+
+export let CookieParticle = styled.img`
+    position: absolute;
+    content:url(${cookieParticle});
+    image-rendering: pixelated;
+;`
 
 export let Container = styled.div`
     position: absolute;
@@ -35,42 +151,6 @@ export let VerticalSection = styled.div`
     overflow-x: hidden;
 `;
 
-export let HorizontalSection = styled.canvas(`
-    position: relative;
-    // image-rendering: pixelated;
-    vertical-align: top;
-    border-image: url('${panelHorizontal}') 16 round;
-    border-bottom-width: 16px;
-    border-bottom-style: solid;
-    width: 110%;
-    height: 128px;
-
-    background: ;`, 
-    props => (`background: repeat-x url('${props.id}') top/25%;`)
-);
-
-export let StoreWindow = styled.div(`
-    position: relative;
-    vertical-align: top;
-    width: 100%;
-    height: 64px;
-
-    background: ;`,
-    props => (`background: url('${storeBackground}') 0 ${(parseFloat(props.id as string) % 4) * 64}px;`) 
-);
-
-export let StoreIcon = styled.div(`
-    position absolute;
-    image-rendering: pixelated;
-    left: 0;
-    width: 64px;
-    height: 64px;
-    filter: drop-shadow(0 0 5px black);
-
-    background: ;`,
-    props =>(`background: url('${buildingIcons}') 0 ${-parseFloat(props.id as string) * 64}px;`)
-);
-
 export let Cookie = styled.div`
     position: absolute;
     top:5%;
@@ -87,8 +167,8 @@ export let CookieGlow = styled.div`
     position: absolute;
     top: 55%;
     left: 50%;
-    width:100%;
-    height:100%;
+    width: 100%;
+    height: 100%;
 
     transform-origin: center;
     background: url(${cookieGlow});
@@ -109,32 +189,6 @@ export let CookieGlow = styled.div`
         }
     }
 `;
-
-export let CookieParticle = styled.img`
-    position: absolute;
-    content:url(${cookieParticle});
-    image-rendering: pixelated;
-;`
-
-export let FloatText = styled.div(`
-    position: absolute;
-    font-family: Merriweather;
-    font-size: 100%;
-    text-shadow: 0px 1px 5px black;
-
-    animation: fadeUp 1.5s linear;`,
-    props => (
-    `@keyframes fadeUp{
-        from{
-            top: ${props.id}%;
-            opacity: 1;
-        }
-        to{
-            top: ${parseFloat(props.id as string) - 10}%;
-            opacity: 0;
-        };
-    }`)
-);
 
 export let AnnouncementSection = styled.div`
     position: sticky;
@@ -173,32 +227,13 @@ export let FormattedText = styled.div`
     }
 `;
 
-export let TotalText = styled.div`
+export let AnnouncementText = styled.div`
     position: absolute;
-    text-align: right;
-    font-size: 230%;
-    right: 0;
+    font-family: Merriweather;
+    font-size: 100%;
+    text-align: center;
+    text-shadow: 5px 5px 8px black;
     width: 100%;
-    color: black;
-    opacity: 0.4;
-`
-
-export let Price = styled.div`
-    position: absolute;
-    text-shadow: 0px 1px 3px black;
-    text-align: left;
-    color: #66ff66;
-    font-size: 45%;
-    right: 2.5%;
-    top:32px;
-    width: calc(100% - 64px);
-`
-
-export let Store = styled.div`
-    position: absolute;
-    top: 9px;
-    font-size: 95%;
-    text-align: left;
-    right: 2.5%;
-    width: calc(100% - 64px);
+    top: 25%;
+    margin: 0px 10px 10px 10px;
 `

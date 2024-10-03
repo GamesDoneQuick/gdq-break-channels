@@ -1,15 +1,3 @@
-export type Building = {
-    id: number;
-    name: string;
-    total: number;
-    price: number;
-    background: string;
-    canvasRef: any;
-    savedCanvas: any;
-    storeRef: any;
-    yRandomization: number;
-}
-
 import grandmaBackground from './assets/bgGrandma.png';
 import farmBackground from './assets/bgFarm.png';
 import mineBackground from './assets/bgMine.png';
@@ -23,6 +11,19 @@ import portalBackground from './assets/bgPortal.png'
 import timeBackground from './assets/bgTime.png'
 import antimBackground from './assets/bgAntim.png'
 import prismBackground from './assets/bgPrism.png'
+import { RefObject } from 'react';
+
+export type Building = {
+    id: number;
+    name: string;
+    total: number;
+    price: number;
+    background: string;
+    canvasRef: null | RefObject<HTMLCanvasElement>;
+    savedCanvas: undefined | ImageData;
+    storeRef: null | RefObject<HTMLDivElement>;
+    yRandomization: number;
+}
 
 // export let cursor: Building = {
 //     id: 0,
@@ -43,7 +44,7 @@ export let grandma: Building = {
     price: 1,
     background: grandmaBackground,
     canvasRef: null,
-    savedCanvas: null,
+    savedCanvas: undefined,
     storeRef: null,
     yRandomization: 10,
 }
@@ -55,7 +56,7 @@ export let farm: Building = {
     price: 5,
     background: farmBackground,
     canvasRef: null,
-    savedCanvas: null,
+    savedCanvas: undefined,
     storeRef: null,
     yRandomization: 8,
 }
@@ -67,7 +68,7 @@ export let mine: Building = {
     price: 10,
     background: mineBackground,
     canvasRef: null,
-    savedCanvas: null,
+    savedCanvas: undefined,
     storeRef: null,
     yRandomization: 8,
 }
@@ -79,7 +80,7 @@ export let factory: Building = {
     price: 15,
     background: factoryBackground,
     canvasRef: null,
-    savedCanvas: null,
+    savedCanvas: undefined,
     storeRef: null,
     yRandomization: 0,
 }
@@ -91,7 +92,7 @@ export let bank: Building = {
     price: 30,
     background: bankBackground,
     canvasRef: null,
-    savedCanvas: null,
+    savedCanvas: undefined,
     storeRef: null,
     yRandomization: 4,
 }
@@ -103,7 +104,7 @@ export let temple: Building = {
     price: 50,
     background: templeBackground,
     canvasRef: null,
-    savedCanvas: null,
+    savedCanvas: undefined,
     storeRef: null,
     yRandomization: 2,
 }
@@ -115,7 +116,7 @@ export let tower: Building = {
     price: 75,
     background: towerBackground,
     canvasRef: null,
-    savedCanvas: null,
+    savedCanvas: undefined,
     storeRef: null,
     yRandomization: 5,
 }
@@ -127,7 +128,7 @@ export let shipment: Building = {
     price: 100,
     background: shipmentBackground,
     canvasRef: null,
-    savedCanvas: null,
+    savedCanvas: undefined,
     storeRef: null,
     yRandomization: 3,
 }
@@ -139,7 +140,7 @@ export let lab: Building = {
     price: 125,
     background: labBackground,
     canvasRef: null,
-    savedCanvas: null,
+    savedCanvas: undefined,
     storeRef: null,
     yRandomization: 4,
 }
@@ -151,7 +152,7 @@ export let portal: Building = {
     price: 150,
     background: portalBackground,
     canvasRef: null,
-    savedCanvas: null,
+    savedCanvas: undefined,
     storeRef: null,
     yRandomization: 4,
 }
@@ -163,7 +164,7 @@ export let timeMachine: Building = {
     price: 175,
     background: timeBackground,
     canvasRef: null,
-    savedCanvas: null,
+    savedCanvas: undefined,
     storeRef: null,
     yRandomization: 5,
 }
@@ -175,7 +176,7 @@ export let antimCondenser: Building = {
     price: 200,
     background: antimBackground,
     canvasRef: null,
-    savedCanvas: null,
+    savedCanvas: undefined,
     storeRef: null,
     yRandomization: 8,
 }
@@ -187,7 +188,9 @@ export let prism: Building = {
     price: 250,
     background: prismBackground,
     canvasRef: null,
-    savedCanvas: null,
+    savedCanvas: undefined,
     storeRef: null,
     yRandomization: 1,
 }
+
+export let buildings = [prism, antimCondenser, timeMachine, portal, lab, shipment, tower, temple, bank, factory, mine, farm, grandma];
