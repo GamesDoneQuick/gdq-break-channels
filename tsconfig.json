@@ -15,7 +15,8 @@
 		"paths": {
 			"@gdq/*": ["src/*"]
 		},
-		"declaration": true
+		"declaration": true,
+		"types": ["@nodecg/types/augment-window", "obs-studio"]
 	},
 	"include": ["src/**/*.ts", "src/**/*.tsx", "index.tsx"]
 }
