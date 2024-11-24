@@ -37,6 +37,9 @@ const climb = {
 };
 
 climbRep.on('change', (value) => {
+	if (typeof value === 'undefined') {
+		return;
+	}
 	climb.value = value;
 });
 
