@@ -33,7 +33,7 @@ import {
 import { useObjects } from './useObjects';
 import { Palettes } from './palettes';
 
-registerChannel('Desert Bus', 17, DesertBus, {
+registerChannel('Desert Bus', 18, DesertBus, {
 	handle: 'VodBox',
 	position: 'bottomRight',
 	site: 'SupportClass',
