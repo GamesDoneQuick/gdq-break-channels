@@ -16,7 +16,11 @@ import stanAndGuybrush from './stan_and_guybrush.gif';
 import star from './star.png';
 import snakeEater from './background.webm';
 
-registerChannel('Monkey Island', 3, MonkeyIsland);
+registerChannel('Monkey Island', 3, MonkeyIsland, {
+	handle: 'VodBox',
+	position: 'bottomLeft',
+	site: 'SupportClass',
+});
 
 const musicOverrideRep = nodecg.Replicant<string | null>('music-override', {
 	defaultValue: null,

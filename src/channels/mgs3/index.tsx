@@ -17,8 +17,13 @@ import { useListenForFn } from '@gdq/lib/hooks/useListenForFn';
 
 import mgs3Video from './SnakeLoop.webm';
 import staticNoise from '@gdq/assets/static.gif';
+import { useActive } from '@gdq/lib/hooks/useActive';
 
-registerChannel('Metal Gear Solid 3', 64, Mgs3);
+registerChannel('Metal Gear Solid 3', 64, Mgs3, {
+	handle: 'VodBox',
+	position: 'bottomLeft',
+	site: 'SupportClass',
+});
 
 const vid = document.createElement('video');
 vid.src = mgs3Video;
@@ -35,12 +40,10 @@ climbRep.on('change', (value) => {
 	climb.value = value;
 });
 
-const layoutQuery = new URLSearchParams(window.location.search);
-const has = layoutQuery.has('layout');
-
 export function Mgs3(_: ChannelProps) {
 	const [climbed] = usePreloadedReplicant<number>('snake-climbed', 0);
 	const [total] = useReplicant<Total | null>('total', null);
+	const active = useActive();
 
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const topRef = useRef<HTMLDivElement>(null);
@@ -54,7 +57,7 @@ export function Mgs3(_: ChannelProps) {
 
 	useListenForFn('donation', (donation: FormattedDonation) => {
 		climb.value = Math.max(climb.value, climbRep.value ?? 0) + Math.floor(Math.max(donation.rawAmount / 50, 1));
-		if (has) return;
+		if (!active) return;
 		climbRep.value = climb.value;
 	});
 
@@ -117,7 +120,7 @@ export function Mgs3(_: ChannelProps) {
 	return (
 		<Container>
 			<Video ref={videoRef} src={mgs3Video} loop={true} />
-			{!has && (
+			{active && (
 				<>
 					<TopHUD ref={topRef}>{progressToMetres(climbed ?? 0).toFixed(1)}m</TopHUD>
 					<BottomHUD />

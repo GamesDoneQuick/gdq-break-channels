@@ -9,7 +9,11 @@ import loopVideo from './video.webm';
 import gem from './gem.gif';
 import { useRef } from 'react';
 
-registerChannel('Spyro', 98, Spyro);
+registerChannel('Spyro', 98, Spyro, {
+	handle: 'VodBox',
+	position: 'bottomLeft',
+	site: 'SupportClass',
+});
 
 export function Spyro(props: ChannelProps) {
 	const [total] = useReplicant<Total | null>('total', null);

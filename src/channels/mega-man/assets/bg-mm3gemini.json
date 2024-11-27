@@ -1,0 +1,227 @@
+{
+	"frames": {
+		"blocks": {
+			"frame": {
+				"x": 1,
+				"y": 1,
+				"w": 96,
+				"h": 32
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0
+			},
+			"sourceSize": {
+				"w": 96,
+				"h": 32
+			}
+		},
+		"gate": {
+			"frame": {
+				"x": 1,
+				"y": 35,
+				"w": 64,
+				"h": 32
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0
+			},
+			"sourceSize": {
+				"w": 64,
+				"h": 32
+			}
+		},
+		"ground": {
+			"frame": {
+				"x": 67,
+				"y": 35,
+				"w": 64,
+				"h": 32
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0
+			},
+			"sourceSize": {
+				"w": 64,
+				"h": 32
+			}
+		},
+		"net1": {
+			"frame": {
+				"x": 99,
+				"y": 1,
+				"w": 32,
+				"h": 32
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 32
+			}
+		},
+		"net2": {
+			"frame": {
+				"x": 133,
+				"y": 1,
+				"w": 32,
+				"h": 32
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 32
+			}
+		},
+		"net3": {
+			"frame": {
+				"x": 133,
+				"y": 35,
+				"w": 32,
+				"h": 32
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 32
+			}
+		},
+		"crystal": {
+			"frame": {
+				"x": 1,
+				"y": 69,
+				"w": 32,
+				"h": 16
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 16
+			}
+		},
+		"starA1": {
+			"frame": {
+				"x": 35,
+				"y": 69,
+				"w": 16,
+				"h": 16
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0
+			},
+			"sourceSize": {
+				"w": 16,
+				"h": 16
+			}
+		},
+		"starA2": {
+			"frame": {
+				"x": 53,
+				"y": 69,
+				"w": 16,
+				"h": 16
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0
+			},
+			"sourceSize": {
+				"w": 16,
+				"h": 16
+			}
+		},
+		"starB1": {
+			"frame": {
+				"x": 71,
+				"y": 69,
+				"w": 16,
+				"h": 16
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0
+			},
+			"sourceSize": {
+				"w": 16,
+				"h": 16
+			}
+		},
+		"starB2": {
+			"frame": {
+				"x": 89,
+				"y": 69,
+				"w": 16,
+				"h": 16
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0
+			},
+			"sourceSize": {
+				"w": 16,
+				"h": 16
+			}
+		},
+		"starC": {
+			"frame": {
+				"x": 107,
+				"y": 69,
+				"w": 16,
+				"h": 16
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0
+			},
+			"sourceSize": {
+				"w": 16,
+				"h": 16
+			}
+		}
+	},
+	"meta": {
+		"scale": "1"
+	},
+	"animations": {
+		"starA": ["starA1", "starA2"],
+		"starB": ["starB1", "starB2"]
+	}
+}

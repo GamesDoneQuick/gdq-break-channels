@@ -21,7 +21,11 @@ import wagon3 from './wagon3.png';
 import river from './river.png';
 import { useListenForFn } from '@gdq/lib/hooks/useListenForFn';
 
-registerChannel('Oregon Trail', 85, OregonTrail);
+registerChannel('Oregon Trail', 85, OregonTrail, {
+	handle: 'einalem4',
+	position: 'bottomLeft',
+	site: 'SupportClass',
+});
 
 type DonationPopup = FormattedDonation & {
 	left: number;

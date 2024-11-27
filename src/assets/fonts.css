@@ -58,3 +58,41 @@
 	font-family: WebbyCaps;
 	src: url('fonts/WebbyCaps.ttf') format('truetype');
 }
+
+@font-face {
+	font-family: DragonWarrior;
+	src: url('fonts/dragon-warrior.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: Reactor7;
+	src: url('fonts/Reactor7.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: minesweeper;
+	src: url('fonts/Minesweeper.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Open Sans';
+	src: url('fonts/Open_Sans/OpenSans-ExtraBold.ttf') format('truetype');
+	font-weight: 800;
+}
+
+@font-face {
+	font-family: 'Cabin';
+	src: url('fonts/Cabin/Cabin-Medium.ttf') format('truetype');
+	font-weight: 500;
+}
+
+@font-face {
+	font-family: NikoDialogue;
+	src: url('fonts/NikoDialogue.ttf') format('truetype');
+	font-weight: 500;
+}
+
+@font-face {
+	font-family: NikoTamagotchi;
+	src: url('fonts/NikoTamagotchi.ttf') format('truetype');
+}

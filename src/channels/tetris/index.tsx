@@ -19,7 +19,11 @@ import tetrominos from './assets/tetrominos.png';
 import frame from './assets/frame.png';
 import donationText from './assets/text.png';
 
-registerChannel('Tetris', 5, Tetris);
+registerChannel('Tetris', 5, Tetris, {
+	handle: 'VodBox',
+	position: 'bottomRight',
+	site: 'SupportClass',
+});
 
 export function Tetris(_: ChannelProps) {
 	const manager = useGameManager();
@@ -252,7 +256,7 @@ export function Tetris(_: ChannelProps) {
 	});
 
 	useEffect(() => {
-		if (!app) return;
+		if (!app.current) return;
 
 		bevelFilter.current = new BevelFilter({
 			thickness: 3.5,
@@ -287,8 +291,8 @@ export function Tetris(_: ChannelProps) {
 		spriteContainer.current.position.set(80, 0);
 		spriteContainer.current.filters = [new OutlineFilter(2, 0xdddddd)];
 
-		app.current?.stage.addChild(textGroup.current);
-		app.current?.stage.addChild(spriteContainer.current);
+		app.current.stage.addChild(textGroup.current);
+		app.current.stage.addChild(spriteContainer.current);
 
 		return () => {
 			bevelFilter.current?.destroy();
