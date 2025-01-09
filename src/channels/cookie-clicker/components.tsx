@@ -159,7 +159,7 @@ export function ParticleAnimation(locationX: number, locationY: number) {
             transform: rotate(20deg);
             opacity: 0.2;
         }
-        100%:{
+        100%{
             left: ${locationX + 6 * flipped}%;
             top: ${locationY + 3}%
             transform: rotate(20deg);
