@@ -262,6 +262,15 @@ export const Cookie = styled.div`
 	background-position: center, center;
 `;
 
+const Rotate = keyframes`
+	from {
+		transform: translate(-50%, -50%) rotate(0deg);
+	}
+	to {
+		transform: translate(-50%, -50%) rotate(360deg);
+	}
+`;
+
 export const CookieGlow = styled.div`
 	position: absolute;
 	top: 55%;
@@ -275,18 +284,10 @@ export const CookieGlow = styled.div`
 	background-size: 100% 100%;
 	background-position: center;
 
-	animation-name: rotate;
+	animation-name: ${Rotate};
 	animation-duration: 10s;
 	animation-timing-function: linear;
 	animation-iteration-count: infinite;
-	@keyframes rotate {
-		from {
-			transform: translate(-50%, -50%) rotate(0deg);
-		}
-		to {
-			transform: translate(-50%, -50%) rotate(360deg);
-		}
-	}
 `;
 
 export const AnnouncementSection = styled.div`

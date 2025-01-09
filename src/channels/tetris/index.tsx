@@ -18,6 +18,7 @@ import background from './assets/background_1.png';
 import tetrominos from './assets/tetrominos.png';
 import frame from './assets/frame.png';
 import donationText from './assets/text.png';
+import { keyframes } from '@emotion/react';
 
 registerChannel('Tetris', 5, Tetris, {
 	handle: 'VodBox',
@@ -374,6 +375,23 @@ const Frame = styled.img`
 	top: 0;
 `;
 
+const Rotate = keyframes`
+	0% {
+		transform: scale(1) rotate(0);
+		animation-timing-function: linear;
+	}
+
+	50% {
+		transform: scale(1.8) rotate(180deg);
+		animation-timing-function: linear;
+	}
+
+	100% {
+		transform: scale(1) rotate(360deg);
+		animation-timing-function: linear;
+	}
+`;
+
 const Background = styled.img`
 	position: absolute;
 	width: 1200px;
@@ -383,24 +401,7 @@ const Background = styled.img`
 	object-fit: cover;
 	filter: brightness(0.5);
 	transform-origin: center center;
-	animation: rotate 120s infinite;
-
-	@keyframes rotate {
-		0% {
-			transform: scale(1) rotate(0);
-			animation-timing-function: linear;
-		}
-
-		50% {
-			transform: scale(1.8) rotate(180deg);
-			animation-timing-function: linear;
-		}
-
-		100% {
-			transform: scale(1) rotate(360deg);
-			animation-timing-function: linear;
-		}
-	}
+	animation: ${Rotate} 120s infinite;
 `;
 
 const Container = styled.div`
