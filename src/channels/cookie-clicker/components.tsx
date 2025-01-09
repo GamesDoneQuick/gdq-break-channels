@@ -246,7 +246,7 @@ export const VerticalSection = styled.div`
 	height: 100%;
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
-	overflow-y: scroll;
+	overflow-y: hidden;
 	overflow-x: hidden;
 `;
 
