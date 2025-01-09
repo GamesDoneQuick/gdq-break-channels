@@ -76,7 +76,7 @@ export function cookieClicker(props: ChannelProps) {
 			{/* Big Cookie */}
 			<VerticalSection style={{ overflow: 'clip' }}>
 				<CookieGlow />
-				<CookieGlow style={{ animation: 'rotate 8s infinite linear reverse' }} />
+				<CookieGlow style={{ animationDuration: '8s', animationDirection: 'reverse' }} />
 
 				<Cookie
 					css={css`
