@@ -187,6 +187,9 @@ function GetHeightFromPos(position: vector3) {
 }
 
 keysRep.on('change', (newKeys) => {
+	if (typeof newKeys === 'undefined') {
+		return;
+	}
 	PinballModule.then((game) => {
 		game.toggleLeftFlipper(newKeys.LDown);
 		game.toggleRightFlipper(newKeys.RDown);

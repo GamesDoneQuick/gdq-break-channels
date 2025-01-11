@@ -46,6 +46,7 @@
     "@commitlint/config-conventional": "^17.4.0",
     "@emotion/babel-plugin": "^11.10.5",
     "@gamesdonequick/prettier-config": "^2.2.1",
+    "@nodecg/types": "^2.1.12",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.10",
     "@supportclass/stylelint-config": "^1.0.1",
     "@types/clone": "^2.1.1",
@@ -68,7 +69,7 @@
     "prettier": "^2.8.2",
     "stylelint": "^14.16.1",
     "stylelint-config-prettier": "^9.0.4",
-    "typescript": "^4.9.4",
+    "typescript": "~5.7.2",
     "vite": "^4.1.1"
   }
 }

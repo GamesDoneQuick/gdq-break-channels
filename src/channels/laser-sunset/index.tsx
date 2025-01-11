@@ -14,10 +14,11 @@ import { useActive } from '@gdq/lib/hooks/useActive';
 import { useListenForFn } from '@gdq/lib/hooks/useListenForFn';
 import TweenNumber from '@gdq/lib/components/TweenNumber';
 
-import { StarVisual, SunReflectionLine, Overcast, DonationPopup, SubscriptionVisual } from './types';
+import { StarVisual, SunReflectionLine, Overcast, DonationPopup, SubscriptionVisual, Static } from './types';
 import * as fn from './functions';
 import CONFIG from './config';
 import './style.css';
+import staticNoise from '@gdq/assets/static.gif';
 
 registerChannel('Laser Sunset', 15, LaserSunset, {
 	position: 'topRight',
@@ -34,9 +35,7 @@ export function LaserSunset(props: ChannelProps) {
 	const [donations, setDonations] = useState<DonationPopup[]>([]);
 	const [countSubscriptions, incrementSubscriptionsCount] = useReducer((x) => x + 1, 0);
 	const [subscriptions, setSubscriptions] = useState<SubscriptionVisual[]>([]);
-	const [lasersX, scrollLasers] = useReducer((x) => {
-		return x > CONFIG.Lasers.bgXmin ? x - CONFIG.Lasers.scrollSpeed : CONFIG.Lasers.bgXstart;
-	}, CONFIG.Lasers.bgXstart);
+	const [_, scrollLasers] = useReducer((x) => x + 1, 0);
 	const [clouds, setClouds] = useState<Overcast[]>([]);
 	const [sunReflections, setSunReflections] = useState<SunReflectionLine[]>([
 		{ xPosition: 50, marginTop: 2, width: 16 },
@@ -48,8 +47,9 @@ export function LaserSunset(props: ChannelProps) {
 		{ xPosition: 50, marginTop: 2, width: 6 },
 		{ xPosition: 50, marginTop: 2, width: 4 },
 	]);
+	const [staticOverlays, setStaticOverlays] = useState<Static[]>([]);
 
-	const lasersXstyle = `.Lasers:after { background-position-x: ${lasersX}px; }`;
+	const bgHighlightClass = donations.length || subscriptions.length ? ' highlight' : '';
 
 	const onDonationReceived = (donation: FormattedDonation) => {
 		if (!active || donations.length >= CONFIG.Donations.countMax) return;
@@ -131,6 +131,21 @@ export function LaserSunset(props: ChannelProps) {
 		return () => clearInterval(twinkleTimer);
 	}, [active]);
 
+	useEffect(() => {
+		if (!active) return;
+
+		const staticOverlaysTimer = setInterval(() => {
+			setTimeout(() => {
+				const staticOverlay = fn.spawnStatic();
+
+				setStaticOverlays((overlays) => [...overlays, staticOverlay]);
+				setTimeout(() => removeStaticOverlay(staticOverlay.spawnDate), staticOverlay.maxAge);
+			}, Math.random() * CONFIG.Static.respawnPeriodVariance);
+		}, CONFIG.Static.respawnPeriod);
+
+		return () => clearInterval(staticOverlaysTimer);
+	}, [active]);
+
 	const removeDonation = (date: Date) => {
 		setDonations((donos) => donos.filter((d) => d.received !== date));
 		props.unlock();
@@ -142,6 +157,10 @@ export function LaserSunset(props: ChannelProps) {
 
 	const removeSubscription = (date: Date) => {
 		setSubscriptions((subscriptions) => subscriptions.filter((s) => s.received !== date));
+	};
+
+	const removeStaticOverlay = (date: Date) => {
+		setStaticOverlays((staticOverlays) => staticOverlays.filter((so) => so.spawnDate !== date));
 	};
 
 	const animateSunReflections = () => {
@@ -161,11 +180,10 @@ export function LaserSunset(props: ChannelProps) {
 
 	return (
 		<Container className="Container">
-			<style>{lasersXstyle}</style>
-			<Sky className="Sky">
+			<Sky className={'Sky' + bgHighlightClass}>
 				<Stars className="Stars">
 					{stars.map((s, index) => (
-						<Star className="Star" key={index} style={fn.starStyle(s)}>
+						<Star className="Star" key={index} style={fn.starStyle(s, false)}>
 							{s.text}
 						</Star>
 					))}
@@ -181,10 +199,13 @@ export function LaserSunset(props: ChannelProps) {
 					))}
 				</Clouds>
 			</Sky>
-			<Ocean className="Ocean">
+			<Ocean className={'Ocean' + bgHighlightClass}>
 				<Stars className="Stars reflection">
 					{stars.map((s, index) => (
-						<Star className="Star" key={index} style={fn.starStyle(s)}>
+						<Star
+							className="Star"
+							key={index}
+							style={fn.starStyle(s, donations.length > 0 || subscriptions.length > 0)}>
 							{s.text}
 						</Star>
 					))}
@@ -195,7 +216,7 @@ export function LaserSunset(props: ChannelProps) {
 				<SunReflections className="SunReflections">
 					{sunReflections.map((line, index) => (
 						<SunReflection
-							className="SunReflection"
+							className={'SunReflection SunReflection-' + index}
 							key={index}
 							style={{
 								width: line.width + '%',
@@ -204,6 +225,9 @@ export function LaserSunset(props: ChannelProps) {
 							}}></SunReflection>
 					))}
 				</SunReflections>
+				<TotalEl className="TotalEl reflection">
+					$<TweenNumber value={total?.raw} />
+				</TotalEl>
 				<SubscriptionsList className="SubscriptionsList">
 					{subscriptions.map((s, idx) => (
 						<Subscription
@@ -244,6 +268,11 @@ export function LaserSunset(props: ChannelProps) {
 			<TotalEl className="TotalEl">
 				$<TweenNumber value={total?.raw} />
 			</TotalEl>
+			<StaticList className="StaticList">
+				{staticOverlays.map((so, idx) => (
+					<StaticEl className="Static" key={idx} style={fn.staticStyle(so, staticNoise)}></StaticEl>
+				))}
+			</StaticList>
 		</Container>
 	);
 }
@@ -267,3 +296,5 @@ export const Lasers = styled.div``;
 export const LasersHorizon = styled.div``;
 export const SunReflections = styled.div``;
 export const SunReflection = styled.div``;
+export const StaticList = styled.div``;
+export const StaticEl = styled.div``;

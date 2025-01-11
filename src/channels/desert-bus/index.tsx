@@ -32,8 +32,9 @@ import {
 } from './sprites';
 import { useObjects } from './useObjects';
 import { Palettes } from './palettes';
+import { keyframes } from '@emotion/react';
 
-registerChannel('Desert Bus', 17, DesertBus, {
+registerChannel('Desert Bus', 18, DesertBus, {
 	handle: 'VodBox',
 	position: 'bottomRight',
 	site: 'SupportClass',
@@ -344,34 +345,35 @@ export function DesertBus(_: ChannelProps) {
 	);
 }
 
+const HeadlightAnim = keyframes`
+	0% {
+		transform: translate(0, 0);
+	}
+
+	20% {
+		transform: translate(2px, 4px);
+	}
+
+	40% {
+		transform: translate(0, 8px);
+	}
+
+	60% {
+		transform: translate(-2px, 4px);
+	}
+
+	80% {
+		transform: translate(0, 0);
+	}
+`;
+
 const Headlights = styled.img`
 	opacity: 0.5;
 	position: absolute;
 	top: 170px;
 	left: 260px;
 
-	animation: anim 1s steps(2, end) infinite;
-	@keyframes anim {
-		0% {
-			transform: translate(0, 0);
-		}
-
-		20% {
-			transform: translate(2px, 4px);
-		}
-
-		40% {
-			transform: translate(0, 8px);
-		}
-
-		60% {
-			transform: translate(-2px, 4px);
-		}
-
-		80% {
-			transform: translate(0, 0);
-		}
-	}
+	animation: ${HeadlightAnim} 1s steps(2, end) infinite;
 `;
 
 const TotalText = styled.div`

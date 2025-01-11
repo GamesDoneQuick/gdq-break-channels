@@ -10,10 +10,10 @@ const timezone = nodecg.Replicant<string>('timezone', {
  */
 
 const Times: [number, 'night' | 'dawn' | 'day' | 'dusk'][] = [
-	[(17 * 60 + 46) * 60, 'night'], // 5:46pm
-	[(17 * 60 + 16) * 60, 'dusk'], // 5:16pm
-	[(7 * 60 + 41) * 60, 'day'], // 7:41am
-	[(7 * 60 + 11) * 60, 'dawn'], // 7:11am
+	[(17 * 60 + 38) * 60, 'night'], // 5:38pm
+	[(17 * 60 + 8) * 60, 'dusk'], // 5:08pm
+	[(7 * 60 + 43) * 60, 'day'], // 7:43am
+	[(7 * 60 + 12) * 60, 'dawn'], // 7:12am
 	[0, 'night'], // Midnight
 ];
 
@@ -22,7 +22,7 @@ const Times: [number, 'night' | 'dawn' | 'day' | 'dusk'][] = [
  * i.e. The Checkpoint.
  * Change time to reflect event schedule before event.
  */
-const OmegaShift = [2024, 1, 20, 21, 7, 0] as const;
+const OmegaShift = [2025, 1, 11, 16, 50, 0] as const;
 
 export function dayTime() {
 	const datetime = DateTime.local({ zone: timezone.value });

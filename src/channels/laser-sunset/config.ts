@@ -47,6 +47,14 @@ const CONFIG = {
 		perspectiveGrowth: 2.4,
 		colors: ['magenta', 'orchid', 'blueviolet', 'mediumpurple'],
 	},
+	Static: {
+		respawnPeriod: 32000,
+		respawnPeriodVariance: 4000,
+		ageMin: 5000,
+		ageMax: 8000,
+		heightMinPercent: 4,
+		heightMaxPercent: 10,
+	},
 	Timers: {
 		fpsInterval: 1000 / 60,
 	},

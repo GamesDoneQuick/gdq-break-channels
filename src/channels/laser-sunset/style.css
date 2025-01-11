@@ -21,6 +21,12 @@
 	z-index: 101;
 }
 
+.TotalEl.reflection {
+	opacity: 0.3;
+	transform: translate(0%, 111%) rotateX(-230deg);
+	z-index: initial;
+}
+
 .DonationsList {
 	position: absolute;
 	width: 100%;
@@ -83,6 +89,11 @@
 		rgba(222, 33, 111, .5) 90%,
 		rgba(222, 33, 111, 1) 100%
 	);
+	transition: background-color 1s ease-in-out;
+}
+
+.Sky.highlight {
+	background-color: rgba(222, 33, 111, .1);
 }
 
 .Stars {
@@ -100,7 +111,7 @@
 
 .Star {
 	font-family: gdqpixel;
-	font-size: 10px;
+	font-size: 13px;
 	color: #eee;
 	position: absolute;
 	left: 10%;
@@ -167,12 +178,12 @@
 	height: 200px;
 	border-radius: 100px;
 	box-shadow: 0 0 32px 0 #f09000;
-	background-color: #f09000;
+	background: linear-gradient(to bottom,rgba(240,144,0,1) 0%,rgba(240,144,0,1) 33%,rgba(240,0,240,1) 100%);
 	transform: translate(-50%, -35%);
 }
 
 .Sun-top {
-	clip-path: inset(-50px -50px 166px -50px);
+	clip-path: inset(-50px -50px 167px -50px);
 }
 
 .Sun-middle-top {
@@ -180,15 +191,17 @@
 }
 
 .Sun-middle {
-	clip-path: inset(56px -50px 126px -50px);
+	clip-path: inset(57px -50px 126px -50px);
 }
 
 .Sun-middle-bottom {
+	box-shadow: 0 0 32px 0 #f0752d;
 	clip-path: inset(82px -50px 97px -50px);
 }
 
 .Sun-bottom {
-	clip-path: inset(112px -50px -50px -50px);
+	box-shadow: 0 0 32px 0 #f05d55;
+	clip-path: inset(112px -50px 77px -50px);
 }
 
 .Ocean {
@@ -198,6 +211,11 @@
 	height: 50%;
 	overflow: hidden;
 	background: #000;
+	transition: background-color 1s ease-in-out;
+}
+
+.Ocean.highlight {
+	background-color: rgba(0, 215, 215, .1);
 }
 
 .Ocean-background {
@@ -212,6 +230,15 @@
 	);
 }
 
+@keyframes laserScroll {
+    0% {
+        transform: perspective(200px) rotateX(38deg) scale(2,1) translateZ(0) translateX(0px);
+    }
+    100% {
+        transform: perspective(200px) rotateX(38deg) scale(2,1) translateZ(0) translateX(-120px);
+    }
+}
+
 .Lasers {
 	position: absolute;
 	overflow: hidden;
@@ -223,7 +250,7 @@
 
 /* Laser grid background effect, taken from https://stackoverflow.com/questions/53416334/css-80s-tron-grid */
 .Lasers:after {
-	transform: perspective(200px) rotateX(38deg) scale(2,1) translateZ(0);
+	transform: perspective(200px) rotateX(38deg) scale(2,1) translateZ(0) translateX(0%);
 	content: "";
 	display: block;
 	position: absolute;
@@ -247,6 +274,8 @@
 	background-image:
 	linear-gradient(to right, cyan 10px, transparent 0),
 	linear-gradient(to bottom, cyan 16px, transparent 0);
+	background-repeat: repeat;
+	animation: laserScroll 5s linear infinite;
 }
 
 .Lasers-horizon {
@@ -277,8 +306,48 @@
 	transition: width 1s cubic-bezier(0, .3, .5, 1), left 1s cubic-bezier(0, .3, .5, 1), margin-top 1s ease-in-out;
 }
 
-.Lamps {
+.SunReflection-0 {
+	box-shadow: 0 0 16px 1px #f0585e;
+	background-color: #f0585ead;
+}
+
+.SunReflection-1 {
+	box-shadow: 0 0 16px 1px #f05d55;
+	background-color: #f05d55ad;
+}
+
+.SunReflection-2 {
+	box-shadow: 0 0 16px 1px #f06c3c;
+	background-color: #f06c3cad;
+}
+
+.SunReflection-3 {
+	box-shadow: 0 0 16px 1px #f07a25;
+	background-color: #f07a25ad;
+}
+
+.SunReflection-4 {
+	box-shadow: 0 0 16px 1px #f08b05;
+	background-color: #f08b05ad;
+}
+
+.StaticList {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	opacity: 0.8;
+}
+
+.Static {
 	position: absolute;
-	right: 2%;
-	bottom: 10%;
+	z-index: 101;
+	width: 100%;
+	height: 4%;
+	background-color: #999;
+	background-size: 75% 75%;
+	background-repeat: repeat;
+	border-top: 1px solid rgba(36, 36, 36, 0.3);
+	border-bottom: 1px solid rgba(150, 150, 150, 0.3);
+	opacity: 1;
 }

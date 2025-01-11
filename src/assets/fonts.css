@@ -96,3 +96,8 @@
 	font-family: NikoTamagotchi;
 	src: url('fonts/NikoTamagotchi.ttf') format('truetype');
 }
+
+@font-face {
+	font-family: Merriweather;
+	src: url('fonts/Merriweather-Black.ttf') format('woff2');
+}

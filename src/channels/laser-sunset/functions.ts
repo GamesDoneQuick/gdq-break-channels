@@ -1,5 +1,5 @@
 import type { FormattedDonation, TwitchSubscription } from '@gdq/types/tracker';
-import { StarVisual, Overcast, DonationPopup, SubscriptionVisual } from './types';
+import { StarVisual, Overcast, DonationPopup, SubscriptionVisual, Static } from './types';
 import CONFIG from './config';
 
 export const formatCurrency = (val: number) => {
@@ -22,6 +22,10 @@ export const randomRange = (min: number, max: number) => {
 	return min + Math.random() * (max - min);
 };
 
+export const staticOpacity = (yPosition: number) => {
+	return Math.max(0.1, Math.abs(yPosition - 50.0) / 100.0);
+};
+
 export const randomStarOpacity = () => {
 	return randomRange(CONFIG.Stars.opacityMin, CONFIG.Stars.opacityMax);
 };
@@ -34,16 +38,16 @@ export const spawnStar = (number: number, xMin: number, xMax: number, yMin: numb
 		left: randomRange(xMin, xMax),
 		top: randomRange(yMin, yMax),
 		text: number % 2 == 0 ? '+' : '*',
-		color: 'RGB(' + clr + ',' + clr + ',' + clr + ')',
+		color: { r: clr, g: clr, b: clr },
 		opacity: opacity,
 	};
 };
 
-export const starStyle = (star: StarVisual) => {
+export const starStyle = (star: StarVisual, highlight: boolean) => {
 	return {
 		left: star.left + '%',
 		top: star.top + '%',
-		color: star.color,
+		color: 'RGB(' + (highlight ? '0' : star.color.r) + ',' + star.color.g + ',' + star.color.b + ')',
 		opacity: star.opacity,
 	};
 };
@@ -76,6 +80,16 @@ export const spawnCloud = (donationAmount: number, count: number): Overcast => {
 		height: sideLength * 1.5,
 		backgroundColor: CONFIG.Cloud.colors[count % CONFIG.Cloud.colors.length],
 		received: new Date(),
+	};
+};
+
+export const spawnStatic = (): Static => {
+	return {
+		spawnDate: new Date(),
+		maxAge: CONFIG.Static.ageMin + Math.random() * (CONFIG.Static.ageMax - CONFIG.Static.ageMin),
+		height:
+			CONFIG.Static.heightMinPercent +
+			Math.random() * (CONFIG.Static.heightMaxPercent - CONFIG.Static.heightMinPercent),
 	};
 };
 
@@ -218,5 +232,18 @@ export const subscriptionReflectionStyle = (sub: SubscriptionVisual) => {
 		...sub,
 		left: dsp.x + '%',
 		top: dsp.radius + pushDown + '%',
+	};
+};
+
+export const staticStyle = (staticOverlay: Static, staticNoiseSrc: string) => {
+	const maxHeight = CONFIG.Static.heightMaxPercent;
+	const now = new Date();
+	const age = now.getTime() - staticOverlay.spawnDate.getTime();
+	const top = -maxHeight + (age / staticOverlay.maxAge) * (100.0 + maxHeight);
+	return {
+		top: top + '%',
+		height: staticOverlay.height + '%',
+		opacity: staticOpacity(top),
+		backgroundImage: 'url(' + staticNoiseSrc + ')',
 	};
 };
