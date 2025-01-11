@@ -67,6 +67,8 @@ const citationTexts: string[] = [
 	'Sequence Breaking',
 	'Dropped your combo',
 	'Didn\'t say "Yes Chef".',
+	'Weeeeeeeeeeeeeeeeee!',
+	'BINGO!'
 ];
 
 export function PapersPlease(props: ChannelProps) {
@@ -197,6 +199,8 @@ export function PapersPlease(props: ChannelProps) {
 	});
 
 	useEffect(() => {
+		setAmountLocked(goalAmount);
+		setAnimationPlaying(true);
 		setTimeout(() => {
 			appear();
 		}, 2000);
