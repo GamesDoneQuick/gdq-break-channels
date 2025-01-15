@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { FormattedDonation, Total } from '@gdq/types/tracker';
+import type { Event, FormattedDonation, Total } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
 import { useListenFor, useReplicant } from 'use-nodecg';
 import styled from '@emotion/styled';
@@ -7,6 +7,12 @@ import TweenNumber from '@gdq/lib/components/TweenNumber';
 import gdq_deck from './assets/gdq_deck.png';
 import gdq_logo from './assets/gdq.png';
 import pcf_logo from './assets/pcf2.png';
+import msf_logo from './assets/msf.png';
+import malala_logo from './assets/malala_fund.png';
+
+interface LogoProps {
+  beneficiaryShort: string | null;
+}
 
 // Register channel
 registerChannel('Balatro', 42, Balatro, {
@@ -36,17 +42,56 @@ const getSuitColor = (suit: string, donationAmount: number) => {
   }
 };
 
+const DynamicLargeRoundBox = ({ beneficiaryShort }: { beneficiaryShort: string | null }) => {
+  let logoSrc;
+  let logoAlt;
+  let description;
+
+  switch (beneficiaryShort) {
+    case 'PCF':
+      logoSrc = pcf_logo;
+      logoAlt = 'Prevent Cancer Foundation Logo'
+      description = 'Benefitting the\nPrevent Cancer Foundation';
+      break;
+    case 'MSF':
+      logoSrc = msf_logo;
+      logoAlt = 'Doctors Without Borders Logo'
+      description = 'Benefitting\nDoctors Without Borders';
+      break;
+    case 'Malala Fund':
+      logoSrc = malala_logo;
+      logoAlt = 'Malala Fund Logo'
+      description = 'Benefitting the\nMalala Fund';
+      break;
+    default:
+      logoSrc = gdq_logo;
+      logoAlt = 'Games Done Quick Logo'
+      description = 'Games Done Quick';
+  }
+
+  return (
+    <LargeRoundBox darkOrange>
+      <Logo src={logoSrc} alt={logoAlt} beneficiaryShort={beneficiaryShort}/>
+      {description}
+    </LargeRoundBox>
+  );
+};
+
 function Balatro(props: ChannelProps) {
 	// Replicants
 	const [total] = useReplicant<Total | null>('total', null);
 	const [dono, setDono] = useReplicant<FormattedDonation | null>('rawAmount', null);
 	const [cards, setCards] = useState<any[]>([]); // Array to hold multiple cards and their states
 	const [donationCount, setDonationCount] = useState(0); // Track the number of donations
-  
+  const currentEvent = nodecg.Replicant<Event>('currentEvent');
+  const [beneficiaryShort, setBeneficiaryShort] = useState<string | null>(null);
+  const [shortname, setShortname] = useState<string>('');
+
 	// Event listener for new donation
 	useListenFor('donation', (donation: FormattedDonation) => {
 	  console.log('New donation received:', donation);
-  
+    console.log(currentEvent.value);
+
 	  if (donation) {
 		setDono({ ...donation, rawAmount: donation.rawAmount });
 		setDonationCount(prevCount => prevCount + 1);
@@ -83,6 +128,27 @@ function Balatro(props: ChannelProps) {
 	  };
 	}, [cards]);
   
+  useEffect(() => {
+    const currentEventReplicant = nodecg.Replicant<Event>('currentEvent');
+    currentEventReplicant.on('change', (newValue) => {
+      // Extract 'beneficiaryShort' from the event data
+      setBeneficiaryShort(newValue?.beneficiaryShort || null);
+    });
+  }, []);
+
+  useEffect(() => {
+    const currentEventReplicant = nodecg.Replicant<Event>('currentEvent');
+    // Listen for changes to the replicant
+    currentEventReplicant.on('change', (newValue) => {
+      if (newValue?.shortname) {
+        // Extract the shortname and format it (add a space before the numbers)
+        const formattedShortname = newValue.shortname.replace(/(\D)(\d)/, '$1 $2');
+        setShortname(formattedShortname); // Update state with the formatted shortname
+      }
+    });
+  }, []);
+
+
 	// Function to handle the end of the animation
 	const handleAnimationEnd = (cardId: number, animationName: string) => {
 	  if (animationName === "slideOut") {
@@ -105,12 +171,9 @@ function Balatro(props: ChannelProps) {
 		<LeftBar>
 		  <BoxWrapper>
 			<RoundBox darkOrange>
-			  AGDQ 2025
+        {shortname || '...'}
 			</RoundBox>
-			<LargeRoundBox darkOrange>
-			<Logo src={pcf_logo} alt="PCF Logo" />
-			  Benefitting the<br></br>Prevent Cancer Foundation
-			</LargeRoundBox>
+			<DynamicLargeRoundBox beneficiaryShort={beneficiaryShort}/>
 			<RoundBox>
 			  <LeftSideText>Score</LeftSideText>
 			  <InnerBox>
@@ -503,11 +566,22 @@ const ScanLinesOverlay = styled.div`
   ); /* Creates 1px lines with 4px spacing */
 `;
 
-const Logo = styled.img`
+const Logo = styled.img<LogoProps>`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 2px solid lightgreen;
+    border: 2px solid ${({ beneficiaryShort }) => {
+    switch (beneficiaryShort) {
+      case 'PCF':
+        return 'lightgreen';
+      case 'MSF':
+        return 'red';
+      case 'Malala Fund':
+        return 'yellow';
+      default:
+        return 'gray';
+    }
+  }};
   object-fit: cover; /* Makes sure the image fits into the circle without distorting */
   margin-left: 15px; /* Adds a small gap between the image and the text */
   margin-right: 10px; /* Adds a small gap between the image and the text */
