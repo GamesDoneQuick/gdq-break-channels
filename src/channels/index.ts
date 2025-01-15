@@ -1,25 +1,26 @@
 import './channels';
 
-import './template';
 import './breakout';
 import './cave-story';
 import './desert-bus';
+import './insaniquarium';
 import './mega-man';
+import './template';
 // import './mgs3';
-import './monkey-island';
-import './oregon-trail';
-import './tetris';
-import './spyro';
-import './undertale';
-import './t-rex-runner';
+import './cookie-clicker';
 import './dragon-warrior';
 import './ff-shop';
-import './papers-please';
-import './minesweeper';
-import './qwop';
-import './laser-sunset';
 import './here-comes-niko';
+import './laser-sunset';
+import './minesweeper';
+import './monkey-island';
+import './oregon-trail';
+import './papers-please';
 import './pinball';
-import './cookie-clicker';
+import './qwop';
+import './spyro';
+import './t-rex-runner';
+import './tetris';
+import './undertale';
 
 export * from './channels';
