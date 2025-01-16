@@ -1,8 +1,6 @@
 import { FishType } from "./entities/Fish"
 import { ItemType } from "./entities/Item"
 
-// export const MIN_FISH: number = 1
-// export const MAX_FISH: number = 1
 export const MIN_FISH: number = 6
 export const MAX_FISH: number = 15
 
