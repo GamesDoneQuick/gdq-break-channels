@@ -101,3 +101,8 @@
 	font-family: Merriweather;
 	src: url('fonts/Merriweather-Black.ttf') format('woff2');
 }
+
+@font-face {
+	font-family: Balatro;
+	src: url('fonts/balatro.ttf') format('truetype');
+}

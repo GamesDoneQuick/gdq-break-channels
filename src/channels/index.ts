@@ -21,7 +21,8 @@ import './laser-sunset';
 import './here-comes-niko';
 import './pinball';
 import './cookie-clicker';
+import './balatro';
 import './snake';
-import './velocity-quest'
+import './velocity-quest';
 
 export * from './channels';
