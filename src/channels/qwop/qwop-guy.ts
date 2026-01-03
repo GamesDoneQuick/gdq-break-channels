@@ -232,7 +232,13 @@ export function usePhysicsBody(
 	useEffect(() => {
 		if (!box2d || !world || !recordLeak) return;
 
-		const createBody = (key: string, x: number, y: number, angle: number, densityMultiplier = 1) => {
+		const createBody = (
+			key: keyof typeof qwopSheet.frames,
+			x: number,
+			y: number,
+			angle: number,
+			densityMultiplier = 1,
+		) => {
 			const spriteDef = qwopSheet.frames[key];
 			const sourceSize = spriteDef.sourceSize;
 
