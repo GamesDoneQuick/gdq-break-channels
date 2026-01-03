@@ -22,5 +22,7 @@ import './here-comes-niko';
 import './pinball';
 import './cookie-clicker';
 import './vampire-survivors';
+import './snake';
+import './velocity-quest'
 
 export * from './channels';
