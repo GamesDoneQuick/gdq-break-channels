@@ -5,10 +5,6 @@ import { useListenFor, useReplicant } from 'use-nodecg';
 import styled from '@emotion/styled';
 import TweenNumber from '@gdq/lib/components/TweenNumber';
 import gdq_deck from './assets/gdq_deck.png';
-import gdq_logo from './assets/gdq.png';
-import pcf_logo from './assets/pcf2.png';
-import msf_logo from './assets/msf.png';
-import malala_logo from './assets/malala_fund.png';
 
 interface LogoProps {
 	beneficiaryShort: string | null;
@@ -43,35 +39,24 @@ const getSuitColor = (suit: string, donationAmount: number) => {
 };
 
 const DynamicLargeRoundBox = ({ beneficiaryShort }: { beneficiaryShort: string | null }) => {
-	let logoSrc;
-	let logoAlt;
 	let description;
 
 	switch (beneficiaryShort) {
 		case 'PCF':
-			logoSrc = pcf_logo;
-			logoAlt = 'Prevent Cancer Foundation Logo';
 			description = 'Benefitting the\nPrevent Cancer Foundation';
 			break;
 		case 'MSF':
-			logoSrc = msf_logo;
-			logoAlt = 'Doctors Without Borders Logo';
 			description = 'Benefitting\nDoctors Without Borders';
 			break;
 		case 'Malala Fund':
-			logoSrc = malala_logo;
-			logoAlt = 'Malala Fund Logo';
 			description = 'Benefitting the\nMalala Fund';
 			break;
 		default:
-			logoSrc = gdq_logo;
-			logoAlt = 'Games Done Quick Logo';
 			description = 'Games Done Quick';
 	}
 
 	return (
 		<LargeRoundBox darkOrange>
-			<Logo src={logoSrc} alt={logoAlt} beneficiaryShort={beneficiaryShort} />
 			<LeftSideText>{description}</LeftSideText>
 		</LargeRoundBox>
 	);
@@ -395,12 +380,13 @@ const LeftSideText = styled.div`
 	font-family: 'Balatro';
 	font-size: 16px;
 	text-shadow: 0px 2px 1px rgba(0, 0, 0, 0.5);
-	letter-spacing: 1px;
+	letter-spacing: px;
 	color: white;
 	text-align: left;
 	width: auto;
-	padding-left: 0px;
+	margin-left: 10px;
 	margin-right: 10px;
+	line-height: 125%;
 `;
 
 const InnerBox = styled.div`
@@ -580,30 +566,6 @@ const ScanLinesOverlay = styled.div`
 		rgba(0, 50, 100, 0.1) 5px
 	); /* Creates 1px lines with 4px spacing */
 	filter: blur(0.8px);
-`;
-
-const Logo = styled.img<LogoProps>`
-	width: 40px;
-	height: 40px;
-	border-radius: 50%;
-	border: 2px solid
-		${({ beneficiaryShort }) => {
-			switch (beneficiaryShort) {
-				case 'PCF':
-					return 'lightgreen';
-				case 'MSF':
-					return 'red';
-				case 'Malala Fund':
-					return 'yellow';
-				default:
-					return 'gray';
-			}
-		}};
-	object-fit: cover; /* Makes sure the image fits into the circle without distorting */
-	margin-left: 15px; /* Adds a small gap between the image and the text */
-	margin-right: 10px; /* Adds a small gap between the image and the text */
-	transform: translateX(-10px); /* Shifts the image to the left */
-	box-shadow: 4px 4px 1px rgba(0, 0, 0, 0.3);
 `;
 
 export default Balatro;
