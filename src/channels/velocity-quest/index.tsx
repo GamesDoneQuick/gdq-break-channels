@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useListenFor, useReplicant } from 'use-nodecg';
+import { useListenFor } from 'use-nodecg';
 import styled from '@emotion/styled';
 import type { FormattedDonation, Total as TotalType, TwitchSubscription } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
@@ -21,6 +21,7 @@ import runKillerIdle from './assets/run-killer/run-killer-idle-sheet.png';
 import runKillerHurt from './assets/run-killer/run-killer-hurt-sheet.png';
 import softLockIdle from './assets/softlock/softlock-idle-sheet.png';
 import softLockHurt from './assets/softlock/softlock-hurt-sheet.png';
+import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
 
 registerChannel('Velocity Quest', 95, VelocityQuest, {
 	position: 'bottomLeft',
@@ -28,7 +29,9 @@ registerChannel('Velocity Quest', 95, VelocityQuest, {
 	handle: 'PIGSquad',
 });
 
-const MESSAGE_DISPLAY_TIME = 3000;
+const DONATION_DISPLAY_TIME = 1500;
+const SUB_DISPLAY_TIME = 4000;
+const MAX_QUEUE_SIZE = 6;
 
 const monsters: { [key: string]: MonsterType } = {
 	BadRNG: {
@@ -54,7 +57,7 @@ const monsters: { [key: string]: MonsterType } = {
 };
 
 function VelocityQuest(props: ChannelProps) {
-	const [total] = useReplicant<TotalType | null>('total', null);
+	const [total] = usePreloadedReplicant<TotalType | null>('total', null);
 	const dialogTimerRef = useRef<NodeJS.Timeout | null>(null);
 	const messageQueueRef = useRef<Array<MessageQueueItem>>([]);
 	const [currentMessage, setCurrentMessage] = useState<MessageQueueItem>();
@@ -68,7 +71,7 @@ function VelocityQuest(props: ChannelProps) {
 	const [showVictoryDialog, setShowVictoryDialog] = useState<boolean>(false);
 	const [idleUrl, setIdleUrl] = useState<string>('');
 	const [hurtUrl, setHurtUrl] = useState<string>('');
-	const [displayTotal, setDisplayTotal] = useState<number>(0);
+	const [displayTotal, setDisplayTotal] = useState<number>(total?.raw ?? 0);
 	const [showSparkle, setShowSparkle] = useState<boolean>(false);
 	const [showStrike, setShowStrike] = useState<boolean>(false);
 	const [showSubscription, setShowSubscription] = useState<boolean>(false);
@@ -86,23 +89,46 @@ function VelocityQuest(props: ChannelProps) {
 			clearTimeout(dialogTimerRef.current);
 		}
 
-		dialogTimerRef.current = setTimeout(() => {
-			dialogTimerRef.current = null;
-			showNextDonationOrSubscription();
-		}, MESSAGE_DISPLAY_TIME);
+		dialogTimerRef.current = setTimeout(
+			() => {
+				dialogTimerRef.current = null;
+				showNextDonationOrSubscription();
+			},
+			next.kind === 'donation' ? DONATION_DISPLAY_TIME : SUB_DISPLAY_TIME,
+		);
 
 		if (next.kind === 'donation') {
 			setMonsterHP((oldHp) => Math.floor(oldHp - next.item.rawAmount));
 			setVelocityState('attack');
 			setMonsterState('hurt');
 			setShowStrike(true);
-			setDisplayTotal((prev) => Math.floor(prev + (next.item.rawAmount ?? 0)));
+			setDisplayTotal(next.item.rawNewTotal);
 		} else {
 			setShowSubscription(true);
 		}
 	}, []);
 
 	useListenFor('donation', (donation: FormattedDonation) => {
+		if (messageQueueRef.current.length > MAX_QUEUE_SIZE) {
+			const replace = messageQueueRef.current.splice(messageQueueRef.current.length - 1, 1)[0];
+
+			const max =
+				replace.kind === 'subscription' || replace.item.rawAmount < donation.rawAmount
+					? donation
+					: replace.item;
+
+			messageQueueRef.current.push({
+				kind: 'donation',
+				item: {
+					amount: max.amount,
+					rawAmount: max.rawAmount,
+					newTotal: donation.newTotal,
+					rawNewTotal: donation.rawNewTotal,
+				},
+			});
+			return;
+		}
+
 		messageQueueRef.current.push({ kind: 'donation', item: donation });
 
 		if (!dialogTimerRef.current && !currentMessage) {
@@ -111,6 +137,12 @@ function VelocityQuest(props: ChannelProps) {
 	});
 
 	useListenFor('subscription', (subscription: TwitchSubscription) => {
+		if (
+			messageQueueRef.current.length >= MAX_QUEUE_SIZE ||
+			messageQueueRef.current.some((item) => item.kind === 'subscription')
+		)
+			return;
+
 		messageQueueRef.current.push({ kind: 'subscription', item: subscription });
 
 		if (!dialogTimerRef.current && !currentMessage) {
@@ -143,10 +175,10 @@ function VelocityQuest(props: ChannelProps) {
 		spawnMonster();
 	}, [spawnMonster]);
 
-	useEffect(() => {
+	/**useEffect(() => {
 		if (total === null) return;
 		setDisplayTotal(Math.floor(total.raw));
-	}, [total]);
+	}, [total]);**/
 
 	const onVictory = useCallback(() => {
 		setShowVictoryDialog(true);
@@ -156,7 +188,7 @@ function VelocityQuest(props: ChannelProps) {
 		const timer = setTimeout(() => {
 			setShowVictoryDialog(false);
 			spawnMonster();
-		}, MESSAGE_DISPLAY_TIME);
+		}, SUB_DISPLAY_TIME);
 		victoryTimerRef.current = timer;
 	}, [spawnMonster]);
 
@@ -202,7 +234,7 @@ function VelocityQuest(props: ChannelProps) {
 				monsterMaxHP={monsterMaxHP}
 				onHurtAnimationEnd={handleMonsterHurtEnd}
 			/>
-			<Total displayTotal={displayTotal} />
+			<Total displayTotal={Math.floor(displayTotal)} />
 			<VictoryDialog showVictoryDialog={showVictoryDialog} monsterName={monsterName} />
 		</Container>
 	);

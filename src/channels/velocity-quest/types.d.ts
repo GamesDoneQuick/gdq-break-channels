@@ -1,3 +1,5 @@
+import type { FormattedDonation, TwitchSubscription } from '@gdq/types/tracker';
+
 export type MessageQueueItem =
 	| { kind: 'donation'; item: FormattedDonation }
 	| { kind: 'subscription'; item: TwitchSubscription };
