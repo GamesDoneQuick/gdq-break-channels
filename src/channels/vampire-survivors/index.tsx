@@ -233,7 +233,7 @@ function VampireSurvivors(props: ChannelProps) {
 					tick={subProps[0].tick}
 					height={subProps[0].height}
 					subPlan={subProps[0].subPlan}
-					displayName={subProps[0].displayName}></Sub>
+					displayName={'NEW SUBSCRIBER!'}></Sub>
 			)}
 
 			<Coin index={1} left="1032px" top="52px" collected={false}></Coin>
