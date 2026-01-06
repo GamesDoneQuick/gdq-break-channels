@@ -125,7 +125,7 @@ export class DigDugGame {
 
 		// Initialize character standing on ground at center
 		this.character = {
-			pos: { x: CHANNEL_WIDTH / 2, y: this.groundY - 16 },
+			pos: { x: CHANNEL_WIDTH / 2, y: this.groundY - 32 },
 			facingRight: true,
 			sprite: null,
 			pumping: false,
@@ -328,7 +328,7 @@ export class DigDugGame {
 	public spawnCollectible(count: number) {
 		for (let i = 0; i < count && this.collectibles.length < MAX_COLLECTIBLES; i++) {
 			const x = 50 + Math.random() * (CHANNEL_WIDTH - 100);
-			const y = this.groundY - 10;
+			const y = this.groundY - 24;
 
 			// Randomly select a vegetable texture
 			const textureIndex = Math.floor(Math.random() * this.vegetableTextures.length);
@@ -356,7 +356,7 @@ export class DigDugGame {
 				x = 50 + Math.random() * (CHANNEL_WIDTH - 100);
 			} while (Math.abs(x - this.character.pos.x) < 150);
 
-			const y = this.groundY - 16;
+			const y = this.groundY - 32;
 
 			const type: 'pooka' | 'fygar' = Math.random() < 0.5 ? 'pooka' : 'fygar';
 
