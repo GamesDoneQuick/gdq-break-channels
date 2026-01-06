@@ -27,6 +27,7 @@ import pumpkinImg from './images/pumpkin.png';
 import tomatoImg from './images/tomato.png';
 import watermelonImg from './images/watermelon.png';
 import pineappleImg from './images/pineapple.png';
+import groundImg from './images/ground.png';
 
 interface Position {
 	x: number;
@@ -79,6 +80,7 @@ export class DigDugGame {
 	private pookaTexture: PIXI.Texture;
 	private fygarTexture: PIXI.Texture;
 	private vegetableTextures: PIXI.Texture[];
+	private groundTexture: PIXI.Texture;
 
 	constructor(canvas: HTMLCanvasElement) {
 		this.app = new PIXI.Application({
@@ -93,6 +95,7 @@ export class DigDugGame {
 		this.characterTexture = PIXI.Texture.from(characterRightImg);
 		this.pookaTexture = PIXI.Texture.from(pookaImg);
 		this.fygarTexture = PIXI.Texture.from(fygarImg);
+		this.groundTexture = PIXI.Texture.from(groundImg);
 
 		// Load all vegetable textures
 		this.vegetableTextures = [
@@ -135,18 +138,17 @@ export class DigDugGame {
 	}
 
 	private drawGround() {
-		// Simple ground - brown rectangle for bottom half
-		const ground = new PIXI.Graphics();
-		ground.beginFill(COLORS.DIRT);
-		ground.drawRect(0, this.groundY, CHANNEL_WIDTH, CHANNEL_HEIGHT - this.groundY);
-		ground.endFill();
+		// Tile ground image twice (546px * 2 = 1092px)
+		const groundSprite1 = new PIXI.Sprite(this.groundTexture);
+		groundSprite1.x = 0;
+		groundSprite1.y = 0;
 
-		// Draw ground line
-		ground.lineStyle(2, 0x000000);
-		ground.moveTo(0, this.groundY);
-		ground.lineTo(CHANNEL_WIDTH, this.groundY);
+		const groundSprite2 = new PIXI.Sprite(this.groundTexture);
+		groundSprite2.x = 546; // Place second tile right after first
+		groundSprite2.y = 0;
 
-		this.backgroundLayer.addChild(ground);
+		this.backgroundLayer.addChild(groundSprite1);
+		this.backgroundLayer.addChild(groundSprite2);
 	}
 
 	public update(deltaTime: number) {
