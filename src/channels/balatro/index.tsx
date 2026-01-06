@@ -296,7 +296,7 @@ const LiquifiedTextWrapper = styled.div`
 
 const LeftBar = styled.div`
 	position: absolute;
-	width: 20%;
+	width: 23%;
 	height: 100%;
 	background-color: rgb(41, 51, 52);
 	left: 2%;
