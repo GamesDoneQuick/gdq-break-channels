@@ -13,6 +13,21 @@ import {
 	DONATION_THRESHOLDS,
 } from './constants';
 
+// Import sprite images
+import characterRightImg from './images/character-right.png';
+import pookaImg from './images/pooka.png';
+import fygarImg from './images/fygar.png';
+import carrotImg from './images/carrot.png';
+import turnipImg from './images/turnip.png';
+import mushroomImg from './images/mushroom.png';
+import cucumberImg from './images/cucumber.png';
+import eggplantImg from './images/eggplant.png';
+import pepperImg from './images/pepper.png';
+import pumpkinImg from './images/pumpkin.png';
+import tomatoImg from './images/tomato.png';
+import watermelonImg from './images/watermelon.png';
+import pineappleImg from './images/pineapple.png';
+
 interface Position {
 	x: number;
 	y: number;
@@ -20,13 +35,13 @@ interface Position {
 
 interface Collectible {
 	pos: Position;
-	graphics: PIXI.Graphics;
+	sprite: PIXI.Sprite;
 	type: number;
 }
 
 interface Enemy {
 	pos: Position;
-	graphics: PIXI.Graphics;
+	sprite: PIXI.Sprite;
 	facingRight: boolean;
 	moveTimer: number;
 	type: 'pooka' | 'fygar';
@@ -46,7 +61,7 @@ export class DigDugGame {
 	private character: {
 		pos: Position;
 		facingRight: boolean;
-		graphics: PIXI.Graphics | null;
+		sprite: PIXI.Sprite | null;
 		pumping: boolean;
 		animFrame: number;
 		moveTimer: number;
@@ -59,6 +74,12 @@ export class DigDugGame {
 	private currentPump: PumpAction | null = null;
 	private groundY: number;
 
+	// Textures
+	private characterTexture: PIXI.Texture;
+	private pookaTexture: PIXI.Texture;
+	private fygarTexture: PIXI.Texture;
+	private vegetableTextures: PIXI.Texture[];
+
 	constructor(canvas: HTMLCanvasElement) {
 		this.app = new PIXI.Application({
 			view: canvas,
@@ -67,6 +88,25 @@ export class DigDugGame {
 			backgroundColor: 0x5599ff, // Sky blue
 			antialias: false,
 		});
+
+		// Load textures
+		this.characterTexture = PIXI.Texture.from(characterRightImg);
+		this.pookaTexture = PIXI.Texture.from(pookaImg);
+		this.fygarTexture = PIXI.Texture.from(fygarImg);
+
+		// Load all vegetable textures
+		this.vegetableTextures = [
+			PIXI.Texture.from(carrotImg),
+			PIXI.Texture.from(turnipImg),
+			PIXI.Texture.from(mushroomImg),
+			PIXI.Texture.from(cucumberImg),
+			PIXI.Texture.from(eggplantImg),
+			PIXI.Texture.from(pepperImg),
+			PIXI.Texture.from(pumpkinImg),
+			PIXI.Texture.from(tomatoImg),
+			PIXI.Texture.from(watermelonImg),
+			PIXI.Texture.from(pineappleImg),
+		];
 
 		// Create layers
 		this.backgroundLayer = new PIXI.Container();
@@ -87,7 +127,7 @@ export class DigDugGame {
 		this.character = {
 			pos: { x: CHANNEL_WIDTH / 2, y: this.groundY - 16 },
 			facingRight: true,
-			graphics: null,
+			sprite: null,
 			pumping: false,
 			animFrame: 0,
 			moveTimer: 0,
@@ -201,11 +241,11 @@ export class DigDugGame {
 			this.enemies.splice(index, 1);
 		}
 
-		// Destroy enemy graphics
-		if (enemy.graphics && enemy.graphics.parent) {
-			this.gameLayer.removeChild(enemy.graphics);
+		// Destroy enemy sprite
+		if (enemy.sprite && enemy.sprite.parent) {
+			this.gameLayer.removeChild(enemy.sprite);
 		}
-		enemy.graphics.destroy();
+		enemy.sprite.destroy();
 
 		// Pop effect
 		const effect = new PIXI.Graphics();
@@ -246,9 +286,9 @@ export class DigDugGame {
 
 			// Collect if character is close
 			if (dist < 25) {
-				if (collectible.graphics && collectible.graphics.parent) {
-					this.gameLayer.removeChild(collectible.graphics);
-					collectible.graphics.destroy();
+				if (collectible.sprite && collectible.sprite.parent) {
+					this.gameLayer.removeChild(collectible.sprite);
+					collectible.sprite.destroy();
 				}
 				this.collectibles.splice(i, 1);
 			}
@@ -290,22 +330,20 @@ export class DigDugGame {
 			const x = 50 + Math.random() * (CHANNEL_WIDTH - 100);
 			const y = this.groundY - 10;
 
-			// Placeholder: colored circle
-			const graphics = new PIXI.Graphics();
-			const colors = [0xff4444, 0xff8844, 0xffdd44, 0xff88dd, 0x88ff44];
-			const color = colors[i % colors.length];
+			// Randomly select a vegetable texture
+			const textureIndex = Math.floor(Math.random() * this.vegetableTextures.length);
+			const texture = this.vegetableTextures[textureIndex];
 
-			graphics.beginFill(color);
-			graphics.drawCircle(0, 0, 8);
-			graphics.endFill();
-			graphics.x = x;
-			graphics.y = y;
+			const sprite = new PIXI.Sprite(texture);
+			sprite.anchor.set(0.5, 0.5);
+			sprite.x = x;
+			sprite.y = y;
 
-			this.gameLayer.addChild(graphics);
+			this.gameLayer.addChild(sprite);
 			this.collectibles.push({
 				pos: { x, y },
-				graphics: graphics,
-				type: i % 5
+				sprite: sprite,
+				type: textureIndex
 			});
 		}
 	}
@@ -321,12 +359,18 @@ export class DigDugGame {
 
 			const type: 'pooka' | 'fygar' = Math.random() < 0.5 ? 'pooka' : 'fygar';
 
-			// Placeholder: colored box
-			const graphics = new PIXI.Graphics();
+			// Create sprite based on enemy type
+			const texture = type === 'pooka' ? this.pookaTexture : this.fygarTexture;
+			const sprite = new PIXI.Sprite(texture);
+			sprite.anchor.set(0.5, 0.5);
+			sprite.x = x;
+			sprite.y = y;
+
+			this.gameLayer.addChild(sprite);
 
 			const enemy: Enemy = {
 				pos: { x, y },
-				graphics: graphics,
+				sprite: sprite,
 				facingRight: Math.random() < 0.5,
 				moveTimer: 0,
 				type,
@@ -374,38 +418,22 @@ export class DigDugGame {
 
 	private render() {
 		// Render character
-		if (this.character.graphics && this.character.graphics.parent) {
-			this.gameLayer.removeChild(this.character.graphics);
-			this.character.graphics.destroy();
+		if (this.character.sprite && this.character.sprite.parent) {
+			this.gameLayer.removeChild(this.character.sprite);
+			this.character.sprite.destroy();
 		}
 
-		// Placeholder: Blue box for character
-		const charGraphics = new PIXI.Graphics();
-		charGraphics.beginFill(0x4444ff);
-		charGraphics.drawRect(-12, -24, 24, 32); // Tall box
-		charGraphics.endFill();
+		// Create character sprite
+		const charSprite = new PIXI.Sprite(this.characterTexture);
+		charSprite.anchor.set(0.5, 0.5);
+		charSprite.x = this.character.pos.x;
+		charSprite.y = this.character.pos.y;
 
-		// Direction indicator
-		charGraphics.beginFill(0xff4444);
-		if (this.character.facingRight) {
-			charGraphics.drawRect(12, -8, 6, 4);
-		} else {
-			charGraphics.drawRect(-18, -8, 6, 4);
-		}
-		charGraphics.endFill();
+		// Flip sprite horizontally when facing left
+		charSprite.scale.x = this.character.facingRight ? 1 : -1;
 
-		// Label
-		const style = new PIXI.TextStyle({ fontSize: 8, fill: 0xffffff });
-		const text = new PIXI.Text('DIG DUG', style);
-		text.x = -15;
-		text.y = -16;
-		charGraphics.addChild(text);
-
-		charGraphics.x = this.character.pos.x;
-		charGraphics.y = this.character.pos.y;
-
-		this.character.graphics = charGraphics;
-		this.gameLayer.addChild(charGraphics);
+		this.character.sprite = charSprite;
+		this.gameLayer.addChild(charSprite);
 
 		// Render pump line
 		if (this.currentPump && this.currentPump.active) {
@@ -425,61 +453,40 @@ export class DigDugGame {
 			}, 50);
 		}
 
-		// Render enemies
+		// Update enemy sprites (position and scale)
 		for (const enemy of this.enemies) {
-			if (enemy.graphics && enemy.graphics.parent) {
-				this.gameLayer.removeChild(enemy.graphics);
-			}
-			enemy.graphics.destroy();
-
-			const enemyGraphics = new PIXI.Graphics();
-
-			// Color based on type
-			const color = enemy.type === 'pooka' ? 0xff8844 : 0x44ff88;
-			enemyGraphics.beginFill(color);
+			// Update position
+			enemy.sprite.x = enemy.pos.x;
+			enemy.sprite.y = enemy.pos.y;
 
 			// Scale based on inflation
-			const baseSize = 16;
 			const scale = 1 + enemy.inflationProgress * (MAX_INFLATION - 1);
-			const size = baseSize * scale;
+			enemy.sprite.scale.set(scale, scale);
 
-			enemyGraphics.drawRect(-size / 2, -size / 2, size, size);
-			enemyGraphics.endFill();
-
-			// Label
-			const style = new PIXI.TextStyle({ fontSize: 6, fill: 0x000000 });
-			const text = new PIXI.Text(enemy.type === 'pooka' ? 'POOKA' : 'FYGAR', style);
-			text.x = -size / 2 + 2;
-			text.y = -size / 2 + 2;
-			enemyGraphics.addChild(text);
-
-			enemyGraphics.x = enemy.pos.x;
-			enemyGraphics.y = enemy.pos.y;
-
-			enemy.graphics = enemyGraphics;
-			this.gameLayer.addChild(enemyGraphics);
+			// Flip based on direction
+			enemy.sprite.scale.x = Math.abs(enemy.sprite.scale.x) * (enemy.facingRight ? 1 : -1);
 		}
 	}
 
 	public destroy() {
-		if (this.character.graphics) {
-			if (this.character.graphics.parent) {
-				this.gameLayer.removeChild(this.character.graphics);
+		if (this.character.sprite) {
+			if (this.character.sprite.parent) {
+				this.gameLayer.removeChild(this.character.sprite);
 			}
-			this.character.graphics.destroy();
+			this.character.sprite.destroy();
 		}
 
 		for (const collectible of this.collectibles) {
-			if (collectible.graphics && collectible.graphics.parent) {
-				this.gameLayer.removeChild(collectible.graphics);
-				collectible.graphics.destroy();
+			if (collectible.sprite && collectible.sprite.parent) {
+				this.gameLayer.removeChild(collectible.sprite);
+				collectible.sprite.destroy();
 			}
 		}
 
 		for (const enemy of this.enemies) {
-			if (enemy.graphics && enemy.graphics.parent) {
-				this.gameLayer.removeChild(enemy.graphics);
-				enemy.graphics.destroy();
+			if (enemy.sprite && enemy.sprite.parent) {
+				this.gameLayer.removeChild(enemy.sprite);
+				enemy.sprite.destroy();
 			}
 		}
 
