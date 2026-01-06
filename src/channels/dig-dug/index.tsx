@@ -42,8 +42,8 @@ const Canvas = styled.canvas`
 const TotalEl = styled.div`
 	font-family: gdqpixel;
 	font-size: 28px;
-	color: ${`#${COLORS.TEXT_BROWN.toString(16).padStart(6, '0')}`};
-	text-shadow: none;
+	color: #ffee44;
+	text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
 `;
 
 const BottomBar = styled.div`
@@ -89,6 +89,9 @@ function DigDug(props: ChannelProps) {
 	// Handle donations
 	useListenFor('donation', (donation: FormattedDonation) => {
 		if (!gameRef.current) return;
+
+		// Show flying donation amount
+		gameRef.current.showDonationAmount(donation.rawAmount);
 
 		// Spawn collectibles and enemies based on donation amount
 		gameRef.current.spawnForDonation(donation.rawAmount);

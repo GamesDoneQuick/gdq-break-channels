@@ -385,6 +385,51 @@ export class DigDugGame {
 		}
 	}
 
+	public showDonationAmount(amount: number) {
+		// Create flying text for donation amount
+		const text = new PIXI.Text(`$${amount.toFixed(2)}`, {
+			fontFamily: 'gdqpixel',
+			fontSize: 32,
+			fill: 0xffee44,
+			stroke: 0x000000,
+			strokeThickness: 4,
+		});
+
+		// Position at center of screen
+		text.anchor.set(0.5, 0.5);
+		text.x = CHANNEL_WIDTH / 2;
+		text.y = CHANNEL_HEIGHT / 2;
+
+		this.effectsLayer.addChild(text);
+
+		const startY = text.y;
+		const startTime = Date.now();
+		const duration = 2000; // 2 seconds
+
+		// Animate the text flying up and fading out
+		const animate = () => {
+			const elapsed = Date.now() - startTime;
+			const progress = elapsed / duration;
+
+			if (progress >= 1) {
+				// Animation complete, remove text
+				if (text.parent) {
+					this.effectsLayer.removeChild(text);
+				}
+				text.destroy();
+				return;
+			}
+
+			// Move up and fade out
+			text.y = startY - progress * 100;
+			text.alpha = 1 - progress;
+
+			requestAnimationFrame(animate);
+		};
+
+		animate();
+	}
+
 	public spawnForDonation(amount: number) {
 		let collectibleCount = 1;
 		let enemyCount = 0;
