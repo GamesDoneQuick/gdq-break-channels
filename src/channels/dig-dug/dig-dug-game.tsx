@@ -336,6 +336,7 @@ export class DigDugGame {
 
 			const sprite = new PIXI.Sprite(texture);
 			sprite.anchor.set(0.5, 0.5);
+			sprite.scale.set(2, 2); // Double the sprite size
 			sprite.x = x;
 			sprite.y = y;
 
@@ -363,6 +364,7 @@ export class DigDugGame {
 			const texture = type === 'pooka' ? this.pookaTexture : this.fygarTexture;
 			const sprite = new PIXI.Sprite(texture);
 			sprite.anchor.set(0.5, 0.5);
+			sprite.scale.set(2, 2); // Double the sprite size
 			sprite.x = x;
 			sprite.y = y;
 
@@ -428,8 +430,9 @@ export class DigDugGame {
 		charSprite.x = this.character.pos.x;
 		charSprite.y = this.character.pos.y;
 
-		// Flip sprite horizontally when facing left
-		charSprite.scale.x = this.character.facingRight ? 1 : -1;
+		// Double sprite size and flip horizontally when facing left
+		charSprite.scale.x = this.character.facingRight ? 2 : -2;
+		charSprite.scale.y = 2;
 
 		this.character.sprite = charSprite;
 		this.gameLayer.addChild(charSprite);
@@ -458,9 +461,12 @@ export class DigDugGame {
 			enemy.sprite.x = enemy.pos.x;
 			enemy.sprite.y = enemy.pos.y;
 
-			// Scale based on inflation
-			const scale = 1 + enemy.inflationProgress * (MAX_INFLATION - 1);
-			enemy.sprite.scale.set(scale, scale);
+			// Double base size, then scale based on inflation
+			const baseScale = 2;
+			const inflationScale = 1 + enemy.inflationProgress * (MAX_INFLATION - 1);
+			const totalScale = baseScale * inflationScale;
+
+			enemy.sprite.scale.set(totalScale, totalScale);
 
 			// Flip based on direction
 			enemy.sprite.scale.x = Math.abs(enemy.sprite.scale.x) * (enemy.facingRight ? 1 : -1);
