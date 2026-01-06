@@ -34,7 +34,7 @@ import { useObjects } from './useObjects';
 import { Palettes } from './palettes';
 import { keyframes } from '@emotion/react';
 
-registerChannel('Desert Bus', 18, DesertBus, {
+registerChannel('Desert Bus', 19, DesertBus, {
 	handle: 'VodBox',
 	position: 'bottomRight',
 	site: 'SupportClass',
