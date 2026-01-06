@@ -392,7 +392,7 @@ export class DigDugGame {
 		const text = new PIXI.Text(`$${amount.toFixed(2)}`, {
 			fontFamily: 'gdqpixel',
 			fontSize: 32,
-			fill: 0xffee44,
+			fill: 0xffffff,
 			stroke: 0x000000,
 			strokeThickness: 4,
 		});
