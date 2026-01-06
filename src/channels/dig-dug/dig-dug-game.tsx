@@ -388,24 +388,23 @@ export class DigDugGame {
 		let enemyCount = 0;
 		let shouldPump = false;
 
+		// Most donations just spawn 1 vegetable
+		// Enemies only appear for larger donations ($100+)
 		if (amount >= DONATION_THRESHOLDS.MEGA) {
-			collectibleCount = 10;
-			enemyCount = 3;
-			shouldPump = true;
-		} else if (amount >= DONATION_THRESHOLDS.HUGE) {
-			collectibleCount = 7;
+			// $500+ : 3 vegetables, 2 enemies, pump one
+			collectibleCount = 3;
 			enemyCount = 2;
 			shouldPump = true;
-		} else if (amount >= DONATION_THRESHOLDS.LARGE) {
-			collectibleCount = 4;
+		} else if (amount >= DONATION_THRESHOLDS.HUGE) {
+			// $100+ : 2 vegetables, 1 enemy, pump it
+			collectibleCount = 2;
 			enemyCount = 1;
 			shouldPump = true;
-		} else if (amount >= DONATION_THRESHOLDS.MEDIUM) {
-			collectibleCount = 2;
-			enemyCount = 0;
-			shouldPump = true;
 		} else {
-			shouldPump = Math.random() < 0.3;
+			// Under $100 : just 1 vegetable, no enemies
+			collectibleCount = 1;
+			enemyCount = 0;
+			shouldPump = false;
 		}
 
 		this.spawnCollectible(collectibleCount);
