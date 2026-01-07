@@ -6,11 +6,19 @@ import staticImg from '../assets/static.gif';
 import GitHubLogo from '../assets/GitHub-Mark-32px.png';
 import TwitchLogo from '../assets/TwitchGlitchPurple.png';
 import SCLogo from '../assets/sc_logo.png';
+import BlueskyLogo from '../assets/BlueskyLogo.png';
+import InstagramLogo from '../assets/InstagramLogo.png';
+import MastodonLogo from '../assets/MastodonLogo.png';
+import TikTokLogo from '../assets/TikTokLogo.png';
 
 const CreditLogos: Record<Required<Credit>['site'], string> = {
 	GitHub: GitHubLogo,
 	Twitch: TwitchLogo,
 	SupportClass: SCLogo,
+	Bluesky: BlueskyLogo,
+	Instagram: InstagramLogo,
+	Mastodon: MastodonLogo,
+	TikTok: TikTokLogo,
 };
 
 export function BreakChannels() {
