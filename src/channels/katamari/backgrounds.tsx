@@ -14,18 +14,18 @@ export type BackgroundLayer = {
 	distancePx?: number;
 };
 
-export type BackgroundPreset = {
+export type BackgroundScene = {
 	id: string;
 	layers: BackgroundLayer[];
 };
 
 export type ParallaxBackgroundProps = {
 	className?: string;
-	backgrounds?: BackgroundPreset[];
+	backgrounds?: BackgroundScene[];
 	selectedIndex?: number;
 };
 
-function resolvePreset(props: ParallaxBackgroundProps): BackgroundPreset | undefined {
+function resolvePreset(props: ParallaxBackgroundProps): BackgroundScene | undefined {
 	const { backgrounds, selectedIndex } = props;
 	if (!backgrounds || backgrounds.length === 0) return undefined;
 
