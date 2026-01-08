@@ -1,16 +1,17 @@
-import type { Event, FormattedDonation, Total } from '@gdq/types/tracker';
+import type { Event, FormattedDonation, Total, TwitchSubscription } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
 import { useEffect, useState, useRef } from 'react';
 import { useListenFor, useReplicant } from 'use-nodecg';
 import TweenNumber from '@gdq/lib/components/TweenNumber';
 import { CurrencyToAbbreviation } from 'currency-to-abbreviation';
-import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
+// import { usePreloadedReplicant } from '@gdq/lib/hooks/usePreloadedReplicant';
 import { useRafLoop } from 'react-use';
 
-import { Container, TotalEl, KatamariTracker, GoalAmount, KatamariBall } from './components';
+import { Container, TotalEl, KatamariTracker, GoalAmount, KatamariBall, BgBlocker } from './components';
 import { GridSprite } from './sprites';
 import { ParallaxBackground, BackgroundScene } from './backgrounds';
 import { DonationFlyers, Flyer, Stuck } from './donationFlyers';
+import { KingOfAllCosmos } from './kingOfAllCosmos';
 import { clamp01, lerp } from '@gdq/channels/katamari/utilities';
 
 // Spritesheets
@@ -75,6 +76,7 @@ import futurecity4_6 from './assets/landscapes/futurecity_4/6.png';
 import futurecity4_7 from './assets/landscapes/futurecity_4/7.png';
 import futurecity4_8 from './assets/landscapes/futurecity_4/8.png';
 import futurecity4_9 from './assets/landscapes/futurecity_4/9.png';
+import bgBlocker from './assets/bgBlocker.png';
 const bgPool: BackgroundScene[] = [
 	{
 		id: 'nature_2',
@@ -378,16 +380,42 @@ function pickObject() {
 const MIN_FLYER_SCALE = 1;
 const MAX_FLYER_SCALE = 4;
 
+// King
+import kingBgSheet from './assets/sprites/king/kingBgSheet.png';
+import kingFace from './assets/sprites/king/king_base.png';
+import kingMouth1 from './assets/sprites/king/king_mouth1.png';
+import kingMouth2 from './assets/sprites/king/king_mouth2.png';
+import kingMouth3 from './assets/sprites/king/king_mouth3.png';
+import kingMouthWide from './assets/sprites/king/king_mouthWide.png';
+import royalRainbow from './assets/sprites/king/royal_rainbow.png';
+function getKingSubLine(username: string) {
+	const kingSubLines: string[] = [
+		`Ah, ${username}. Colorblocked as usual. How disturbing.`,
+		`Oh, it's you ${username}. You're mucho long. Why are you shaped that way? How disturbing.`,
+		`Oh, it's ${username}. Why are you in camoflauge? Are you fighting someone? How disturbing.`,
+		`Look, it's ${username}. Aack, you look exactly like the Prince. How disturbing.`,
+		`How are you, ${username}? You really are a shocking shade of pink all year round. How disturbing.`,
+		`There's, ${username}. So you eat batteries for breakfast. How disturbing.`,
+		`Oh, there's ${username}. Is there something inside that head of yours? How disturbing,`,
+		`Ah, ${username}. So very square. A perfect square, in fact. How disturbing.`,
+		`Eek, it's ${username}. S-She's floating... Bobbing, really. How disturbing.`,
+		`Eek, it's ${username}. Why the lights? Are you that desperate for attention? How disturbing.`,
+		`Aack, it's ${username}. You think it's cute to stuff your face, don't you? How disturbing.`,
+		`Oh, is that ${username}? Are your polka dots multiplying? How disturbing.`,
+		`Oh, it's ${username}. Really, that name... A little full of yourself, don't you think? How disturbing.`,
+		`Oh, ${username}. Never a good time or place for you to put some clothes on, hm? How disturbing.`,
+		`Oh, it's ${username}. Goodness, gracious, you're very long. Too long. How very disturbing.`,
+		`Oh, it's ${username}. So what exactly is stuffed inside that round head of yours? How disturbing?`,
+		`Saluton, ${username}! Do you know Esperanto?`,
+	];
+	return kingSubLines[Math.floor(Math.random() * kingSubLines.length)];
+}
+
 registerChannel('Katamari', 1438, Katamari, {
 	position: 'bottomRight',
 	site: 'GitHub',
 	handle: 'michaelgnslvs',
 });
-
-type KatamariObject = {
-	reason: string;
-	amount: string;
-};
 
 export function Katamari(props: ChannelProps) {
 	// const [event] = usePreloadedReplicant<Event>('currentEvent');
@@ -398,12 +426,12 @@ export function Katamari(props: ChannelProps) {
 	const [animationPlaying, setAnimationPlaying] = useState(false);
 
 	// Rolled Object
-	const [katamariObject, setKatamariObject] = useState<KatamariObject | undefined>(undefined);
-	const [pendingEvents, setPendingEvents] = useState<FormattedDonation[]>([]);
+	const [pendingDonationEvents, setPendingDonationEvents] = useState<FormattedDonation[]>([]);
 
 	// Goal amount
+	const [goalSequenceActive, setGoalSequenceActive] = useState(false);
 	const [goalProgress, setGoalProgress] = useState(totalRaw);
-	const goalStep = 1000;
+	const goalStep = 2000;
 	const goalTarget = (Math.floor(goalProgress / goalStep) + 1) * goalStep;
 	const goalAmount = formatGoalAmount(goalTarget);
 	const [goalAmountLocked, setAmountLocked] = useState(goalAmount);
@@ -439,15 +467,35 @@ export function Katamari(props: ChannelProps) {
 	const katamariBallCenterX = katamariBall.xOffset + katamariBall.size / 2;
 	const katamariBallCenterY = katamariBall.yOffset + katamariBall.size / 2;
 
+	// King stuff
+	const [pendingSubscriptionEvents, setPendingSubscriptionEvents] = useState<TwitchSubscription[]>([]);
+	const [kingVisible, setKingVisible] = useState(false);
+	const [kingText, setKingText] = useState<string | undefined>(undefined);
+	const kingHideTimeoutRef = useRef<number | null>(null);
+	const kingSpeakTimeoutRef = useRef<number | null>(null);
+	const [kingGoalActive, setKingGoalActive] = useState(false);
+	const [kingMouthForceWide, setKingMouthForceWide] = useState(false);
+	const kingGoalTimeoutRef = useRef<number | null>(null);
+	const [rainbowRunId, setRainbowRunId] = useState(0);
+	const kingGoalStartTimeoutRef = useRef<number | null>(null);
+	const goalCleanupTimeoutRef = useRef<number | null>(null);
+	const RAINBOW_IN_MS = 600;
+	const RAINBOW_OUT_MS = 400;
+
 	// Background scene
 	const [bgIndex, setBgIndex] = useState(0);
+	const [sceneTransitionActive, setSceneTransitionActive] = useState(false);
+	const [bgBlockerActive, setBgBlockerActive] = useState(false);
+	const [bgBlockerRunId, setBgBlockerRunId] = useState(0);
+	const bgBlockerStartTimeoutRef = useRef<number | null>(null);
+	const bgBlockerCoveredRef = useRef(false);
 
 	// Reset katamari -> appear()
 	const appear = () => {
 		console.log('Appear()');
 		setAmountLocked(goalAmount);
 		setAnimationPlaying(true);
-		setBgIndex(Math.floor(Math.random() * bgPool.length));
+		// setBgIndex(Math.floor(Math.random() * bgPool.length));
 		setTimeout(() => {
 			setAnimationPlaying(false);
 			console.log('End SetTimeout: appear()');
@@ -458,7 +506,78 @@ export function Katamari(props: ChannelProps) {
 	// Hit the goal
 	const goal = () => {
 		setAmountLocked(goalAmount);
+		setSceneTransitionActive(true);
+		setBgBlockerRunId((n) => n + 1);
+		setBgBlockerActive(false);
+		bgBlockerCoveredRef.current = false;
 		console.log('Goal Reached');
+
+		// Clear any prior goal sequence timers
+		if (kingGoalTimeoutRef.current != null) {
+			window.clearTimeout(kingGoalTimeoutRef.current);
+			kingGoalTimeoutRef.current = null;
+		}
+		if (kingGoalStartTimeoutRef.current != null) {
+			window.clearTimeout(kingGoalStartTimeoutRef.current);
+			kingGoalStartTimeoutRef.current = null;
+		}
+		if (goalCleanupTimeoutRef.current != null) {
+			window.clearTimeout(goalCleanupTimeoutRef.current);
+			goalCleanupTimeoutRef.current = null;
+		}
+		if (bgBlockerStartTimeoutRef.current != null) {
+			window.clearTimeout(bgBlockerStartTimeoutRef.current);
+			bgBlockerStartTimeoutRef.current = null;
+		}
+
+		// Block flyer spawns and clean up donation queue
+		setGoalSequenceActive(true);
+		setPendingDonationEvents([]);
+
+		// Show king first (no mouth wide, rainbow OFF)
+		setKingVisible(true);
+		setKingText(undefined);
+		setKingMouthForceWide(false);
+		setKingGoalActive(false);
+		setRainbowRunId((v) => v + 1);
+
+		// Beat 1: King appears
+		const appearBeatMs = 350;
+
+		kingGoalStartTimeoutRef.current = window.setTimeout(() => {
+			// Beat 2: Open mouth
+			setKingMouthForceWide(true);
+
+			// Beat 3: rainbow IN
+			setKingGoalActive(true);
+			bgBlockerStartTimeoutRef.current = window.setTimeout(() => {
+				setBgBlockerActive(true);
+				bgBlockerStartTimeoutRef.current = null;
+			}, 0);
+
+			// Clear flyers/stuck ONLY once rainbow is fully covering the screen
+			goalCleanupTimeoutRef.current = window.setTimeout(() => {
+				setFlyers([]);
+				setStuck([]);
+				goalCleanupTimeoutRef.current = null;
+			}, RAINBOW_IN_MS);
+
+			// Hold, then rainbow OUT + cleanup
+			kingGoalTimeoutRef.current = window.setTimeout(() => {
+				setKingGoalActive(false);
+				setKingMouthForceWide(false);
+
+				window.setTimeout(() => {
+					setKingVisible(false);
+					setKingText(undefined);
+					setGoalSequenceActive(false);
+				}, RAINBOW_OUT_MS + 200);
+
+				kingGoalTimeoutRef.current = null;
+			}, 2000);
+
+			kingGoalStartTimeoutRef.current = null;
+		}, appearBeatMs);
 	};
 
 	const katamariEvent = (donation: FormattedDonation) => {
@@ -487,6 +606,32 @@ export function Katamari(props: ChannelProps) {
 				scale: MIN_FLYER_SCALE + Math.random() * (MAX_FLYER_SCALE - MIN_FLYER_SCALE),
 			},
 		]);
+	};
+
+	const kingEvent = (sub: TwitchSubscription) => {
+		// Appear silently
+		setKingVisible(true);
+		setKingText(undefined);
+
+		if (kingHideTimeoutRef.current != null) {
+			window.clearTimeout(kingHideTimeoutRef.current);
+		}
+		if (kingSpeakTimeoutRef.current != null) {
+			window.clearTimeout(kingSpeakTimeoutRef.current);
+		}
+
+		// Delay before speaking
+		kingSpeakTimeoutRef.current = window.setTimeout(() => {
+			setKingText(getKingSubLine(sub.user_name));
+			kingSpeakTimeoutRef.current = null;
+		}, 400);
+
+		// Linger on screen
+		kingHideTimeoutRef.current = window.setTimeout(() => {
+			setKingVisible(false);
+			setKingText(undefined);
+			kingHideTimeoutRef.current = null;
+		}, 5000);
 	};
 
 	function onFlyerArrive(f: Flyer, orbitAngleDeg: number) {
@@ -523,20 +668,35 @@ export function Katamari(props: ChannelProps) {
 		// Process pending donation events
 		// Removing animation checker for now, no interrupting animations defined
 		// if (!animationPlaying && katamariObject == undefined) {
-		if (pendingEvents.length > 0) {
-			katamariEvent(pendingEvents[0]);
-			const ev: FormattedDonation[] = [...pendingEvents];
+		if (!goalSequenceActive && !sceneTransitionActive && pendingDonationEvents.length > 0) {
+			katamariEvent(pendingDonationEvents[0]);
+			const ev: FormattedDonation[] = [...pendingDonationEvents];
 			ev.splice(0, 1);
-			setPendingEvents(ev);
+			setPendingDonationEvents(ev);
+		}
+
+		if (!goalSequenceActive && !sceneTransitionActive && pendingSubscriptionEvents.length > 0) {
+			kingEvent(pendingSubscriptionEvents[0]);
+			const ev: TwitchSubscription[] = [...pendingSubscriptionEvents];
+			ev.splice(0, 1);
+			setPendingSubscriptionEvents(ev);
 		}
 		// }
 	});
 
 	// Listens for GDQ Donation event
 	useListenFor('donation', (donation: FormattedDonation) => {
-		const ev: FormattedDonation[] = [...pendingEvents];
+		if (goalSequenceActive || sceneTransitionActive) return;
+		const ev: FormattedDonation[] = [...pendingDonationEvents];
 		ev.push(donation);
-		setPendingEvents(ev);
+		setPendingDonationEvents(ev);
+	});
+
+	useListenFor('subscription', (subscription: TwitchSubscription) => {
+		if (goalSequenceActive || sceneTransitionActive) return;
+		const ev: TwitchSubscription[] = [...pendingSubscriptionEvents];
+		ev.push(subscription);
+		setPendingSubscriptionEvents(ev);
 	});
 
 	useEffect(() => {
@@ -571,12 +731,56 @@ export function Katamari(props: ChannelProps) {
 		}
 	}, [total?.raw, goalTarget, animationPlaying]);
 
+	useEffect(() => {
+		return () => {
+			if (kingHideTimeoutRef.current != null) {
+				window.clearTimeout(kingHideTimeoutRef.current);
+				kingHideTimeoutRef.current = null;
+			}
+			if (kingSpeakTimeoutRef.current != null) {
+				window.clearTimeout(kingSpeakTimeoutRef.current);
+				kingSpeakTimeoutRef.current = null;
+			}
+			if (kingGoalTimeoutRef.current != null) {
+				window.clearTimeout(kingGoalTimeoutRef.current);
+				kingGoalTimeoutRef.current = null;
+			}
+			if (kingGoalStartTimeoutRef.current != null) {
+				window.clearTimeout(kingGoalStartTimeoutRef.current);
+				kingGoalStartTimeoutRef.current = null;
+			}
+			if (bgBlockerStartTimeoutRef.current != null) {
+				window.clearTimeout(bgBlockerStartTimeoutRef.current);
+				bgBlockerStartTimeoutRef.current = null;
+			}
+		};
+	}, []);
+
 	return (
 		<Container>
 			<ParallaxBackground
 				backgrounds={bgPool}
 				selectedIndex={bgIndex}
 				// selectedIndex={5}
+			/>
+			<BgBlocker
+				key={bgBlockerRunId}
+				active={bgBlockerActive}
+				src={bgBlocker}
+				targetScale={2}
+				durationMsIn={800}
+				durationMsOut={600}
+				rotateDegIn={-90}
+				rotateDegOut={-45}
+				onCovered={() => {
+					if (bgBlockerCoveredRef.current) return;
+					bgBlockerCoveredRef.current = true;
+					setBgIndex(Math.floor(Math.random() * bgPool.length));
+				}}
+				onDone={() =>{
+					setBgBlockerActive(false);
+					setSceneTransitionActive(false);
+				}}
 			/>
 			<GridSprite
 				src={princeSheet}
@@ -603,6 +807,46 @@ export function Katamari(props: ChannelProps) {
 				</TotalEl>
 				<GoalAmount>{goalAmountLocked}</GoalAmount>
 			</KatamariTracker>
+			{kingVisible && (
+				<KingOfAllCosmos
+					xOffset="50%"
+					yOffset={10}
+					scale={0.5}
+					faceSrc={kingFace}
+					bgSprite={{
+						src: kingBgSheet,
+						tileWidth: 205,
+						tileHeight: 256,
+						columns: 14,
+						rows: 5,
+						fps: 24,
+						scale: 1.75,
+						frameCount: 64,
+					}}
+					mouthSrcs={['', kingMouth1, kingMouth2, kingMouth3]}
+					mouthForceWide={kingMouthForceWide}
+					mouthWideSrc={kingMouthWide}
+					mouthWideWidth={166}
+					mouthWideHeight={138}
+					rainbow={{
+						src: royalRainbow,
+						yOffset: 10,
+						durationMsIn: RAINBOW_IN_MS,
+						durationMsOut: RAINBOW_OUT_MS,
+						finalScaleX: 5,
+						finalScaleY: 0.9,
+					}}
+					rainbowActive={kingGoalActive}
+					rainbowRunId={rainbowRunId}
+					speaking={kingText != undefined}
+					mouthFps={8}
+					mouthAnchorY={0.75}
+					mouthWidth={80}
+					mouthHeight={48}
+					bubbleMaxWidth={256}
+					text={kingText}
+				/>
+			)}
 		</Container>
 	);
 }

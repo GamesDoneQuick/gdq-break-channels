@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
+import { useEffect, useRef, useState } from 'react';
 
 export const Container = styled.div`
 	position: absolute;
@@ -19,6 +20,150 @@ export const TotalEl = styled.div`
 	top: 50%;
 	transform: translate(0, -50%);
 	filter: drop-shadow(2px 3px black);
+`;
+
+// Background scene blocker (used to hide ParallaxBackground scene transitions)
+export type BgBlockerProps = {
+	active: boolean;
+	src: string;
+	targetScale?: number;
+	durationMsIn?: number;
+	durationMsOut?: number;
+	rotateDegIn?: number;
+	rotateDegOut?: number;
+	onCovered?: () => void;
+	onDone?: () => void;
+	className?: string;
+	style?: React.CSSProperties;
+};
+
+export function BgBlocker({
+	active,
+	src,
+	targetScale = 2.5,
+	durationMsIn = 900,
+	durationMsOut = 700,
+	rotateDegIn = -90,
+	rotateDegOut = -45,
+	onCovered,
+	onDone,
+	className,
+	style,
+}: BgBlockerProps) {
+	const [visible, setVisible] = useState(false);
+	const [phase, setPhase] = useState<'idle' | 'in' | 'out'>('idle');
+	const [scale, setScale] = useState(0.001);
+	const [rot, setRot] = useState(0);
+	const [opacity, setOpacity] = useState(0);
+
+	const inTimer = useRef<number | null>(null);
+	const outTimer = useRef<number | null>(null);
+	const raf1 = useRef<number | null>(null);
+	const raf2 = useRef<number | null>(null);
+
+	useEffect(() => {
+		return () => {
+			if (inTimer.current != null) window.clearTimeout(inTimer.current);
+			if (outTimer.current != null) window.clearTimeout(outTimer.current);
+			if (raf1.current != null) window.cancelAnimationFrame(raf1.current);
+			if (raf2.current != null) window.cancelAnimationFrame(raf2.current);
+		};
+	}, []);
+
+	useEffect(() => {
+		if (!active) {
+			setVisible(false);
+			setPhase('idle');
+			setScale(0.001);
+			setRot(0);
+			setOpacity(0);
+			return;
+		}
+
+		// Start sequence
+		setVisible(true);
+		setPhase('in');
+		setScale(0.001);
+		setRot(0);
+		setOpacity(0);
+
+		if (inTimer.current != null) window.clearTimeout(inTimer.current);
+		if (outTimer.current != null) window.clearTimeout(outTimer.current);
+		if (raf1.current != null) window.cancelAnimationFrame(raf1.current);
+		if (raf2.current != null) window.cancelAnimationFrame(raf2.current);
+		raf1.current = window.requestAnimationFrame(() => {
+			raf2.current = window.requestAnimationFrame(() => {
+				setOpacity(1);
+				setScale(Math.max(0.001, targetScale));
+				setRot(rotateDegIn);
+			});
+		});
+
+		inTimer.current = window.setTimeout(() => {
+			onCovered?.();
+			setPhase('out');
+			if (raf1.current != null) window.cancelAnimationFrame(raf1.current);
+			if (raf2.current != null) window.cancelAnimationFrame(raf2.current);
+			raf1.current = window.requestAnimationFrame(() => {
+				raf2.current = window.requestAnimationFrame(() => {
+					setOpacity(0);
+					setScale(0.001);
+					setRot(rotateDegIn + rotateDegOut);
+				});
+			});
+
+			outTimer.current = window.setTimeout(() => {
+				setVisible(false);
+				setPhase('idle');
+				onDone?.();
+			}, durationMsOut);
+		}, durationMsIn);
+
+		return () => {
+			if (inTimer.current != null) window.clearTimeout(inTimer.current);
+			if (outTimer.current != null) window.clearTimeout(outTimer.current);
+			if (raf1.current != null) window.cancelAnimationFrame(raf1.current);
+			if (raf2.current != null) window.cancelAnimationFrame(raf2.current);
+		};
+	}, [active, targetScale, durationMsIn, durationMsOut, rotateDegIn, rotateDegOut, onCovered, onDone]);
+
+	if (!visible) return null;
+
+	const transitionMs = phase === 'in' ? durationMsIn : durationMsOut;
+
+	return (
+		<BgBlockerRoot className={className} style={style}>
+			<BgBlockerImg
+				src={src}
+				draggable={false}
+				style={{
+					transform: `translate(-50%, -50%) scale(${scale}) rotate(${rot}deg)`,
+					transitionDuration: `${transitionMs}ms`,
+					opacity,
+				}}
+			/>
+		</BgBlockerRoot>
+	);
+}
+
+const BgBlockerRoot = styled.div`
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	pointer-events: none;
+	//z-index: 1;
+`;
+
+const BgBlockerImg = styled.img`
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform-origin: 50% 50%;
+	will-change: transform;
+	transition-property: transform, opacity;
+	transition-timing-function: ease-in-out;
+	//image-rendering: pixelated;
+	opacity: 0;
 `;
 
 export const GoalAmount = styled.div`
