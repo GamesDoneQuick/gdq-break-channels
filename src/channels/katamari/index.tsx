@@ -567,7 +567,7 @@ export function Katamari(props: ChannelProps) {
 	const RAINBOW_IN_MS = 600;
 	const RAINBOW_OUT_MS = 400;
 	const chanceOfKing = 1;
-	const chanceOfKingOnStuck = 10;
+	const chanceOfKingOnStuck = 1;
 
 	// Background scene
 	const [bgIndex, setBgIndex] = useState(0);
@@ -750,7 +750,7 @@ export function Katamari(props: ChannelProps) {
 			},
 		]);
 
-		if (Math.floor(Math.random() * 100) <= chanceOfKingOnStuck) {
+		if (Math.floor(Math.random() * 500) <= chanceOfKingOnStuck) {
 			kingSay(kingLines[Math.floor(Math.random() * kingLines.length)]);
 		}
 	}
