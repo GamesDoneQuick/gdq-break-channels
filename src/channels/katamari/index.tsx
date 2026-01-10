@@ -1,6 +1,6 @@
-import type { Event, FormattedDonation, Total, TwitchSubscription } from '@gdq/types/tracker';
+import type { FormattedDonation, Total, TwitchSubscription } from '@gdq/types/tracker';
 import { ChannelProps, registerChannel } from '../channels';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useListenFor, useReplicant } from 'use-nodecg';
 import TweenNumber from '@gdq/lib/components/TweenNumber';
 import { CurrencyToAbbreviation } from 'currency-to-abbreviation';
@@ -417,13 +417,29 @@ registerChannel('Katamari', 1438, Katamari, {
 	handle: 'michaelgnslvs',
 });
 
+function clearTimeoutRef(ref: React.MutableRefObject<number | null>) {
+	if (ref.current != null) {
+		window.clearTimeout(ref.current);
+		ref.current = null;
+	}
+}
+
+function shiftQueue<T>(queue: T[], setter: (v: T[]) => void): T | undefined {
+	if (queue.length === 0) return undefined;
+	const [first, ...rest] = queue;
+	setter(rest);
+	return first;
+}
+
+function enqueue<T>(queue: T[], setter: (v: T[]) => void, item: T) {
+	setter([...queue, item]);
+}
+
 export function Katamari(props: ChannelProps) {
-	// const [event] = usePreloadedReplicant<Event>('currentEvent');
 	const [total] = useReplicant<Total | null>('total', null);
 
 	// Totals
 	const totalRaw = total ? total.raw : 0;
-	const [animationPlaying, setAnimationPlaying] = useState(false);
 
 	// Rolled Object
 	const [pendingDonationEvents, setPendingDonationEvents] = useState<FormattedDonation[]>([]);
@@ -489,92 +505,101 @@ export function Katamari(props: ChannelProps) {
 	const [bgBlockerRunId, setBgBlockerRunId] = useState(0);
 	const bgBlockerStartTimeoutRef = useRef<number | null>(null);
 	const bgBlockerCoveredRef = useRef(false);
+	const [bgBlockerStartCovered, setBgBlockerStartCovered] = useState(false);
+	const initializingRef = useRef(true);
 
-	// Reset katamari -> appear()
-	const appear = () => {
-		console.log('Appear()');
-		setAmountLocked(goalAmount);
-		setAnimationPlaying(true);
-		// setBgIndex(Math.floor(Math.random() * bgPool.length));
-		setTimeout(() => {
-			setAnimationPlaying(false);
-			console.log('End SetTimeout: appear()');
-		}, 5000);
-		console.log('End appear()');
+	const resetUnwindTimeoutRef = useRef<number | null>(null);
+	const resetKingTimeoutRef = useRef<number | null>(null);
+
+	const reset = (opts?: { initial?: boolean }) => {
+		const initial = opts?.initial === true;
+
+		clearTimeoutRef(resetUnwindTimeoutRef);
+		clearTimeoutRef(resetKingTimeoutRef);
+
+		setSceneTransitionActive(true);
+		setGoalSequenceActive(true);
+		setPendingDonationEvents([]);
+		setPendingSubscriptionEvents([]);
+
+		setBgIndex(Math.floor(Math.random() * bgPool.length));
+		setFlyers([]);
+		setStuck([]);
+
+		if (initial) {
+			setKingVisible(false);
+			setKingText(undefined);
+			setKingGoalActive(false);
+			setKingMouthForceWide(false);
+			setRainbowRunId((v) => v + 1);
+
+			bgBlockerCoveredRef.current = true;
+			setBgBlockerRunId((n) => n + 1);
+			setBgBlockerStartCovered(true);
+			setBgBlockerActive(true);
+
+			window.requestAnimationFrame(() => {
+				setBgBlockerActive(false);
+				setBgBlockerStartCovered(false);
+			});
+
+			return;
+		}
+
+		setKingGoalActive(false);
+
+		resetUnwindTimeoutRef.current = window.setTimeout(() => {
+			setKingMouthForceWide(false);
+
+			resetKingTimeoutRef.current = window.setTimeout(() => {
+				setKingVisible(false);
+				setKingText(undefined);
+
+				window.requestAnimationFrame(() => {
+					setBgBlockerActive(false);
+				});
+
+				resetKingTimeoutRef.current = null;
+			}, 200);
+
+			resetUnwindTimeoutRef.current = null;
+		}, RAINBOW_OUT_MS);
 	};
 
-	// Hit the goal
 	const goal = () => {
 		setAmountLocked(goalAmount);
 		setSceneTransitionActive(true);
-		setBgBlockerRunId((n) => n + 1);
-		setBgBlockerActive(false);
-		bgBlockerCoveredRef.current = false;
-		console.log('Goal Reached');
-
-		// Clear any prior goal sequence timers
-		if (kingGoalTimeoutRef.current != null) {
-			window.clearTimeout(kingGoalTimeoutRef.current);
-			kingGoalTimeoutRef.current = null;
-		}
-		if (kingGoalStartTimeoutRef.current != null) {
-			window.clearTimeout(kingGoalStartTimeoutRef.current);
-			kingGoalStartTimeoutRef.current = null;
-		}
-		if (goalCleanupTimeoutRef.current != null) {
-			window.clearTimeout(goalCleanupTimeoutRef.current);
-			goalCleanupTimeoutRef.current = null;
-		}
-		if (bgBlockerStartTimeoutRef.current != null) {
-			window.clearTimeout(bgBlockerStartTimeoutRef.current);
-			bgBlockerStartTimeoutRef.current = null;
-		}
-
-		// Block flyer spawns and clean up donation queue
 		setGoalSequenceActive(true);
-		setPendingDonationEvents([]);
 
-		// Show king first (no mouth wide, rainbow OFF)
+		setPendingDonationEvents([]);
+		setPendingSubscriptionEvents([]);
+
+		bgBlockerCoveredRef.current = false;
+		setBgBlockerRunId((n) => n + 1);
+		setBgBlockerStartCovered(false);
+		setBgBlockerActive(false);
+
+		clearTimeoutRef(kingGoalTimeoutRef);
+		clearTimeoutRef(kingGoalStartTimeoutRef);
+		clearTimeoutRef(goalCleanupTimeoutRef);
+		clearTimeoutRef(bgBlockerStartTimeoutRef);
+
 		setKingVisible(true);
 		setKingText(undefined);
 		setKingMouthForceWide(false);
 		setKingGoalActive(false);
 		setRainbowRunId((v) => v + 1);
 
-		// Beat 1: King appears
 		const appearBeatMs = 350;
 
 		kingGoalStartTimeoutRef.current = window.setTimeout(() => {
-			// Beat 2: Open mouth
 			setKingMouthForceWide(true);
-
-			// Beat 3: rainbow IN
 			setKingGoalActive(true);
+
 			bgBlockerStartTimeoutRef.current = window.setTimeout(() => {
 				setBgBlockerActive(true);
 				bgBlockerStartTimeoutRef.current = null;
 			}, 0);
-
-			// Clear flyers/stuck ONLY once rainbow is fully covering the screen
-			goalCleanupTimeoutRef.current = window.setTimeout(() => {
-				setFlyers([]);
-				setStuck([]);
-				goalCleanupTimeoutRef.current = null;
-			}, RAINBOW_IN_MS);
-
-			// Hold, then rainbow OUT + cleanup
-			kingGoalTimeoutRef.current = window.setTimeout(() => {
-				setKingGoalActive(false);
-				setKingMouthForceWide(false);
-
-				window.setTimeout(() => {
-					setKingVisible(false);
-					setKingText(undefined);
-					setGoalSequenceActive(false);
-				}, RAINBOW_OUT_MS + 200);
-
-				kingGoalTimeoutRef.current = null;
-			}, 2000);
 
 			kingGoalStartTimeoutRef.current = null;
 		}, appearBeatMs);
@@ -586,7 +611,6 @@ export function Katamari(props: ChannelProps) {
 		const id = `${Date.now()}-${Math.random()}`;
 		const startX = 1192;
 		const startY = 249;
-		console.log(`Donation received: ${donation.amount}`);
 
 		// Spawn a flyer
 		setFlyers((prev) => [
@@ -595,7 +619,6 @@ export function Katamari(props: ChannelProps) {
 				id,
 				src: pickObject(),
 				amountText: donation.amount,
-				startMs: Date.now(),
 				durationMs: flyerTravelMs,
 				startX,
 				startY,
@@ -613,12 +636,8 @@ export function Katamari(props: ChannelProps) {
 		setKingVisible(true);
 		setKingText(undefined);
 
-		if (kingHideTimeoutRef.current != null) {
-			window.clearTimeout(kingHideTimeoutRef.current);
-		}
-		if (kingSpeakTimeoutRef.current != null) {
-			window.clearTimeout(kingSpeakTimeoutRef.current);
-		}
+		clearTimeoutRef(kingHideTimeoutRef);
+		clearTimeoutRef(kingSpeakTimeoutRef);
 
 		// Delay before speaking
 		kingSpeakTimeoutRef.current = window.setTimeout(() => {
@@ -655,7 +674,6 @@ export function Katamari(props: ChannelProps) {
 	}
 
 	useRafLoop(() => {
-		// Tween the progress tracker scaling smoothly toward the latest target
 		const speed = 0.12;
 		const cur = currentProgressScaleRef.current;
 		const next = lerp(cur, targetProgressScaleRef.current, speed);
@@ -665,94 +683,69 @@ export function Katamari(props: ChannelProps) {
 			setProgressScale(next);
 		}
 
-		// Process pending donation events
-		// Removing animation checker for now, no interrupting animations defined
-		// if (!animationPlaying && katamariObject == undefined) {
-		if (!goalSequenceActive && !sceneTransitionActive && pendingDonationEvents.length > 0) {
-			katamariEvent(pendingDonationEvents[0]);
-			const ev: FormattedDonation[] = [...pendingDonationEvents];
-			ev.splice(0, 1);
-			setPendingDonationEvents(ev);
-		}
+		if (!goalSequenceActive && !sceneTransitionActive) {
+			const donation = shiftQueue(pendingDonationEvents, setPendingDonationEvents);
+			if (donation) katamariEvent(donation);
 
-		if (!goalSequenceActive && !sceneTransitionActive && pendingSubscriptionEvents.length > 0) {
-			kingEvent(pendingSubscriptionEvents[0]);
-			const ev: TwitchSubscription[] = [...pendingSubscriptionEvents];
-			ev.splice(0, 1);
-			setPendingSubscriptionEvents(ev);
+			const sub = shiftQueue(pendingSubscriptionEvents, setPendingSubscriptionEvents);
+			if (sub) kingEvent(sub);
 		}
-		// }
 	});
 
 	// Listens for GDQ Donation event
 	useListenFor('donation', (donation: FormattedDonation) => {
 		if (goalSequenceActive || sceneTransitionActive) return;
-		const ev: FormattedDonation[] = [...pendingDonationEvents];
-		ev.push(donation);
-		setPendingDonationEvents(ev);
+		enqueue(pendingDonationEvents, setPendingDonationEvents, donation);
 	});
 
 	useListenFor('subscription', (subscription: TwitchSubscription) => {
 		if (goalSequenceActive || sceneTransitionActive) return;
-		const ev: TwitchSubscription[] = [...pendingSubscriptionEvents];
-		ev.push(subscription);
-		setPendingSubscriptionEvents(ev);
+		enqueue(pendingSubscriptionEvents, setPendingSubscriptionEvents, subscription);
 	});
 
-	useEffect(() => {
-		targetProgressScaleRef.current = Math.max(0.001, targetScale);
-	}, [targetScale]);
+	const handleBgBlockerCovered = useCallback(() => {
+		if (bgBlockerCoveredRef.current) return;
+		bgBlockerCoveredRef.current = true;
+		reset();
+	}, []);
 
-	// Keep goal display locked to the latest computed goal text
+	const handleBgBlockerDone = useCallback(() => {
+		setSceneTransitionActive(false);
+		setGoalSequenceActive(false);
+	}, []);
+
 	useEffect(() => {
+		if (goalSequenceActive || sceneTransitionActive) return;
+		targetProgressScaleRef.current = Math.max(0.001, targetScale);
+	}, [targetScale, goalSequenceActive, sceneTransitionActive]);
+
+	useEffect(() => {
+		if (goalSequenceActive || sceneTransitionActive) return;
 		setAmountLocked(goalAmount);
-	}, [goalTarget]);
+	}, [goalTarget, goalSequenceActive, sceneTransitionActive]);
 
 	useEffect(() => {
 		if ((total?.raw ?? 0) >= goalTarget) {
 			setGoalProgress(total?.raw ?? 0);
-
-			if (!animationPlaying) {
-				setAnimationPlaying(true);
-				// TRIGGER GOAL ANIMATIONS
+			if (!goalSequenceActive && !sceneTransitionActive) {
 				goal();
-				// TRIGGER START AGAIN
-				appear();
-				// setTimeout(() => {
-				// 	// let country: Country = generateRandomCountry();
-				// 	// Roll until unique
-				// 	// while (country.id == currentCountry.id) {
-				// 	// 	country = generateRandomCountry();
-				// 	// }
-				// 	// setCurrentCountry(country);
-				// 	appear();
-				// }, 11200);
 			}
 		}
-	}, [total?.raw, goalTarget, animationPlaying]);
+	}, [total?.raw, goalTarget, goalSequenceActive, sceneTransitionActive]);
+
+	useEffect(() => {
+		if (!initializingRef.current) return;
+		initializingRef.current = false;
+		reset({ initial: true });
+	}, []);
 
 	useEffect(() => {
 		return () => {
-			if (kingHideTimeoutRef.current != null) {
-				window.clearTimeout(kingHideTimeoutRef.current);
-				kingHideTimeoutRef.current = null;
-			}
-			if (kingSpeakTimeoutRef.current != null) {
-				window.clearTimeout(kingSpeakTimeoutRef.current);
-				kingSpeakTimeoutRef.current = null;
-			}
-			if (kingGoalTimeoutRef.current != null) {
-				window.clearTimeout(kingGoalTimeoutRef.current);
-				kingGoalTimeoutRef.current = null;
-			}
-			if (kingGoalStartTimeoutRef.current != null) {
-				window.clearTimeout(kingGoalStartTimeoutRef.current);
-				kingGoalStartTimeoutRef.current = null;
-			}
-			if (bgBlockerStartTimeoutRef.current != null) {
-				window.clearTimeout(bgBlockerStartTimeoutRef.current);
-				bgBlockerStartTimeoutRef.current = null;
-			}
+			clearTimeoutRef(kingHideTimeoutRef);
+			clearTimeoutRef(kingSpeakTimeoutRef);
+			clearTimeoutRef(kingGoalTimeoutRef);
+			clearTimeoutRef(kingGoalStartTimeoutRef);
+			clearTimeoutRef(bgBlockerStartTimeoutRef);
 		};
 	}, []);
 
@@ -766,21 +759,15 @@ export function Katamari(props: ChannelProps) {
 			<BgBlocker
 				key={bgBlockerRunId}
 				active={bgBlockerActive}
+				startCovered={bgBlockerStartCovered}
 				src={bgBlocker}
 				targetScale={2}
 				durationMsIn={800}
 				durationMsOut={600}
 				rotateDegIn={-90}
 				rotateDegOut={-45}
-				onCovered={() => {
-					if (bgBlockerCoveredRef.current) return;
-					bgBlockerCoveredRef.current = true;
-					setBgIndex(Math.floor(Math.random() * bgPool.length));
-				}}
-				onDone={() =>{
-					setBgBlockerActive(false);
-					setSceneTransitionActive(false);
-				}}
+				onCovered={handleBgBlockerCovered}
+				onDone={handleBgBlockerDone}
 			/>
 			<GridSprite
 				src={princeSheet}

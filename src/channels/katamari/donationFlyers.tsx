@@ -1,7 +1,5 @@
-// donationFlyers.tsx
 import React, { useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { keyframes } from '@emotion/react';
 import { clamp01, lerp } from './utilities';
 import { useRafLoop } from 'react-use';
 
@@ -9,7 +7,6 @@ export type Flyer = {
 	id: string;
 	src: string;
 	amountText: string;
-	startMs: number;
 	durationMs: number;
 	startX: number;
 	startY: number;
@@ -31,11 +28,8 @@ export type Stuck = {
 export type DonationFlyersProps = {
 	flyers: Flyer[];
 	stuck: Stuck[];
-
 	targetX: number;
 	targetY: number;
-
-	// onFlyerArrive: (flyer: Flyer) => void;
 	onFlyerArrive: (flyer: Flyer, orbitAngleDeg: number) => void;
 };
 
@@ -48,7 +42,16 @@ export function DonationFlyers({ flyers, stuck, targetX, targetY, onFlyerArrive 
 	const arrivedIdsRef = useRef<Set<string>>(new Set());
 	const orbitStartMsRef = useRef<number>(Date.now());
 	const ORBIT_PERIOD_MS = 1600;
-	const orbitAngelDeg = (((now - orbitStartMsRef.current) % ORBIT_PERIOD_MS) / ORBIT_PERIOD_MS) * 360;
+
+	const orbitAngleDeg = (((now - orbitStartMsRef.current) % ORBIT_PERIOD_MS) / ORBIT_PERIOD_MS) * 360;
+
+	const markLoaded = (id: string) => {
+		if (!loadedIdsRef.current.has(id)) {
+			loadedIdsRef.current.add(id);
+			startAtRef.current.set(id, Date.now());
+			setNow(Date.now());
+		}
+	};
 
 	return (
 		<Layer>
@@ -63,7 +66,7 @@ export function DonationFlyers({ flyers, stuck, targetX, targetY, onFlyerArrive 
 				if (t >= 1 && !arrivedIdsRef.current.has(f.id)) {
 					arrivedIdsRef.current.add(f.id);
 					// queueMicrotask(() => onFlyerArrive(f));
-					queueMicrotask(() => onFlyerArrive(f, orbitAngelDeg));
+					queueMicrotask(() => onFlyerArrive(f, orbitAngleDeg));
 				}
 
 				return (
@@ -77,20 +80,8 @@ export function DonationFlyers({ flyers, stuck, targetX, targetY, onFlyerArrive 
 							src={f.src}
 							draggable={false}
 							style={{ transform: `scale(${f.scale})`, opacity: loaded ? 1 : 0 }}
-							onLoad={() => {
-								if (!loadedIdsRef.current.has(f.id)) {
-									loadedIdsRef.current.add(f.id);
-									startAtRef.current.set(f.id, Date.now());
-									setNow(Date.now());
-								}
-							}}
-							onError={() => {
-								if (!loadedIdsRef.current.has(f.id)) {
-									loadedIdsRef.current.add(f.id);
-									startAtRef.current.set(f.id, Date.now());
-									setNow(Date.now());
-								}
-							}}
+							onLoad={() => markLoaded(f.id)}
+							onError={() => markLoaded(f.id)}
 						/>
 					</FlyerRoot>
 				);
@@ -98,7 +89,7 @@ export function DonationFlyers({ flyers, stuck, targetX, targetY, onFlyerArrive 
 
 			{stuck.length > 0 && (
 				<OrbitRoot style={{ left: targetX, top: targetY }}>
-					<OrbitSpin style={{ transform: `rotate(${orbitAngelDeg}deg)` }}>
+					<OrbitSpin style={{ transform: `rotate(${orbitAngleDeg}deg)` }}>
 						{stuck.map((s) => (
 							<StuckItem
 								key={s.id}
@@ -150,11 +141,6 @@ const FlyerImg = styled.img`
 	transition: opacity 120ms linear;
 `;
 
-const spin = keyframes`
-	from { transform: rotate(0deg); }
-	to   { transform: rotate(360deg); }
-`;
-
 const OrbitRoot = styled.div`
 	position: absolute;
 	width: 0;
@@ -167,8 +153,6 @@ const OrbitSpin = styled.div`
 	left: 0;
 	top: 0;
 	transform-origin: 0 0;
-	//animation: ${spin} 1.6s linear infinite;
-	//transform: rotate(var(--orbit-rot));
 	will-change: transform;
 `;
 

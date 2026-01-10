@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
 import { useRafLoop } from 'react-use';
 import { GridSprite } from './sprites';
+import { clampInt } from './utilities';
 
 export type KingOfAllCosmosProps = {
 	xOffset?: number | string;
@@ -62,8 +63,8 @@ export function KingOfAllCosmos({
 	mouthWideSrc,
 	mouthWidth = 96,
 	mouthHeight = 48,
-	mouthWideWidth = mouthWidth,
-	mouthWideHeight = mouthHeight,
+	mouthWideWidth,
+	mouthWideHeight,
 	rainbow,
 	rainbowActive = false,
 	rainbowRunId = 0,
@@ -88,8 +89,10 @@ export function KingOfAllCosmos({
 	let activeMouthIndex = -1;
 
 	if (mouthSrcs?.length) {
+		const maxIndex = mouthSrcs.length - 1;
+
 		if (mouthIndex != null) {
-			activeMouthIndex = clampInt(mouthIndex, 0, mouthSrcs.length - 1);
+			activeMouthIndex = clampInt(mouthIndex, 0, maxIndex);
 		} else if (!speaking || mouthSrcs.length === 1) {
 			activeMouthIndex = 0;
 		} else {
@@ -99,8 +102,20 @@ export function KingOfAllCosmos({
 	}
 
 	const mouthSrc = activeMouthIndex >= 0 ? mouthSrcs[activeMouthIndex] : undefined;
-
 	const bubbleVisible = Boolean(text && text.trim().length > 0);
+	const mouthStyle = {
+		left: `${mouthAnchorX * 100}%`,
+		top: `${mouthAnchorY * 100}%`,
+		width: mouthWidth,
+		height: mouthHeight,
+	};
+
+	const mouthWideStyle = {
+		left: `${mouthAnchorX * 100}%`,
+		top: '78%',
+		width: mouthWideWidth,
+		height: mouthWideHeight,
+	};
 
 	return (
 		<KingRoot
@@ -132,29 +147,9 @@ export function KingOfAllCosmos({
 				)}
 				<FaceImg src={faceSrc} draggable={false} />
 				{mouthForceWide && mouthWideSrc ? (
-					<MouthImg
-						src={mouthWideSrc}
-						draggable={false}
-						style={{
-							left: `${mouthAnchorX * 100}%`,
-							top: '78%',
-							width: mouthWideWidth,
-							height: mouthWideHeight,
-						}}
-					/>
+					<MouthImg src={mouthWideSrc} draggable={false} style={mouthWideStyle} />
 				) : (
-					mouthSrc && (
-						<MouthImg
-							src={mouthSrc}
-							draggable={false}
-							style={{
-								left: `${mouthAnchorX * 100}%`,
-								top: `${mouthAnchorY * 100}%`,
-								width: mouthWidth,
-								height: mouthHeight,
-							}}
-						/>
-					)
+					mouthSrc && <MouthImg src={mouthSrc} draggable={false} style={mouthStyle} />
 				)}
 
 				{rainbow && (
@@ -193,10 +188,6 @@ export function KingOfAllCosmos({
 	);
 }
 
-function clampInt(n: number, min: number, max: number) {
-	return Math.max(min, Math.min(max, Math.floor(n)));
-}
-
 const KingRoot = styled.div`
 	position: absolute;
 	pointer-events: none;
@@ -217,7 +208,6 @@ const BgLayer = styled.div`
 	position: absolute;
 	left: 50%;
 	top: 50%;
-	//transform: translate(-50%, -50%);
 	pointer-events: none;
 	z-index: -1;
 	animation: ${rotateClockwise} 10s linear infinite;
@@ -268,14 +258,11 @@ const BubbleAnchor = styled.div`
 const Bubble = styled.div`
 	position: relative;
 	display: inline-block;
-
 	background: #ffffff;
 	border: 4px solid #000000;
 	border-radius: 999px;
 	padding: 14px 18px;
 	box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
-
-	/* Tail pointing upward at the mouth */
 	&::before {
 		content: '';
 		position: absolute;
@@ -297,8 +284,6 @@ const Bubble = styled.div`
 		top: -14px;
 		left: 50%;
 		transform: translateX(-50%);
-
-		/* inner (white) triangle */
 		width: 0;
 		height: 0;
 		border-left: 12px solid transparent;

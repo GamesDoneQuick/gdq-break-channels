@@ -22,7 +22,6 @@ export const TotalEl = styled.div`
 	filter: drop-shadow(2px 3px black);
 `;
 
-// Background scene blocker (used to hide ParallaxBackground scene transitions)
 export type BgBlockerProps = {
 	active: boolean;
 	src: string;
@@ -31,6 +30,7 @@ export type BgBlockerProps = {
 	durationMsOut?: number;
 	rotateDegIn?: number;
 	rotateDegOut?: number;
+	startCovered?: boolean;
 	onCovered?: () => void;
 	onDone?: () => void;
 	className?: string;
@@ -45,6 +45,7 @@ export function BgBlocker({
 	durationMsOut = 700,
 	rotateDegIn = -90,
 	rotateDegOut = -45,
+	startCovered = false,
 	onCovered,
 	onDone,
 	className,
@@ -61,98 +62,110 @@ export function BgBlocker({
 	const raf1 = useRef<number | null>(null);
 	const raf2 = useRef<number | null>(null);
 
-	useEffect(() => {
-		return () => {
-			if (inTimer.current != null) window.clearTimeout(inTimer.current);
-			if (outTimer.current != null) window.clearTimeout(outTimer.current);
-			if (raf1.current != null) window.cancelAnimationFrame(raf1.current);
-			if (raf2.current != null) window.cancelAnimationFrame(raf2.current);
-		};
-	}, []);
-
-	useEffect(() => {
-		if (!active) {
-			setVisible(false);
-			setPhase('idle');
-			setScale(0.001);
-			setRot(0);
-			setOpacity(0);
-			return;
-		}
-
-		// Start sequence
-		setVisible(true);
-		setPhase('in');
-		setScale(0.001);
-		setRot(0);
-		setOpacity(0);
-
+	const clearAll = () => {
 		if (inTimer.current != null) window.clearTimeout(inTimer.current);
 		if (outTimer.current != null) window.clearTimeout(outTimer.current);
 		if (raf1.current != null) window.cancelAnimationFrame(raf1.current);
 		if (raf2.current != null) window.cancelAnimationFrame(raf2.current);
-		raf1.current = window.requestAnimationFrame(() => {
-			raf2.current = window.requestAnimationFrame(() => {
+		inTimer.current = null;
+		outTimer.current = null;
+		raf1.current = null;
+		raf2.current = null;
+	};
+
+	const resetState = () => {
+		setVisible(false);
+		setPhase('idle');
+		setScale(0.001);
+		setRot(0);
+		setOpacity(0);
+	};
+
+	useEffect(() => {
+		return () => {
+			clearAll();
+		};
+	}, []);
+
+	useEffect(() => {
+		clearAll();
+
+		if (active) {
+			setVisible(true);
+
+			if (startCovered) {
+				setPhase('in');
 				setOpacity(1);
 				setScale(Math.max(0.001, targetScale));
 				setRot(rotateDegIn);
-			});
-		});
+				inTimer.current = window.setTimeout(() => {
+					onCovered?.();
+					inTimer.current = null;
+				}, 0);
+				return;
+			}
 
-		inTimer.current = window.setTimeout(() => {
-			onCovered?.();
-			setPhase('out');
-			if (raf1.current != null) window.cancelAnimationFrame(raf1.current);
-			if (raf2.current != null) window.cancelAnimationFrame(raf2.current);
+			setPhase('in');
+			setScale(0.001);
+			setRot(0);
+			setOpacity(0);
+
 			raf1.current = window.requestAnimationFrame(() => {
 				raf2.current = window.requestAnimationFrame(() => {
-					setOpacity(0);
-					setScale(0.001);
-					setRot(rotateDegIn + rotateDegOut);
+					setOpacity(1);
+					setScale(Math.max(0.001, targetScale));
+					setRot(rotateDegIn);
 				});
 			});
 
-			outTimer.current = window.setTimeout(() => {
-				setVisible(false);
-				setPhase('idle');
-				onDone?.();
-			}, durationMsOut);
-		}, durationMsIn);
+			inTimer.current = window.setTimeout(() => {
+				onCovered?.();
+				inTimer.current = null;
+			}, durationMsIn);
 
-		return () => {
-			if (inTimer.current != null) window.clearTimeout(inTimer.current);
-			if (outTimer.current != null) window.clearTimeout(outTimer.current);
-			if (raf1.current != null) window.cancelAnimationFrame(raf1.current);
-			if (raf2.current != null) window.cancelAnimationFrame(raf2.current);
-		};
-	}, [active, targetScale, durationMsIn, durationMsOut, rotateDegIn, rotateDegOut, onCovered, onDone]);
+			return;
+		}
+
+		if (!visible) return;
+
+		setPhase('out');
+		setOpacity(0);
+		setScale(0.001);
+		setRot(rotateDegOut);
+
+		outTimer.current = window.setTimeout(() => {
+			resetState();
+			onDone?.();
+			outTimer.current = null;
+		}, durationMsOut);
+	}, [
+		active,
+		startCovered,
+		visible,
+		targetScale,
+		rotateDegIn,
+		rotateDegOut,
+		durationMsIn,
+		durationMsOut,
+		onCovered,
+		onDone,
+	]);
 
 	if (!visible) return null;
 
-	const transitionMs = phase === 'in' ? durationMsIn : durationMsOut;
-
 	return (
-		<BgBlockerRoot className={className} style={style}>
-			<BgBlockerImg
-				src={src}
-				draggable={false}
-				style={{
-					transform: `translate(-50%, -50%) scale(${scale}) rotate(${rot}deg)`,
-					transitionDuration: `${transitionMs}ms`,
-					opacity,
-				}}
-			/>
-		</BgBlockerRoot>
+		<BgBlockerImg
+			className={className}
+			src={src}
+			style={{
+				transform: `translate(-50%, -50%) scale(${scale}) rotate(${rot}deg)`,
+				opacity,
+				transitionDuration: `${phase === 'in' ? durationMsIn : durationMsOut}ms`,
+				...style,
+			}}
+		/>
 	);
 }
-
-const BgBlockerRoot = styled.div`
-	position: absolute;
-	inset: 0;
-	overflow: hidden;
-	pointer-events: none;
-	//z-index: 1;
-`;
 
 const BgBlockerImg = styled.img`
 	position: absolute;
@@ -162,7 +175,6 @@ const BgBlockerImg = styled.img`
 	will-change: transform;
 	transition-property: transform, opacity;
 	transition-timing-function: ease-in-out;
-	//image-rendering: pixelated;
 	opacity: 0;
 `;
 
@@ -313,7 +325,7 @@ const outerPulseB = keyframes`
 	50%      { transform: scale(1); }
 `;
 
-// 3 seconds for 90-degree rotation = 12 seconds 360 degrees
+// From gameplay footage: 3 seconds for 90-degree rotation = 12 seconds 360 degrees
 // Inner shape pulses 4 times per 90 degrees
 const innerPulseSpin = keyframes`
 	0% {

@@ -25,13 +25,16 @@ export type ParallaxBackgroundProps = {
 	selectedIndex?: number;
 };
 
+function wrapIndex(idx: number, len: number) {
+	return ((idx % len) + len) % len;
+}
+
 function resolvePreset(props: ParallaxBackgroundProps): BackgroundScene | undefined {
 	const { backgrounds, selectedIndex } = props;
 	if (!backgrounds || backgrounds.length === 0) return undefined;
 
 	if (typeof selectedIndex === 'number') {
-		const idx = ((selectedIndex % backgrounds.length) + backgrounds.length) % backgrounds.length;
-		return backgrounds[idx];
+		return backgrounds[wrapIndex(selectedIndex, backgrounds.length)];
 	}
 
 	// Default: first preset

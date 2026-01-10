@@ -9,3 +9,7 @@ export function easeOutCubic(t: number) {
 export function lerp(a: number, b: number, t: number) {
 	return a + (b - a) * t;
 }
+
+export function clampInt(n: number, min: number, max: number) {
+	return Math.max(min, Math.min(max, Math.floor(n)));
+}
