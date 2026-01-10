@@ -379,6 +379,8 @@ function pickObject() {
 }
 const MIN_FLYER_SCALE = 1;
 const MAX_FLYER_SCALE = 4;
+const MIN_DONO_THRESHOLD = 10;
+const MAX_DONO_THRESHOLD = 200;
 
 // King
 import kingBgSheet from './assets/sprites/king/kingBgSheet.png';
@@ -691,7 +693,14 @@ export function Katamari(props: ChannelProps) {
 					endY: startY,
 					stick: false,
 					arrived: false,
-					scale: MIN_FLYER_SCALE + Math.random() * (MAX_FLYER_SCALE - MIN_FLYER_SCALE),
+					// scale: MIN_FLYER_SCALE + Math.random() * (MAX_FLYER_SCALE - MIN_FLYER_SCALE),
+					scale: lerp(
+						MIN_FLYER_SCALE,
+						MAX_FLYER_SCALE,
+						clamp01(
+							(donation.rawAmount - MIN_DONO_THRESHOLD) / (MAX_DONO_THRESHOLD - MIN_DONO_THRESHOLD),
+						),
+					),
 				},
 			]);
 		}
