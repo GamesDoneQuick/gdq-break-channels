@@ -73,7 +73,7 @@ export function DonationFlyers({ flyers, stuck, targetX, targetY, onFlyerArrive 
 					<FlyerRoot key={f.id} style={{ left: x, top: y, ['--flyer-scale' as any]: f.scale }}>
 						{!f.stick && (
 							<AmountText style={{ visibility: f.arrived ? 'hidden' : 'visible' }}>
-								{f.amountText}
+								{/*{f.amountText}*/}
 							</AmountText>
 						)}
 						<FlyerImg

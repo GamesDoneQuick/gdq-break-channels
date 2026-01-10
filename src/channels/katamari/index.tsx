@@ -445,6 +445,7 @@ export function Katamari(props: ChannelProps) {
 	const [pendingDonationEvents, setPendingDonationEvents] = useState<FormattedDonation[]>([]);
 
 	// Goal amount
+	const softGoalSpokenTargetRef = useRef<number | null>(null);
 	const [goalSequenceActive, setGoalSequenceActive] = useState(false);
 	const [goalProgress, setGoalProgress] = useState(totalRaw);
 	const goalStep = 2000;
@@ -478,6 +479,7 @@ export function Katamari(props: ChannelProps) {
 	const [stuck, setStuck] = useState<Stuck[]>([]);
 	const flyerTravelMs = 3000;
 	const flyerStopX = 540;
+	const minFlyersForTransition = 10;
 
 	const katamariBall = { size: 250, xOffset: 350, yOffset: 140 };
 	const katamariBallCenterX = katamariBall.xOffset + katamariBall.size / 2;
@@ -606,8 +608,6 @@ export function Katamari(props: ChannelProps) {
 	};
 
 	const katamariEvent = (donation: FormattedDonation) => {
-		// Don't need this, donation.amount is already a formatted string with dollar sign
-		// const amountText = `$${donation.amount}`;
 		const id = `${Date.now()}-${Math.random()}`;
 		const startX = 1192;
 		const startY = 249;
@@ -724,14 +724,47 @@ export function Katamari(props: ChannelProps) {
 		setAmountLocked(goalAmount);
 	}, [goalTarget, goalSequenceActive, sceneTransitionActive]);
 
+	// useEffect(() => {
+	// 	if ((total?.raw ?? 0) >= goalTarget) {
+	// 		setGoalProgress(total?.raw ?? 0);
+	// 		if (!goalSequenceActive && !sceneTransitionActive) {
+	// 			goal();
+	// 		}
+	// 	}
+	// }, [total?.raw, goalTarget, goalSequenceActive, sceneTransitionActive]);
 	useEffect(() => {
-		if ((total?.raw ?? 0) >= goalTarget) {
-			setGoalProgress(total?.raw ?? 0);
+		const raw = total?.raw ?? 0;
+
+		if (raw >= goalTarget) {
+			setGoalProgress(raw);
+
 			if (!goalSequenceActive && !sceneTransitionActive) {
-				goal();
+				if (stuck.length >= minFlyersForTransition) {
+					softGoalSpokenTargetRef.current = null;
+					goal();
+				} else if (softGoalSpokenTargetRef.current !== goalTarget) {
+					softGoalSpokenTargetRef.current = goalTarget;
+
+					setKingVisible(true);
+					setKingText(undefined);
+
+					clearTimeoutRef(kingHideTimeoutRef);
+					clearTimeoutRef(kingSpeakTimeoutRef);
+
+					kingSpeakTimeoutRef.current = window.setTimeout(() => {
+						setKingText('PLACEHOLDER: Not enough stuck flyers yet!');
+						kingSpeakTimeoutRef.current = null;
+					}, 400);
+
+					kingHideTimeoutRef.current = window.setTimeout(() => {
+						setKingVisible(false);
+						setKingText(undefined);
+						kingHideTimeoutRef.current = null;
+					}, 5000);
+				}
 			}
 		}
-	}, [total?.raw, goalTarget, goalSequenceActive, sceneTransitionActive]);
+	}, [total?.raw, goalTarget, goalSequenceActive, sceneTransitionActive, stuck.length]);
 
 	useEffect(() => {
 		if (!initializingRef.current) return;
