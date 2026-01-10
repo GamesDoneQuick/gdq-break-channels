@@ -406,10 +406,71 @@ function getKingSubLine(username: string) {
 		`Oh, ${username}. Never a good time or place for you to put some clothes on, hm? How disturbing.`,
 		`Oh, it's ${username}. Goodness, gracious, you're very long. Too long. How very disturbing.`,
 		`Oh, it's ${username}. So what exactly is stuffed inside that round head of yours? How disturbing?`,
-		`Saluton, ${username}! Do you know Esperanto?`,
+		`Huh? ${username}? When we saw eachother last, you did have a neck, yes? My, how disturbing!`,
+		`Ah, ${username}. We saw you on the elephant, but you were kind of embedded. How disturbing.`,
+		`Oh, ${username}. That head of yours, the shape is a bit much. How disturbing.`,
+		`Oh, there's ${username}. Styling yourself as a superhero? How disturbing.`,
+		`Hi-dee-ho, ${username}. When is that hole going to be fixed? How disturbing.`,
+		`Hello there, ${username}. Is that cutesy phase of yours ever going to end? How disturbing.`,
+		`Oh, ${username}! You have lava dripping from the top of your head. How disturbing.`,
 	];
 	return kingSubLines[Math.floor(Math.random() * kingSubLines.length)];
 }
+
+const kingLines: string[] = [
+	'We are exhausted. The sky is done. The sky is complete.',
+	'Phew, We are tired. Rolling a katamari is very hard. Right, Prince?',
+	'We must celebrate. Mother, We need cake.',
+	'We are not certain, we are not sure...',
+	'Who knows why, but make it exactly 10m.',
+	'The closer it is to 10m the brighter a North Star it will be.',
+	'Much is expected of you, Prince of Diffidence.',
+	"For some reason... For some reason I don't feel comfortable at all.",
+	'We admit defeat. We believed Ourselves invincible when it came to prettiness...',
+	'Oh! Be still my heart! The earth is full of maidens! Pretty maidens!',
+	'Most Earth maidens are easily bored, so you only have 10 minutes. We look forward to it, frisky Prince.',
+	"This sky is not pretty at all. It's rough and masculine. Possibly sweaty.",
+	'A coooooow!!',
+	'A parent that leaves all the work to the child, that looks bad. Deadbeat, yes?',
+	'The last cow ran away! Shoot! Stupid cow! We are sick of it!',
+	'Ooooh! I smell a bear! Bad bears! Bad! Hurry up and start rolling!',
+	'Flippity flop. Flippity flop. Settle down! Settle down, already!',
+	"Fresh! And are you feeling livelier too? We'll take the fresh Rainbow back.",
+	'Who did this? Who flattened this like a pancake?',
+	'Mysterious! Mysterious indeed! Really identical! Utterly identical.',
+	"Eek, identical! Mind-bending! Uncanny! Come to think of it, didn't you have a twin?",
+	"We'll tell you what's mysterious. Twins. What is with that connection? Is it telepathy? Do they have ESP?",
+	'Hello? Hello, this is The King.',
+	'Silly Prince! That won’t hatch, it’s sushi now.',
+	'We see. Hina doll, We suspect.',
+	'Too crab-intensive and kind of gross ... Anyway ... What?',
+	'Wheeee, that looks delicious! But also slightly disturbing.',
+	'Saluton! Do you know Esperanto?',
+	"Maybe We'll invent a Cosmic Esperanto.",
+	'Trust each other, accept each other and everything will feel so much sweeter.',
+	'Tee-hee... ♥ So sweet! ♥',
+	'Sain banu. Have you ever been to Mongolia? We were there yesterday.',
+	'We did some horseback riding. It was so exciting We got a nosebleed!',
+	'Zdravstvuite! So big, Russia. Really big! Why is it so big?',
+	"We are an excellent pianist, but couldn't touch Him. That pesky Chopin...",
+	"Al salaam a'alaykum! Have you ever been to the Arabian Peninsula? We haven't either.",
+	'Goede middag! Netherlands rocks! We adore tulips.',
+	'Buenos días! We love Spain. This is Our other homeland. Bulls and flamenco... Everyday is a carnival.',
+	'Oh?? What a nice katamari. Kind of bratty, kind of shy.',
+	'Papillons everywhere.',
+	'Boa tarde! Portugal is the best! The origin of the Castilla sponge cake.',
+	'Magan magandan? Huh? Dang tagaga po?',
+	'Magandang tanghali po! Have you ever been to the Philippines?',
+	'Sawa dee Krab! Have you ever been to Thailand?',
+	'OH! The same thing! This was the very first thing We ever rolled up!',
+	'OH! The same thing! This was the very first thing We ever collided with!',
+	'Well done! So aristocratic! We are dazzled!',
+	'Ooh! The same place! We took Our first swim ever in this very place!',
+	'We feel a growing sense of hope. We should put this in the diary.',
+	'That body, that physique.\nCould you really be Our son?',
+	'Trans Rights!',
+	'ORB!',
+];
 
 registerChannel('Katamari', 1438, Katamari, {
 	position: 'bottomRight',
@@ -503,6 +564,8 @@ export function Katamari(props: ChannelProps) {
 	const goalCleanupTimeoutRef = useRef<number | null>(null);
 	const RAINBOW_IN_MS = 600;
 	const RAINBOW_OUT_MS = 400;
+	const chanceOfKing = 1;
+	const chanceOfKingOnStuck = 10;
 
 	// Background scene
 	const [bgIndex, setBgIndex] = useState(0);
@@ -608,29 +671,33 @@ export function Katamari(props: ChannelProps) {
 	};
 
 	function spawnFlyer(donation: FormattedDonation) {
-		const id = `${Date.now()}-${Math.random()}`;
-		const startX = 1192;
-		const startY = 249;
+		if (Math.floor(Math.random() * 1000) <= chanceOfKing) {
+			kingSay(kingLines[Math.floor(Math.random() * kingLines.length)]);
+		} else {
+			const id = `${Date.now()}-${Math.random()}`;
+			const startX = 1192;
+			const startY = 249;
 
-		setFlyers((prev) => [
-			...prev,
-			{
-				id,
-				src: pickObject(),
-				amountText: donation.amount,
-				durationMs: flyerTravelMs,
-				startX,
-				startY,
-				endX: flyerStopX,
-				endY: startY,
-				stick: false,
-				arrived: false,
-				scale: MIN_FLYER_SCALE + Math.random() * (MAX_FLYER_SCALE - MIN_FLYER_SCALE),
-			},
-		]);
+			setFlyers((prev) => [
+				...prev,
+				{
+					id,
+					src: pickObject(),
+					amountText: donation.amount,
+					durationMs: flyerTravelMs,
+					startX,
+					startY,
+					endX: flyerStopX,
+					endY: startY,
+					stick: false,
+					arrived: false,
+					scale: MIN_FLYER_SCALE + Math.random() * (MAX_FLYER_SCALE - MIN_FLYER_SCALE),
+				},
+			]);
+		}
 	}
 
-	const kingEvent = (sub: TwitchSubscription) => {
+	function kingSay(text: string) {
 		// Appear silently
 		setKingVisible(true);
 		setKingText(undefined);
@@ -639,7 +706,7 @@ export function Katamari(props: ChannelProps) {
 
 		// Delay before speaking
 		kingSpeakTimeoutRef.current = window.setTimeout(() => {
-			setKingText(getKingSubLine(sub.user_name));
+			setKingText(text);
 			kingSpeakTimeoutRef.current = null;
 		}, 400);
 
@@ -649,6 +716,10 @@ export function Katamari(props: ChannelProps) {
 			setKingText(undefined);
 			kingHideTimeoutRef.current = null;
 		}, 5000);
+	}
+
+	const kingEvent = (sub: TwitchSubscription) => {
+		kingSay(getKingSubLine(sub.user_name));
 	};
 
 	function onFlyerArrive(f: Flyer, orbitAngleDeg: number) {
@@ -669,6 +740,10 @@ export function Katamari(props: ChannelProps) {
 				scale: f.scale,
 			},
 		]);
+
+		if (Math.floor(Math.random() * 100) <= chanceOfKingOnStuck) {
+			kingSay(kingLines[Math.floor(Math.random() * kingLines.length)]);
+		}
 	}
 
 	useRafLoop(() => {
@@ -721,14 +796,6 @@ export function Katamari(props: ChannelProps) {
 		setAmountLocked(goalAmount);
 	}, [goalTarget, goalSequenceActive, sceneTransitionActive]);
 
-	// useEffect(() => {
-	// 	if ((total?.raw ?? 0) >= goalTarget) {
-	// 		setGoalProgress(total?.raw ?? 0);
-	// 		if (!goalSequenceActive && !sceneTransitionActive) {
-	// 			goal();
-	// 		}
-	// 	}
-	// }, [total?.raw, goalTarget, goalSequenceActive, sceneTransitionActive]);
 	useEffect(() => {
 		const raw = total?.raw ?? 0;
 
@@ -748,7 +815,7 @@ export function Katamari(props: ChannelProps) {
 					clearAllTimeouts(kingHideTimeoutRef, kingSpeakTimeoutRef);
 
 					kingSpeakTimeoutRef.current = window.setTimeout(() => {
-						setKingText('PLACEHOLDER: Not enough stuck flyers yet!');
+						setKingText(kingLines[Math.floor(Math.random() * kingLines.length)]);
 						kingSpeakTimeoutRef.current = null;
 					}, 400);
 
