@@ -29,8 +29,7 @@ function wrapIndex(idx: number, len: number) {
 	return ((idx % len) + len) % len;
 }
 
-function resolvePreset(props: ParallaxBackgroundProps): BackgroundScene | undefined {
-	const { backgrounds, selectedIndex } = props;
+function resolvePreset({ backgrounds, selectedIndex }: ParallaxBackgroundProps): BackgroundScene | undefined {
 	if (!backgrounds || backgrounds.length === 0) return undefined;
 
 	if (typeof selectedIndex === 'number') {
@@ -42,48 +41,38 @@ function resolvePreset(props: ParallaxBackgroundProps): BackgroundScene | undefi
 }
 
 const scrollLeft = keyframes`
-	from { background-position-x: 0px; }
+	from { background-position-x: 0; }
 	to   { background-position-x: calc(-1 * var(--bg-dist)); }
 `;
 
 const scrollRight = keyframes`
-	from { background-position-x: 0px; }
+	from { background-position-x: 0; }
 	to   { background-position-x: var(--bg-dist); }
 `;
 
 export function ParallaxBackground(props: ParallaxBackgroundProps) {
-	const { className } = props;
-
 	const resolved = resolvePreset(props);
 	if (!resolved) return null;
 
-	const layers = resolved.layers.slice(0, 9);
-
 	return (
-		<Root className={className} data-preset={resolved.id}>
-			{layers.map((layer, i) => {
-				const speedSec = layer.speedSec ?? 24;
-				const direction = layer.direction ?? 'left';
-				const distancePx = layer.distancePx ?? 320;
-
-				return (
-					<Layer
-						key={`${resolved.id}:${i}`}
-						data-dir={direction}
-						style={{
-							backgroundImage: `url(${layer.src})`,
-							opacity: layer.opacity ?? 1,
-							mixBlendMode: layer.blendMode ?? 'normal',
-							backgroundSize: layer.size ?? 'cover',
-							backgroundPosition: layer.position ?? 'center',
-							backgroundRepeat: layer.repeat ?? 'no-repeat',
-							['--bg-dist' as any]: `${distancePx}px`,
-							animationDuration: `${speedSec}s`,
-							zIndex: i,
-						}}
-					/>
-				);
-			})}
+		<Root className={props.className} data-preset={resolved.id}>
+			{resolved.layers.slice(0, 9).map((layer, i) => (
+				<Layer
+					key={`${resolved.id}:${i}`}
+					data-dir={layer.direction ?? 'left'}
+					style={{
+						backgroundImage: `url(${layer.src})`,
+						opacity: layer.opacity ?? 1,
+						mixBlendMode: layer.blendMode ?? 'normal',
+						backgroundSize: layer.size ?? 'cover',
+						backgroundPosition: layer.position ?? 'center',
+						backgroundRepeat: layer.repeat ?? 'no-repeat',
+						['--bg-dist' as any]: `${layer.distancePx ?? 320}px`,
+						animationDuration: `${layer.speedSec ?? 24}s`,
+						zIndex: i,
+					}}
+				/>
+			))}
 		</Root>
 	);
 }

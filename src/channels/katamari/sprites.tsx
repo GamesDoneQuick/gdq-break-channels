@@ -1,4 +1,3 @@
-// sprites.tsx (only showing the GridSprite pieces that change)
 import React from 'react';
 import styled from '@emotion/styled';
 import { css, keyframes } from '@emotion/react';
@@ -40,8 +39,8 @@ function makeGridSpriteKeyframes(cols: number, frames: number) {
 }
 
 const Root = styled.div`
-	position: absolute; /* NEW: makes xOffset/yOffset work */
-	overflow: hidden; /* ensures we crop to one frame */
+	position: absolute;
+	overflow: hidden;
 	pointer-events: none;
 `;
 
@@ -62,11 +61,14 @@ const Sheet = styled.div<SheetStyleProps>`
 	background-size: ${({ $tileW, $tileH, $scale, $cols, $rows }) =>
 		`${$tileW * $cols * $scale}px ${$tileH * $rows * $scale}px`};
 	image-rendering: auto;
+
 	&[data-pixelated='true'] {
 		image-rendering: pixelated;
 	}
+
 	background-position: calc(var(--sx, 0) * ${({ $tileW, $scale }) => $tileW * $scale}px)
 		calc(var(--sy, 0) * ${({ $tileH, $scale }) => $tileH * $scale}px);
+
 	animation-duration: ${({ $durationSec }) => `${$durationSec}s`};
 	animation-timing-function: steps(${({ $frames }) => $frames});
 	animation-iteration-count: infinite;
@@ -74,6 +76,7 @@ const Sheet = styled.div<SheetStyleProps>`
 		css`
 			${makeGridSpriteKeyframes($cols, $frames)}
 		`};
+
 	&[data-playing='false'] {
 		animation-name: none;
 	}
@@ -96,11 +99,10 @@ export function GridSprite({
 	pixelated = true,
 	startFrame = 0,
 }: GridSpriteProps) {
-	let totalFrames = frameCount ?? columns * rows;
-	if (totalFrames > columns * rows) {
-		totalFrames = columns * rows;
-	}
-	const durationSec = fps != 0 ? totalFrames / fps : 6000;
+	const maxFrames = columns * rows;
+	const totalFrames = Math.min(frameCount ?? maxFrames, maxFrames);
+	const durationSec = fps !== 0 ? totalFrames / fps : 6000;
+
 	const clampedStart = Math.max(0, Math.min(totalFrames - 1, startFrame));
 	const { x: startX, y: startY } = getFrameXY(clampedStart, columns);
 	const frameW = tileWidth * scale;

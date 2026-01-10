@@ -33,6 +33,8 @@ export type DonationFlyersProps = {
 	onFlyerArrive: (flyer: Flyer, orbitAngleDeg: number) => void;
 };
 
+const ORBIT_PERIOD_MS = 1600;
+
 export function DonationFlyers({ flyers, stuck, targetX, targetY, onFlyerArrive }: DonationFlyersProps) {
 	const [now, setNow] = useState(() => Date.now());
 	useRafLoop(() => setNow(Date.now()));
@@ -41,7 +43,6 @@ export function DonationFlyers({ flyers, stuck, targetX, targetY, onFlyerArrive 
 	const startAtRef = useRef<Map<string, number>>(new Map());
 	const arrivedIdsRef = useRef<Set<string>>(new Set());
 	const orbitStartMsRef = useRef<number>(Date.now());
-	const ORBIT_PERIOD_MS = 1600;
 
 	const orbitAngleDeg = (((now - orbitStartMsRef.current) % ORBIT_PERIOD_MS) / ORBIT_PERIOD_MS) * 360;
 
@@ -57,15 +58,14 @@ export function DonationFlyers({ flyers, stuck, targetX, targetY, onFlyerArrive 
 		<Layer>
 			{flyers.map((f) => {
 				const loaded = loadedIdsRef.current.has(f.id);
-				const effectiveStartMs = startAtRef.current.get(f.id);
-				const t = loaded && effectiveStartMs != null ? clamp01((now - effectiveStartMs) / f.durationMs) : 0;
+				const startMs = startAtRef.current.get(f.id);
+				const t = loaded && startMs != null ? clamp01((now - startMs) / f.durationMs) : 0;
 
 				const x = lerp(f.startX, f.endX, t);
 				const y = lerp(f.startY, f.endY, t);
 
 				if (t >= 1 && !arrivedIdsRef.current.has(f.id)) {
 					arrivedIdsRef.current.add(f.id);
-					// queueMicrotask(() => onFlyerArrive(f));
 					queueMicrotask(() => onFlyerArrive(f, orbitAngleDeg));
 				}
 

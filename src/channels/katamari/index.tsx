@@ -424,6 +424,10 @@ function clearTimeoutRef(ref: React.MutableRefObject<number | null>) {
 	}
 }
 
+function clearAllTimeouts(...refs: React.MutableRefObject<number | null>[]) {
+	refs.forEach(clearTimeoutRef);
+}
+
 function shiftQueue<T>(queue: T[], setter: (v: T[]) => void): T | undefined {
 	if (queue.length === 0) return undefined;
 	const [first, ...rest] = queue;
@@ -431,8 +435,8 @@ function shiftQueue<T>(queue: T[], setter: (v: T[]) => void): T | undefined {
 	return first;
 }
 
-function enqueue<T>(queue: T[], setter: (v: T[]) => void, item: T) {
-	setter([...queue, item]);
+function enqueue<T>(setter: React.Dispatch<React.SetStateAction<T[]>>, item: T) {
+	setter((prev) => [...prev, item]);
 }
 
 export function Katamari(props: ChannelProps) {
@@ -516,8 +520,7 @@ export function Katamari(props: ChannelProps) {
 	const reset = (opts?: { initial?: boolean }) => {
 		const initial = opts?.initial === true;
 
-		clearTimeoutRef(resetUnwindTimeoutRef);
-		clearTimeoutRef(resetKingTimeoutRef);
+		clearAllTimeouts(resetUnwindTimeoutRef, resetKingTimeoutRef);
 
 		setSceneTransitionActive(true);
 		setGoalSequenceActive(true);
@@ -581,10 +584,7 @@ export function Katamari(props: ChannelProps) {
 		setBgBlockerStartCovered(false);
 		setBgBlockerActive(false);
 
-		clearTimeoutRef(kingGoalTimeoutRef);
-		clearTimeoutRef(kingGoalStartTimeoutRef);
-		clearTimeoutRef(goalCleanupTimeoutRef);
-		clearTimeoutRef(bgBlockerStartTimeoutRef);
+		clearAllTimeouts(kingGoalTimeoutRef, kingGoalStartTimeoutRef, goalCleanupTimeoutRef, bgBlockerStartTimeoutRef);
 
 		setKingVisible(true);
 		setKingText(undefined);
@@ -607,12 +607,11 @@ export function Katamari(props: ChannelProps) {
 		}, appearBeatMs);
 	};
 
-	const katamariEvent = (donation: FormattedDonation) => {
+	function spawnFlyer(donation: FormattedDonation) {
 		const id = `${Date.now()}-${Math.random()}`;
 		const startX = 1192;
 		const startY = 249;
 
-		// Spawn a flyer
 		setFlyers((prev) => [
 			...prev,
 			{
@@ -629,15 +628,14 @@ export function Katamari(props: ChannelProps) {
 				scale: MIN_FLYER_SCALE + Math.random() * (MAX_FLYER_SCALE - MIN_FLYER_SCALE),
 			},
 		]);
-	};
+	}
 
 	const kingEvent = (sub: TwitchSubscription) => {
 		// Appear silently
 		setKingVisible(true);
 		setKingText(undefined);
 
-		clearTimeoutRef(kingHideTimeoutRef);
-		clearTimeoutRef(kingSpeakTimeoutRef);
+		clearAllTimeouts(kingHideTimeoutRef, kingSpeakTimeoutRef);
 
 		// Delay before speaking
 		kingSpeakTimeoutRef.current = window.setTimeout(() => {
@@ -679,13 +677,11 @@ export function Katamari(props: ChannelProps) {
 		const next = lerp(cur, targetProgressScaleRef.current, speed);
 		currentProgressScaleRef.current = next;
 
-		if (Math.abs(next - progressScale) > 0.0005) {
-			setProgressScale(next);
-		}
+		if (Math.abs(next - progressScale) > 0.0005) setProgressScale(next);
 
 		if (!goalSequenceActive && !sceneTransitionActive) {
 			const donation = shiftQueue(pendingDonationEvents, setPendingDonationEvents);
-			if (donation) katamariEvent(donation);
+			if (donation) spawnFlyer(donation);
 
 			const sub = shiftQueue(pendingSubscriptionEvents, setPendingSubscriptionEvents);
 			if (sub) kingEvent(sub);
@@ -695,12 +691,13 @@ export function Katamari(props: ChannelProps) {
 	// Listens for GDQ Donation event
 	useListenFor('donation', (donation: FormattedDonation) => {
 		if (goalSequenceActive || sceneTransitionActive) return;
-		enqueue(pendingDonationEvents, setPendingDonationEvents, donation);
+		enqueue(setPendingDonationEvents, donation);
 	});
 
+	// Listens for GDQ sub event
 	useListenFor('subscription', (subscription: TwitchSubscription) => {
 		if (goalSequenceActive || sceneTransitionActive) return;
-		enqueue(pendingSubscriptionEvents, setPendingSubscriptionEvents, subscription);
+		enqueue(setPendingSubscriptionEvents, subscription);
 	});
 
 	const handleBgBlockerCovered = useCallback(() => {
@@ -748,8 +745,7 @@ export function Katamari(props: ChannelProps) {
 					setKingVisible(true);
 					setKingText(undefined);
 
-					clearTimeoutRef(kingHideTimeoutRef);
-					clearTimeoutRef(kingSpeakTimeoutRef);
+					clearAllTimeouts(kingHideTimeoutRef, kingSpeakTimeoutRef);
 
 					kingSpeakTimeoutRef.current = window.setTimeout(() => {
 						setKingText('PLACEHOLDER: Not enough stuck flyers yet!');
@@ -774,21 +770,21 @@ export function Katamari(props: ChannelProps) {
 
 	useEffect(() => {
 		return () => {
-			clearTimeoutRef(kingHideTimeoutRef);
-			clearTimeoutRef(kingSpeakTimeoutRef);
-			clearTimeoutRef(kingGoalTimeoutRef);
-			clearTimeoutRef(kingGoalStartTimeoutRef);
-			clearTimeoutRef(bgBlockerStartTimeoutRef);
+			clearAllTimeouts(
+				kingHideTimeoutRef,
+				kingSpeakTimeoutRef,
+				kingGoalTimeoutRef,
+				kingGoalStartTimeoutRef,
+				bgBlockerStartTimeoutRef,
+				resetUnwindTimeoutRef,
+				resetKingTimeoutRef,
+			);
 		};
 	}, []);
 
 	return (
 		<Container>
-			<ParallaxBackground
-				backgrounds={bgPool}
-				selectedIndex={bgIndex}
-				// selectedIndex={5}
-			/>
+			<ParallaxBackground backgrounds={bgPool} selectedIndex={bgIndex} />
 			<BgBlocker
 				key={bgBlockerRunId}
 				active={bgBlockerActive}

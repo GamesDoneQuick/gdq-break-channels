@@ -80,38 +80,42 @@ export function KingOfAllCosmos({
 }: KingOfAllCosmosProps) {
 	const s = Math.max(0.001, scale);
 
-	// Simple “talk” cycling
 	const [now, setNow] = useState(() => Date.now());
 	useRafLoop(() => {
 		if (speaking && mouthIndex == null && mouthSrcs.length > 1) setNow(Date.now());
 	});
 
+	const mouthCount = mouthSrcs?.length ?? 0;
 	let activeMouthIndex = -1;
 
-	if (mouthSrcs?.length) {
-		const maxIndex = mouthSrcs.length - 1;
+	if (mouthCount) {
+		const maxIndex = mouthCount - 1;
 
 		if (mouthIndex != null) {
 			activeMouthIndex = clampInt(mouthIndex, 0, maxIndex);
-		} else if (!speaking || mouthSrcs.length === 1) {
+		} else if (!speaking || mouthCount === 1) {
 			activeMouthIndex = 0;
 		} else {
-			const frame = Math.floor((now / 1000) * mouthFps);
-			activeMouthIndex = frame % mouthSrcs.length;
+			activeMouthIndex = Math.floor((now / 1000) * mouthFps) % mouthCount;
 		}
 	}
 
 	const mouthSrc = activeMouthIndex >= 0 ? mouthSrcs[activeMouthIndex] : undefined;
 	const bubbleVisible = Boolean(text && text.trim().length > 0);
-	const mouthStyle = {
+
+	const baseMouthPos = {
 		left: `${mouthAnchorX * 100}%`,
 		top: `${mouthAnchorY * 100}%`,
+	};
+
+	const mouthStyle = {
+		...baseMouthPos,
 		width: mouthWidth,
 		height: mouthHeight,
 	};
 
 	const mouthWideStyle = {
-		left: `${mouthAnchorX * 100}%`,
+		...baseMouthPos,
 		top: '78%',
 		width: mouthWideWidth,
 		height: mouthWideHeight,
@@ -172,13 +176,10 @@ export function KingOfAllCosmos({
 						/>
 					</RainbowAnchor>
 				)}
+
 				{bubbleVisible && (
 					<BubbleAnchor style={{ marginTop: bubbleGap }}>
-						<Bubble
-							style={{
-								width: 'max-content',
-								maxWidth: bubbleMaxWidth / s,
-							}}>
+						<Bubble style={{ width: 'max-content', maxWidth: bubbleMaxWidth / s }}>
 							<BubbleText>{text}</BubbleText>
 						</Bubble>
 					</BubbleAnchor>

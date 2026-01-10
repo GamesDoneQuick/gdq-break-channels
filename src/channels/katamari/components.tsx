@@ -22,6 +22,20 @@ export const TotalEl = styled.div`
 	filter: drop-shadow(2px 3px black);
 `;
 
+function clampScale(v: number) {
+	return Math.max(0.001, v);
+}
+
+function clearTimer(ref: React.MutableRefObject<number | null>) {
+	if (ref.current != null) window.clearTimeout(ref.current);
+	ref.current = null;
+}
+
+function clearRaf(ref: React.MutableRefObject<number | null>) {
+	if (ref.current != null) window.cancelAnimationFrame(ref.current);
+	ref.current = null;
+}
+
 export type BgBlockerProps = {
 	active: boolean;
 	src: string;
@@ -63,14 +77,10 @@ export function BgBlocker({
 	const raf2 = useRef<number | null>(null);
 
 	const clearAll = () => {
-		if (inTimer.current != null) window.clearTimeout(inTimer.current);
-		if (outTimer.current != null) window.clearTimeout(outTimer.current);
-		if (raf1.current != null) window.cancelAnimationFrame(raf1.current);
-		if (raf2.current != null) window.cancelAnimationFrame(raf2.current);
-		inTimer.current = null;
-		outTimer.current = null;
-		raf1.current = null;
-		raf2.current = null;
+		clearTimer(inTimer);
+		clearTimer(outTimer);
+		clearRaf(raf1);
+		clearRaf(raf2);
 	};
 
 	const resetState = () => {
@@ -81,22 +91,18 @@ export function BgBlocker({
 		setOpacity(0);
 	};
 
-	useEffect(() => {
-		return () => {
-			clearAll();
-		};
-	}, []);
+	useEffect(() => clearAll, []);
 
 	useEffect(() => {
 		clearAll();
 
 		if (active) {
 			setVisible(true);
+			setPhase('in');
 
 			if (startCovered) {
-				setPhase('in');
 				setOpacity(1);
-				setScale(Math.max(0.001, targetScale));
+				setScale(clampScale(targetScale));
 				setRot(rotateDegIn);
 				inTimer.current = window.setTimeout(() => {
 					onCovered?.();
@@ -105,7 +111,6 @@ export function BgBlocker({
 				return;
 			}
 
-			setPhase('in');
 			setScale(0.001);
 			setRot(0);
 			setOpacity(0);
@@ -113,7 +118,7 @@ export function BgBlocker({
 			raf1.current = window.requestAnimationFrame(() => {
 				raf2.current = window.requestAnimationFrame(() => {
 					setOpacity(1);
-					setScale(Math.max(0.001, targetScale));
+					setScale(clampScale(targetScale));
 					setRot(rotateDegIn);
 				});
 			});
@@ -192,6 +197,11 @@ export const GoalAmount = styled.div`
 		drop-shadow(-1px -1px #9c4d43);
 `;
 
+function safeScale(scale: number) {
+	const clamped = Math.max(0, Math.min(1, scale));
+	return clamped <= 0 ? 0.001 : clamped;
+}
+
 type KatamariTrackerProps = {
 	size?: number;
 	xOffset?: number;
@@ -209,8 +219,7 @@ export function KatamariTracker({
 	className,
 	children,
 }: KatamariTrackerProps) {
-	const clamped = Math.max(0, Math.min(1, scale));
-	const s = clamped <= 0 ? 0.001 : clamped;
+	const s = safeScale(scale);
 	const cx = 160;
 	const cy = 160;
 	const trackerScale = `translate(${cx} ${cy}) scale(${s}) translate(${-cx} ${-cy})`;
@@ -417,16 +426,19 @@ const SizeTrackerContent = styled.div`
 	pointer-events: none;
 `;
 
+function polarToCartesian(cx: number, cy: number, r: number, angle: number) {
+	const rad = (angle / 360) * Math.PI * 2;
+	return {
+		x: cx + Math.cos(rad) * r,
+		y: cy + Math.sin(rad) * r,
+	};
+}
+
 function makeArc(opts: { cx: number; cy: number; r: number; startAngle: number; endAngle: number }): string {
 	const { cx, cy, r, startAngle, endAngle } = opts;
-	const startAngleR = (startAngle / 360) * Math.PI * 2;
-	const endAngleR = (endAngle / 360) * Math.PI * 2;
-	const x1 = cx + Math.cos(startAngleR) * r;
-	const y1 = cy + Math.sin(startAngleR) * r;
-	const x2 = cx + Math.cos(endAngleR) * r;
-	const y2 = cy + Math.sin(endAngleR) * r;
-
-	return `M ${x1} ${y1} A ${r} ${r} 0 1 1 ${x2} ${y2}`;
+	const p1 = polarToCartesian(cx, cy, r, startAngle);
+	const p2 = polarToCartesian(cx, cy, r, endAngle);
+	return `M ${p1.x} ${p1.y} A ${r} ${r} 0 1 1 ${p2.x} ${p2.y}`;
 }
 
 type KatamariBallProps = {
