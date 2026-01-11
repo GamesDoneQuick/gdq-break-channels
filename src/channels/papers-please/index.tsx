@@ -67,6 +67,8 @@ const citationTexts: string[] = [
 	'Sequence Breaking',
 	'Dropped your combo',
 	'Didn\'t say "Yes Chef".',
+	'Weeeeeeeeeeeeeeeeee!',
+	'BINGO!'
 ];
 
 export function PapersPlease(props: ChannelProps) {
@@ -197,6 +199,8 @@ export function PapersPlease(props: ChannelProps) {
 	});
 
 	useEffect(() => {
+		setAmountLocked(goalAmount);
+		setAnimationPlaying(true);
 		setTimeout(() => {
 			appear();
 		}, 2000);
@@ -265,7 +269,7 @@ export function PapersPlease(props: ChannelProps) {
 					*/}
 					<div>{event.shortname.slice(0, 12)}</div>
 					<div>{event.beneficiaryShort}</div>
-					<div>2024/01/21 {/* TEMP DATE! Should add this to the event obj */}</div>
+					<div>2025/07/13 {/* TEMP DATE! Should add this to the event obj */}</div>
 				</SupplementaryText>
 				<FullWidthImage src={currentCountry.passportInner} />
 			</Passport>

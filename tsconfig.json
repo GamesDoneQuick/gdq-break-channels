@@ -1,21 +1,21 @@
 {
 	"compilerOptions": {
 		"target": "es2020",
-		"baseUrl": ".",
 		"outDir": "dist",
 		"jsx": "react-jsx",
 		"jsxImportSource": "@emotion/react",
 		"lib": ["dom", "webworker", "es2019"],
-		"module": "ES2020",
-		"moduleResolution": "node",
+		"module": "preserve",
+		"moduleResolution": "bundler",
 		"strict": true,
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
 		"skipLibCheck": true,
 		"paths": {
-			"@gdq/*": ["src/*"]
+			"@gdq/*": ["./src/*"]
 		},
-		"declaration": true
+		"declaration": true,
+		"types": ["@nodecg/types/augment-window", "obs-studio"]
 	},
-	"include": ["src/**/*.ts", "src/**/*.tsx", "index.tsx"]
+	"include": ["./src/**/*.ts", "./src/**/*.tsx", "./index.tsx"]
 }

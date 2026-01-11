@@ -17,5 +17,12 @@ import './ff-shop';
 import './papers-please';
 import './minesweeper';
 import './qwop';
+import './laser-sunset';
+import './here-comes-niko';
+import './pinball';
+import './cookie-clicker';
+import './balatro';
+import './snake';
+import './velocity-quest';
 
 export * from './channels';

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import type { NodeCGBrowser, NodeCGStaticBrowser, ReplicantBrowser, ReplicantOptions } from '@gdq/types/nodecg';
+import type NodeCG from '@nodecg/types';
 import { EventEmitter } from 'events';
 import clone from 'clone';
 
@@ -39,15 +39,15 @@ const proxySet = new WeakSet();
 
 const declaredReplicants: Record<string, Record<string, Replicant<any>>> = {};
 
-export class Replicant<V> extends EventEmitter implements ReplicantBrowser<V> {
+export class Replicant<V> extends EventEmitter {
 	public value?: V = undefined;
 	public revision = 0;
 	public status: 'undeclared' | 'declared' | 'declaring' = 'undeclared';
-	public opts: ReplicantOptions<V> = {};
+	public opts: NodeCG.Replicant.Options<V> = {};
 
 	public _ignoreProxy = false;
 
-	constructor(public name: string, public namespace: string, opts?: ReplicantOptions<V>) {
+	constructor(public name: string, public namespace: string, opts?: NodeCG.Replicant.Options<V>) {
 		super();
 
 		if (!name || typeof name !== 'string') {
@@ -94,7 +94,7 @@ export class Replicant<V> extends EventEmitter implements ReplicantBrowser<V> {
 		declaredReplicants[namespace][name] = thisProxy;
 
 		setTimeout(() => {
-			thisProxy.value = this.opts.defaultValue;
+			thisProxy.value = (this.opts as any).defaultValue;
 			this.emit('change', this.value, undefined);
 		}, 500);
 
@@ -288,7 +288,11 @@ const CHILD_ARRAY_HANDLER = {
 
 		const oldValue = clone(replicant.value);
 
-		target[prop] = proxyRecursive(metadata.replicant, newValue, joinPathParts(metadata.path, prop as string));
+		target[prop as any] = proxyRecursive(
+			metadata.replicant,
+			newValue,
+			joinPathParts(metadata.path, prop as string),
+		);
 
 		replicant.emit('change', replicant.value, oldValue);
 
@@ -342,7 +346,7 @@ const CHILD_OBJECT_HANDLER = {
 window.nodecg =
 	window.nodecg ||
 	(() => {
-		const ret: NodeCGBrowser = {} as unknown as NodeCGBrowser;
+		const ret = {} as unknown as NodeCG.ClientAPI;
 
 		const listenerMap = new Map<string, Map<string, ((message: any) => void)[]>>();
 
@@ -394,11 +398,11 @@ window.nodecg =
 			array.splice(idx, 1);
 		}) as typeof ret.unlisten;
 
-		ret.Replicant = ((name, namespace, opts) => {
+		ret.Replicant = ((name: any, namespace: any, opts: any) => {
 			const options = typeof namespace !== 'string' ? namespace : opts;
 			const space = typeof namespace !== 'string' ? 'nodecg-pratchett' : namespace;
 
-			return new Replicant(name, space, options) as ReplicantBrowser<any>;
+			return new Replicant(name, space, options) as unknown as NodeCG.ClientReplicant<any>;
 		}) as typeof ret.Replicant;
 
 		ret.readReplicant = (<V>(name: string, namespace: string, cb: (value: V) => void) => {
@@ -426,11 +430,11 @@ window.nodecg =
 window.NodeCG =
 	window.NodeCG ||
 	(() => {
-		const ret = {} as NodeCGStaticBrowser;
+		const ret = {} as any;
 
 		ret.declaredReplicants = declaredReplicants;
 		ret.waitForReplicants = function (...replicants: Replicant<any>[]) {
-			return new Promise((resolve) => {
+			return new Promise<void>((resolve) => {
 				const numReplicants = replicants.length;
 				let declaredReplicants = 0;
 				replicants.forEach((replicant) => {
