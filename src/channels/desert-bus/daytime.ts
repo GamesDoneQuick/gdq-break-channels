@@ -5,15 +5,15 @@ const timezone = nodecg.Replicant<string>('timezone', {
 });
 
 /**
- * These times are based on Minneapolis, July 7th 2025.
+ * These times are based on Minneapolis, Jan 6th 2026.
  * Change times to reflect event location and time before event.
  */
 
 const Times: [number, 'night' | 'dawn' | 'day' | 'dusk'][] = [
-	[(21 * 60 + 1) * 60, 'night'], // 9:01pm
-	[(21 * 60 + 37) * 60, 'dusk'], // 9:37pm
-	[(4 * 60 + 57) * 60, 'day'], // 4:57am
-	[(5 * 60 + 34) * 60, 'dawn'], // 5:34am
+	[(17 * 60 + 9) * 60, 'night'], // 5:09pm
+	[(17 * 60 + 40) * 60, 'dusk'], // 5:40pm
+	[(7 * 60 + 12) * 60, 'day'], // 7:12am
+	[(7 * 60 + 43) * 60, 'dawn'], // 7:43am
 	[0, 'night'], // Midnight
 ];
 
@@ -22,7 +22,7 @@ const Times: [number, 'night' | 'dawn' | 'day' | 'dusk'][] = [
  * i.e. The Checkpoint.
  * Change time to reflect event schedule before event.
  */
-const OmegaShift = [2025, 7, 13, 17, 50, 0] as const;
+const OmegaShift = [2026, 1, 10, 14, 40, 0] as const;
 
 export function dayTime() {
 	const datetime = DateTime.local({ zone: timezone.value });

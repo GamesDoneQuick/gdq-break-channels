@@ -39,6 +39,8 @@ a stream.
 
 -   Channels that are strictly advertisements will be rejected.
 
+-   Channels that use AI-generated code, images, or other assets will be rejected.
+
 -   Channels may be rejected for any other unspecified reason.
 
 ## Philosophy/Approach
