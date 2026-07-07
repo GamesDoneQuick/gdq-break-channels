@@ -4,6 +4,7 @@ import './template';
 import './breakout';
 import './cave-story';
 import './desert-bus';
+import './insaniquarium';
 import './mega-man';
 // import './mgs3';
 import './monkey-island';

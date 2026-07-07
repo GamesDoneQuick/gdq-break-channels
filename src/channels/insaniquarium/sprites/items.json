@@ -1,0 +1,1114 @@
+{
+  "frames": {
+    "coin-silver_0": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-silver_1": {
+      "frame": {
+        "x": 46,
+        "y": 0,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-silver_2": {
+      "frame": {
+        "x": 92,
+        "y": 0,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-silver_3": {
+      "frame": {
+        "x": 138,
+        "y": 0,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-silver_4": {
+      "frame": {
+        "x": 184,
+        "y": 0,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-silver_5": {
+      "frame": {
+        "x": 230,
+        "y": 0,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-silver_6": {
+      "frame": {
+        "x": 276,
+        "y": 0,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-silver_7": {
+      "frame": {
+        "x": 322,
+        "y": 0,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-silver_8": {
+      "frame": {
+        "x": 368,
+        "y": 0,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-silver_9": {
+      "frame": {
+        "x": 414,
+        "y": 0,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-gold_0": {
+      "frame": {
+        "x": 0,
+        "y": 46,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-gold_1": {
+      "frame": {
+        "x": 46,
+        "y": 46,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-gold_2": {
+      "frame": {
+        "x": 92,
+        "y": 46,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-gold_3": {
+      "frame": {
+        "x": 138,
+        "y": 46,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-gold_4": {
+      "frame": {
+        "x": 184,
+        "y": 46,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-gold_5": {
+      "frame": {
+        "x": 230,
+        "y": 46,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-gold_6": {
+      "frame": {
+        "x": 276,
+        "y": 46,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-gold_7": {
+      "frame": {
+        "x": 322,
+        "y": 46,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-gold_8": {
+      "frame": {
+        "x": 368,
+        "y": 46,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "coin-gold_9": {
+      "frame": {
+        "x": 414,
+        "y": 46,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "star_0": {
+      "frame": {
+        "x": 0,
+        "y": 92,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "star_1": {
+      "frame": {
+        "x": 46,
+        "y": 92,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "star_2": {
+      "frame": {
+        "x": 92,
+        "y": 92,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "star_3": {
+      "frame": {
+        "x": 138,
+        "y": 92,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "star_4": {
+      "frame": {
+        "x": 184,
+        "y": 92,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "star_5": {
+      "frame": {
+        "x": 230,
+        "y": 92,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "star_6": {
+      "frame": {
+        "x": 276,
+        "y": 92,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "star_7": {
+      "frame": {
+        "x": 322,
+        "y": 92,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "star_8": {
+      "frame": {
+        "x": 368,
+        "y": 92,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "star_9": {
+      "frame": {
+        "x": 414,
+        "y": 92,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "pearl": {
+      "frame": {
+        "x": 0,
+        "y": 138,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-flake_0": {
+      "frame": {
+        "x": 0,
+        "y": 184,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-flake_1": {
+      "frame": {
+        "x": 46,
+        "y": 184,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-flake_2": {
+      "frame": {
+        "x": 92,
+        "y": 184,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-flake_3": {
+      "frame": {
+        "x": 138,
+        "y": 184,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-flake_4": {
+      "frame": {
+        "x": 184,
+        "y": 184,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-flake_5": {
+      "frame": {
+        "x": 230,
+        "y": 184,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-flake_6": {
+      "frame": {
+        "x": 276,
+        "y": 184,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-flake_7": {
+      "frame": {
+        "x": 322,
+        "y": 184,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-flake_8": {
+      "frame": {
+        "x": 368,
+        "y": 184,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-flake_9": {
+      "frame": {
+        "x": 414,
+        "y": 184,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-pellet_0": {
+      "frame": {
+        "x": 0,
+        "y": 230,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-pellet_1": {
+      "frame": {
+        "x": 46,
+        "y": 230,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-pellet_2": {
+      "frame": {
+        "x": 92,
+        "y": 230,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-pellet_3": {
+      "frame": {
+        "x": 138,
+        "y": 230,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-pellet_4": {
+      "frame": {
+        "x": 184,
+        "y": 230,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-pellet_5": {
+      "frame": {
+        "x": 230,
+        "y": 230,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-pellet_6": {
+      "frame": {
+        "x": 276,
+        "y": 230,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-pellet_7": {
+      "frame": {
+        "x": 322,
+        "y": 230,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-pellet_8": {
+      "frame": {
+        "x": 368,
+        "y": 230,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "food-pellet_9": {
+      "frame": {
+        "x": 414,
+        "y": 230,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "diamond_0": {
+      "frame": {
+        "x": 0,
+        "y": 276,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "diamond_1": {
+      "frame": {
+        "x": 46,
+        "y": 276,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "diamond_2": {
+      "frame": {
+        "x": 92,
+        "y": 276,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "diamond_3": {
+      "frame": {
+        "x": 138,
+        "y": 276,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "diamond_4": {
+      "frame": {
+        "x": 184,
+        "y": 276,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "diamond_5": {
+      "frame": {
+        "x": 230,
+        "y": 276,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "diamond_6": {
+      "frame": {
+        "x": 276,
+        "y": 276,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "diamond_7": {
+      "frame": {
+        "x": 322,
+        "y": 276,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "diamond_8": {
+      "frame": {
+        "x": 368,
+        "y": 276,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    },
+    "diamond_9": {
+      "frame": {
+        "x": 414,
+        "y": 276,
+        "w": 46,
+        "h": 46
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0
+      },
+      "sourceSize": {
+        "x": 46,
+        "y": 46
+      }
+    }
+  },
+  "meta": {
+    "scale": "1"
+  },
+  "animations": {
+    "coinSilver": [ "coin-silver_0", "coin-silver_1", "coin-silver_2", "coin-silver_3", "coin-silver_4", "coin-silver_5", "coin-silver_6", "coin-silver_7", "coin-silver_8", "coin-silver_9" ],
+    "coinGold": [ "coin-gold_0", "coin-gold_1", "coin-gold_2", "coin-gold_3", "coin-gold_4", "coin-gold_5", "coin-gold_6", "coin-gold_7", "coin-gold_8", "coin-gold_9" ],
+    "star": [ "star_0", "star_1", "star_2", "star_3", "star_4", "star_5", "star_6", "star_7", "star_8", "star_9" ],
+    "pearl": ["pearl"],
+    "diamond": [ "diamond_0", "diamond_1", "diamond_2", "diamond_3", "diamond_4", "diamond_5", "diamond_6", "diamond_7", "diamond_8", "diamond_9" ],
+    "foodFlake": [ "food-flake_0", "food-flake_1", "food-flake_2", "food-flake_3", "food-flake_4", "food-flake_5", "food-flake_6", "food-flake_7", "food-flake_8", "food-flake_9" ],
+    "foodPellet": [ "food-pellet_0", "food-pellet_1", "food-pellet_2", "food-pellet_3", "food-pellet_4", "food-pellet_5", "food-pellet_6", "food-pellet_7", "food-pellet_8", "food-pellet_9" ]
+  }
+}
