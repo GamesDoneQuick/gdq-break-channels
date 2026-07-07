@@ -24,5 +24,6 @@ import './cookie-clicker';
 import './balatro';
 import './snake';
 import './velocity-quest';
+import './katamari';
 
 export * from './channels';
