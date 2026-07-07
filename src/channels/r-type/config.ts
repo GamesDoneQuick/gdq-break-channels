@@ -1,0 +1,56 @@
+export const CONFIG = {
+	// Canvas
+	WIDTH: 1092,
+	HEIGHT: 320,
+
+	// Player
+	PLAYER_WIDTH: 20,
+	PLAYER_HEIGHT: 16,
+	PLAYER_SPEED: 2,
+	PLAYER_START_X: 50,
+	PLAYER_START_Y: 150,
+
+	// Shots
+	SHOT_WIDTH: 8,
+	SHOT_HEIGHT: 4,
+	SHOT_SPEED: 6,
+	SHOT_COOLDOWN: 200,
+
+	// Enemies — type 2 (r-enemy-2.png, 33×36, faster/tighter wave)
+	ENEMY_WIDTH: 33,
+	ENEMY_HEIGHT: 36,
+	ENEMY_SPEED: 3,
+	ENEMY_SPEED_MULTIPLIER: 0.75,
+	ENEMY_SPAWN_INTERVAL: 1500,
+	// Spawn y restricted to middle 50% of screen (25%–75%)
+	ENEMY_SPAWN_Y_MIN_FRAC: 0.25,
+	ENEMY_SPAWN_Y_MAX_FRAC: 0.75,
+	// Batch spawning
+	ENEMY_BATCH_SIZE: 4,
+	ENEMY_BATCH_SPACING: 50, // ~1.5× enemy width, matching R-Type-main 50px stagger
+	// Sinusoidal movement — type 2 (R-Type-main: amplitude 10, factor 20)
+	ENEMY2_SINE_AMPLITUDE: 55,
+	ENEMY2_SINE_PERIOD: 80,
+	// Type 3 (r-enemy-3.png, 65×66, slow wide wave — R-Type-main: amplitude 20, factor 30)
+	ENEMY3_WIDTH: 65,
+	ENEMY3_HEIGHT: 66,
+	ENEMY3_BATCH_SIZE: 4,
+	ENEMY3_SINE_AMPLITUDE: 40,
+	ENEMY3_SINE_PERIOD: 120,
+
+	// Background
+	BG_SCROLL_SPEED: 1,
+	BG_WIDTH: 512,
+	BG_HEIGHT: 320,
+
+	// Animations
+	DEATH_ANIMATION_FRAMES: 48,
+	DEATH_ANIMATION_SPEED: 60,
+
+	// Colors
+	PLAYER_COLOR: 0x00ff00,
+	SHOT_COLOR: 0xffff00,
+	ENEMY_COLOR: 0xff0000,
+	EXPLOSION_COLOR: 0xff8800,
+	BG_COLOR: 0x000033,
+};
