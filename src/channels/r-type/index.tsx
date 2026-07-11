@@ -4,10 +4,12 @@
  * @file R-Type style shoot-em-up game
  */
 
+import type { Total } from '@gdq/types/tracker';
 import type { ChannelProps } from '../channels';
 import { registerChannel } from '../channels';
 import styled from '@emotion/styled';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import { useReplicant } from 'use-nodecg';
 import { useRTypeGame } from './hook';
 import { CONFIG } from './config';
 import bgPng from './sprites/bg.png';
@@ -18,6 +20,18 @@ import boomSpritePng from './sprites/r-boom.png';
 import shootSpritePng from './sprites/r-shoot.png';
 import barPng from './sprites/bar.png';
 import barFilledPng from './sprites/bar-filled.png';
+import number0Png from './sprites/numbers/0.png';
+import number1Png from './sprites/numbers/1.png';
+import number2Png from './sprites/numbers/2.png';
+import number3Png from './sprites/numbers/3.png';
+import number4Png from './sprites/numbers/4.png';
+import number5Png from './sprites/numbers/5.png';
+import number6Png from './sprites/numbers/6.png';
+import number7Png from './sprites/numbers/7.png';
+import number8Png from './sprites/numbers/8.png';
+import number9Png from './sprites/numbers/9.png';
+import dollarPng from './sprites/numbers/dollar.png';
+import commaPng from './sprites/numbers/comma.png';
 
 registerChannel('R-Type', 85, RType, {
 	position: 'bottomLeft',
@@ -50,8 +64,13 @@ function loadImg(src: string): Promise<HTMLImageElement> {
 	});
 }
 
+function formatTotalText(totalRaw: number): string {
+	return `$${Intl.NumberFormat('en-US').format(Math.floor(totalRaw))}`;
+}
+
 function RType(props: ChannelProps) {
 	const gameState = useRTypeGame();
+	const [total] = useReplicant<Total | null>('total', null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const spritesLoadedRef = useRef<boolean>(false);
 	const bgImgRef = useRef<HTMLImageElement | null>(null);
@@ -62,6 +81,20 @@ function RType(props: ChannelProps) {
 	const shootImgRef = useRef<HTMLImageElement | null>(null);
 	const barImgRef = useRef<HTMLImageElement | null>(null);
 	const barFilledImgRef = useRef<HTMLImageElement | null>(null);
+	const numberImgsRef = useRef<Record<string, HTMLImageElement | null>>({
+		0: null,
+		1: null,
+		2: null,
+		3: null,
+		4: null,
+		5: null,
+		6: null,
+		7: null,
+		8: null,
+		9: null,
+		$: null,
+		',': null,
+	});
 	// Tracks current bank frame (0=most up, 2=neutral, 4=most down) for smooth tilt animation
 	const playerAnimFrameRef = useRef<number>(2);
 
@@ -76,6 +109,18 @@ function RType(props: ChannelProps) {
 			loadImg(shootSpritePng),
 			loadImg(barPng),
 			loadImg(barFilledPng),
+			loadImg(number0Png),
+			loadImg(number1Png),
+			loadImg(number2Png),
+			loadImg(number3Png),
+			loadImg(number4Png),
+			loadImg(number5Png),
+			loadImg(number6Png),
+			loadImg(number7Png),
+			loadImg(number8Png),
+			loadImg(number9Png),
+			loadImg(dollarPng),
+			loadImg(commaPng),
 		]).then((images) => {
 			bgImgRef.current = images[0];
 			enemyImgRef.current = images[1];
@@ -85,6 +130,18 @@ function RType(props: ChannelProps) {
 			shootImgRef.current = images[5];
 			barImgRef.current = images[6];
 			barFilledImgRef.current = images[7];
+			numberImgsRef.current['0'] = images[8];
+			numberImgsRef.current['1'] = images[9];
+			numberImgsRef.current['2'] = images[10];
+			numberImgsRef.current['3'] = images[11];
+			numberImgsRef.current['4'] = images[12];
+			numberImgsRef.current['5'] = images[13];
+			numberImgsRef.current['6'] = images[14];
+			numberImgsRef.current['7'] = images[15];
+			numberImgsRef.current['8'] = images[16];
+			numberImgsRef.current['9'] = images[17];
+			numberImgsRef.current['$'] = images[18];
+			numberImgsRef.current[','] = images[19];
 			spritesLoadedRef.current = true;
 		});
 	}, []);
@@ -95,6 +152,7 @@ function RType(props: ChannelProps) {
 
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
+		ctx.imageSmoothingEnabled = false;
 
 		// Draw scrolling tiled background with uniform scaling (no deformation).
 		if (bgImgRef.current) {
@@ -113,6 +171,24 @@ function RType(props: ChannelProps) {
 		// Keep a fixed bottom stripe outside the active playfield.
 		ctx.fillStyle = '#000';
 		ctx.fillRect(0, CONFIG.PLAYFIELD_HEIGHT, CONFIG.WIDTH, CONFIG.BOTTOM_STRIPE_HEIGHT);
+
+		const totalText = formatTotalText(total?.raw ?? 0);
+		const totalScale = 3;
+		const totalGap = 3;
+		const totalSprites = [...totalText].map((char) => ({ char, sprite: numberImgsRef.current[char] })).filter(
+			(item): item is { char: string; sprite: HTMLImageElement } => !!item.sprite,
+		);
+		const totalWidth = totalSprites.reduce(
+			(sum, item, index) => sum + item.sprite.width * totalScale + (index > 0 ? totalGap : 0),
+			0,
+		);
+		const totalHeight = totalSprites.reduce((maxHeight, item) => Math.max(maxHeight, item.sprite.height * totalScale), 0);
+		const totalY = CONFIG.PLAYFIELD_HEIGHT + CONFIG.BOTTOM_STRIPE_HEIGHT - totalHeight;
+		let totalX = CONFIG.WIDTH - totalWidth;
+		for (const item of totalSprites) {
+			ctx.drawImage(item.sprite, totalX, totalY, item.sprite.width * totalScale, item.sprite.height * totalScale);
+			totalX += item.sprite.width * totalScale + totalGap;
+		}
 
 		// Draw charge HUD in the bottom stripe at native sprite size, top-right anchored.
 		if (barImgRef.current && barFilledImgRef.current) {
