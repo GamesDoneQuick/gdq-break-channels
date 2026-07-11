@@ -16,11 +16,13 @@ import enemy3SpritePng from './sprites/r-enemy-3.png';
 import playerSpritePng from './sprites/r-player-1.png';
 import boomSpritePng from './sprites/r-boom.png';
 import shootSpritePng from './sprites/r-shoot.png';
+import barPng from './sprites/bar.png';
+import barFilledPng from './sprites/bar-filled.png';
 
 registerChannel('R-Type', 85, RType, {
-	position: 'topLeft',
+	position: 'bottomLeft',
 	site: 'GitHub',
-	handle: 'gdq',
+	handle: 'ViMaSter',
 });
 
 const Container = styled.div`
@@ -58,6 +60,8 @@ function RType(props: ChannelProps) {
 	const playerImgRef = useRef<HTMLImageElement | null>(null);
 	const boomImgRef = useRef<HTMLImageElement | null>(null);
 	const shootImgRef = useRef<HTMLImageElement | null>(null);
+	const barImgRef = useRef<HTMLImageElement | null>(null);
+	const barFilledImgRef = useRef<HTMLImageElement | null>(null);
 	// Tracks current bank frame (0=most up, 2=neutral, 4=most down) for smooth tilt animation
 	const playerAnimFrameRef = useRef<number>(2);
 
@@ -70,6 +74,8 @@ function RType(props: ChannelProps) {
 			loadImg(playerSpritePng),
 			loadImg(boomSpritePng),
 			loadImg(shootSpritePng),
+			loadImg(barPng),
+			loadImg(barFilledPng),
 		]).then((images) => {
 			bgImgRef.current = images[0];
 			enemyImgRef.current = images[1];
@@ -77,6 +83,8 @@ function RType(props: ChannelProps) {
 			playerImgRef.current = images[3];
 			boomImgRef.current = images[4];
 			shootImgRef.current = images[5];
+			barImgRef.current = images[6];
+			barFilledImgRef.current = images[7];
 			spritesLoadedRef.current = true;
 		});
 	}, []);
@@ -90,15 +98,52 @@ function RType(props: ChannelProps) {
 
 		// Draw scrolling tiled background with uniform scaling (no deformation).
 		if (bgImgRef.current) {
-			const scale = CONFIG.HEIGHT / bgImgRef.current.height;
+			const scale = CONFIG.PLAYFIELD_HEIGHT / bgImgRef.current.height;
 			const drawW = bgImgRef.current.width * scale;
 			const drawH = bgImgRef.current.height * scale;
-			const y = (CONFIG.HEIGHT - drawH) / 2;
+			const y = 0;
 			const normalizedOffset = ((gameState.bgOffset % drawW) + drawW) % drawW;
 			const scrollOffset = -normalizedOffset;
 
 			for (let x = scrollOffset - drawW; x < CONFIG.WIDTH + drawW; x += drawW) {
 				ctx.drawImage(bgImgRef.current, x, y, drawW, drawH);
+			}
+		}
+
+		// Keep a fixed bottom stripe outside the active playfield.
+		ctx.fillStyle = '#000';
+		ctx.fillRect(0, CONFIG.PLAYFIELD_HEIGHT, CONFIG.WIDTH, CONFIG.BOTTOM_STRIPE_HEIGHT);
+
+		// Draw charge HUD in the bottom stripe at native sprite size, top-right anchored.
+		if (barImgRef.current && barFilledImgRef.current) {
+			const barWidth = barImgRef.current.width;
+			const barHeight = barImgRef.current.height;
+			const barX = (CONFIG.WIDTH - barWidth) / 2;
+			const barY = CONFIG.PLAYFIELD_HEIGHT;
+
+			ctx.drawImage(barImgRef.current, barX, barY, barWidth, barHeight);
+
+			const heldSeconds = gameState.chargeTimeMs / 1000;
+			const maxChargeSeconds = CONFIG.SHOT_CHARGE_MAX_MS / 1000;
+			const chargePercent = Math.max(0, Math.min(1, heldSeconds / maxChargeSeconds));
+			const innerLeft = 131;
+			const innerRight = 15;
+			const fillMaxWidth = Math.max(0, barWidth - innerLeft - innerRight);
+			const fillWidth = Math.floor(fillMaxWidth * chargePercent);
+
+			if (fillWidth > 0) {
+				const srcFillWidth = (barFilledImgRef.current.width - innerLeft - innerRight) * chargePercent;
+				ctx.drawImage(
+					barFilledImgRef.current,
+					innerLeft,
+					0,
+					srcFillWidth,
+					barFilledImgRef.current.height,
+					barX + innerLeft,
+					barY,
+					fillWidth,
+					barFilledImgRef.current.height,
+				);
 			}
 		}
 
@@ -143,16 +188,17 @@ function RType(props: ChannelProps) {
 			}
 		}
 
-		// Draw shots using r-shoot.png — frame at x=127 as per E_Bullet::render() sourceRec {127,0,20,20}
+		// Draw shots using r-shoot.png with 5 charge rows.
 		const SHOT_FRAME_W = 20;
-		const SHOT_FRAME_H = 20;
-		const SHOT_SRC_X = 146;
+		const SHOT_FRAME_H = 18;
+		const SHOT_SRC_X = 127;
 		gameState.shots.forEach((shot) => {
 			if (shootImgRef.current) {
+				const srcY = (shot.chargeLevel - 1) * SHOT_FRAME_H;
 				ctx.drawImage(
 					shootImgRef.current,
-					SHOT_SRC_X, 0, SHOT_FRAME_W, SHOT_FRAME_H,
-					shot.x, shot.y + shot.height / 2 - SHOT_FRAME_H / 2, SHOT_FRAME_W, SHOT_FRAME_H,
+					SHOT_SRC_X, srcY, SHOT_FRAME_W, SHOT_FRAME_H,
+					shot.x, shot.y, shot.width, shot.height,
 				);
 			}
 		});

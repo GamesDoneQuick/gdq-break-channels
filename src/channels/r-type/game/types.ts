@@ -14,6 +14,7 @@ export interface Shot {
 	y: number;
 	width: number;
 	height: number;
+	chargeLevel: 1 | 2 | 3 | 4 | 5;
 	id: number;
 }
 
@@ -48,6 +49,11 @@ export interface GameState {
 	autoMoveDirection: -1 | 0 | 1;
 	autoMoveTimer: number;
 	autoMoveDuration: number;
+	autoMoveTimerX: number;
+	autoMoveDurationX: number;
 	autoMoveTargetY: number | null;
+	autoMoveTargetX: number | null;
 	autoShootInterval: number;
+	chargeTimeMs: number;
+	wasFireHeld: boolean;
 }
