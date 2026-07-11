@@ -10,6 +10,7 @@ import styled from '@emotion/styled';
 import { useEffect, useRef, useState } from 'react';
 import { useRTypeGame } from './hook';
 import { CONFIG } from './config';
+import bgPng from './sprites/bg.png';
 import enemySpritePng from './sprites/r-enemy-2.png';
 import enemy3SpritePng from './sprites/r-enemy-3.png';
 import playerSpritePng from './sprites/r-player-1.png';
@@ -51,6 +52,7 @@ function RType(props: ChannelProps) {
 	const gameState = useRTypeGame();
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const spritesLoadedRef = useRef<boolean>(false);
+	const bgImgRef = useRef<HTMLImageElement | null>(null);
 	const enemyImgRef = useRef<HTMLImageElement | null>(null);
 	const enemy3ImgRef = useRef<HTMLImageElement | null>(null);
 	const playerImgRef = useRef<HTMLImageElement | null>(null);
@@ -62,17 +64,19 @@ function RType(props: ChannelProps) {
 	// Load all sprite sheets on mount
 	useEffect(() => {
 		Promise.all([
+			loadImg(bgPng),
 			loadImg(enemySpritePng),
 			loadImg(enemy3SpritePng),
 			loadImg(playerSpritePng),
 			loadImg(boomSpritePng),
 			loadImg(shootSpritePng),
 		]).then((images) => {
-			enemyImgRef.current = images[0];
-			enemy3ImgRef.current = images[1];
-			playerImgRef.current = images[2];
-			boomImgRef.current = images[3];
-			shootImgRef.current = images[4];
+			bgImgRef.current = images[0];
+			enemyImgRef.current = images[1];
+			enemy3ImgRef.current = images[2];
+			playerImgRef.current = images[3];
+			boomImgRef.current = images[4];
+			shootImgRef.current = images[5];
 			spritesLoadedRef.current = true;
 		});
 	}, []);
@@ -84,31 +88,18 @@ function RType(props: ChannelProps) {
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 
-		// Draw background
-		const gradient = ctx.createLinearGradient(0, 0, CONFIG.WIDTH, CONFIG.HEIGHT);
-		gradient.addColorStop(0, '#000033');
-		gradient.addColorStop(1, '#000055');
-		ctx.fillStyle = gradient;
-		ctx.fillRect(0, 0, CONFIG.WIDTH, CONFIG.HEIGHT);
+		// Draw scrolling tiled background with uniform scaling (no deformation).
+		if (bgImgRef.current) {
+			const scale = CONFIG.HEIGHT / bgImgRef.current.height;
+			const drawW = bgImgRef.current.width * scale;
+			const drawH = bgImgRef.current.height * scale;
+			const y = (CONFIG.HEIGHT - drawH) / 2;
+			const normalizedOffset = ((gameState.bgOffset % drawW) + drawW) % drawW;
+			const scrollOffset = -normalizedOffset;
 
-		// Add starfield
-		ctx.fillStyle = '#ffffff';
-		for (let i = 0; i < CONFIG.HEIGHT * CONFIG.WIDTH * 0.0001; i++) {
-			const x = Math.random() * CONFIG.WIDTH;
-			const y = Math.random() * CONFIG.HEIGHT;
-			const size = Math.random() * 0.5;
-			ctx.fillRect(x, y, size, size);
-		}
-
-		// Scrolling lines pattern
-		const scrollOffset = -(gameState.bgOffset % CONFIG.BG_WIDTH);
-		ctx.strokeStyle = 'rgba(0, 100, 100, 0.3)';
-		ctx.lineWidth = 1;
-		for (let x = scrollOffset; x < CONFIG.WIDTH; x += 32) {
-			ctx.beginPath();
-			ctx.moveTo(x, 0);
-			ctx.lineTo(x, CONFIG.HEIGHT);
-			ctx.stroke();
+			for (let x = scrollOffset - drawW; x < CONFIG.WIDTH + drawW; x += drawW) {
+				ctx.drawImage(bgImgRef.current, x, y, drawW, drawH);
+			}
 		}
 
 		// Draw player ship

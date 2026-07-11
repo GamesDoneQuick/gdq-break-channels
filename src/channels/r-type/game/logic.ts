@@ -29,7 +29,7 @@ export function updateGameState(state: GameState, deltaTime: number): GameState 
 	const newState = { ...state };
 
 	// Update background scroll
-	newState.bgOffset = (newState.bgOffset + CONFIG.BG_SCROLL_SPEED) % CONFIG.BG_WIDTH;
+	newState.bgOffset += (CONFIG.BG_SCROLL_SPEED * deltaTime) / (1000 / 60);
 
 	// Update player
 	if (!newState.player.dead) {

@@ -39,7 +39,7 @@ export const CONFIG = {
 	ENEMY3_SINE_PERIOD: 120,
 
 	// Background
-	BG_SCROLL_SPEED: 1,
+	BG_SCROLL_SPEED: 0.5,
 	BG_WIDTH: 512,
 	BG_HEIGHT: 320,
 
