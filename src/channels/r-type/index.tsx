@@ -108,11 +108,15 @@ function RType(props: ChannelProps) {
 		const PLAYER_FRAME_H = 18;
 		const PLAYER_FRAME_COUNT = 5;
 		if (!gameState.player.dead) {
+			const isInvincible = gameState.playerInvincibilityTimer > 0;
+			const flickerStep = Math.floor(gameState.playerInvincibilityTimer / CONFIG.RESPAWN_FLICKER_INTERVAL_MS);
+			const shouldDrawPlayer = !isInvincible || flickerStep % 2 === 0;
+
 			// Animate bank frame toward target based on vertical velocity
 			const targetFrame = gameState.player.vy < 0 ? 0 : gameState.player.vy > 0 ? PLAYER_FRAME_COUNT - 1 : 2;
 			if (playerAnimFrameRef.current < targetFrame) playerAnimFrameRef.current++;
 			else if (playerAnimFrameRef.current > targetFrame) playerAnimFrameRef.current--;
-			if (playerImgRef.current) {
+			if (playerImgRef.current && shouldDrawPlayer) {
 				ctx.drawImage(
 					playerImgRef.current,
 					playerAnimFrameRef.current * PLAYER_FRAME_W, 0, PLAYER_FRAME_W, PLAYER_FRAME_H,

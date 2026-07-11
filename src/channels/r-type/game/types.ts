@@ -36,10 +36,18 @@ export interface GameState {
 	shots: Shot[];
 	enemies: Enemy[];
 	keys: Record<string, boolean>;
+	controlsEnabled: boolean;
 	lastShotTime: number;
 	nextEnemySpawn: number;
+	pendingEnemyWaves: number;
 	nextShotId: number;
 	nextEnemyId: number;
 	bgOffset: number;
 	playerRespawnTimer: number;
+	playerInvincibilityTimer: number;
+	autoMoveDirection: -1 | 0 | 1;
+	autoMoveTimer: number;
+	autoMoveDuration: number;
+	autoMoveTargetY: number | null;
+	autoShootInterval: number;
 }

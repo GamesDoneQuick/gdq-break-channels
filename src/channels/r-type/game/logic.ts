@@ -16,12 +16,20 @@ export function createInitialState(): GameState {
 		shots: [],
 		enemies: [],
 		keys: {},
+		controlsEnabled: false,
 		lastShotTime: 0,
 		nextEnemySpawn: CONFIG.ENEMY_SPAWN_INTERVAL,
+		pendingEnemyWaves: 0,
 		nextShotId: 0,
 		nextEnemyId: 0,
 		bgOffset: 0,
 		playerRespawnTimer: 0,
+		playerInvincibilityTimer: 0,
+		autoMoveDirection: Math.random() < 0.5 ? -1 : 1,
+		autoMoveTimer: 1600,
+		autoMoveDuration: 1600,
+		autoMoveTargetY: null,
+		autoShootInterval: 220,
 	};
 }
 
@@ -33,6 +41,7 @@ export function updateGameState(state: GameState, deltaTime: number): GameState 
 
 	// Update player
 	if (!newState.player.dead) {
+		newState.playerInvincibilityTimer = Math.max(0, newState.playerInvincibilityTimer - deltaTime);
 		updatePlayer(newState, deltaTime);
 		handlePlayerShooting(newState, deltaTime);
 	} else {
@@ -52,6 +61,7 @@ export function updateGameState(state: GameState, deltaTime: number): GameState 
 				newState.player.dead = false;
 				newState.player.deathFrame = 0;
 				newState.playerRespawnTimer = 0;
+				newState.playerInvincibilityTimer = CONFIG.RESPAWN_INVINCIBILITY_MS;
 			}
 		}
 	}
@@ -62,11 +72,10 @@ export function updateGameState(state: GameState, deltaTime: number): GameState 
 		return shot.x < CONFIG.WIDTH;
 	});
 
-	// Spawn enemies (always spawn, regardless of player state)
-	newState.nextEnemySpawn -= deltaTime;
-	if (newState.nextEnemySpawn <= 0) {
+	// Spawn enemies only when a donation event has queued a wave.
+	if (newState.pendingEnemyWaves > 0) {
 		spawnEnemy(newState);
-		newState.nextEnemySpawn = CONFIG.ENEMY_SPAWN_INTERVAL;
+		newState.pendingEnemyWaves--;
 	}
 
 	// Update enemies
@@ -100,36 +109,75 @@ export function updateGameState(state: GameState, deltaTime: number): GameState 
 function updatePlayer(state: GameState, deltaTime: number): void {
 	const player = state.player;
 
-	// Vertical movement
-	if (state.keys['w'] || state.keys['W']) {
-		player.vy = -CONFIG.PLAYER_SPEED;
-	} else if (state.keys['s'] || state.keys['S']) {
-		player.vy = CONFIG.PLAYER_SPEED;
-	} else {
-		player.vy = 0;
-	}
+	if (state.controlsEnabled) {
+		// Vertical movement
+		if (state.keys['w'] || state.keys['W']) {
+			player.vy = -CONFIG.PLAYER_SPEED;
+		} else if (state.keys['s'] || state.keys['S']) {
+			player.vy = CONFIG.PLAYER_SPEED;
+		} else {
+			player.vy = 0;
+		}
 
-	// Horizontal movement (can move left/right freely too)
-	if (state.keys['a'] || state.keys['A']) {
-		player.vx = -CONFIG.PLAYER_SPEED;
-	} else if (state.keys['d'] || state.keys['D']) {
-		player.vx = CONFIG.PLAYER_SPEED;
+		// Horizontal movement (can move left/right freely too)
+		if (state.keys['a'] || state.keys['A']) {
+			player.vx = -CONFIG.PLAYER_SPEED;
+		} else if (state.keys['d'] || state.keys['D']) {
+			player.vx = CONFIG.PLAYER_SPEED;
+		} else {
+			player.vx = 0;
+		}
 	} else {
+		const hasActiveEnemies = hasLivingEnemies(state);
+		updateAttractMode(state, deltaTime, hasActiveEnemies);
 		player.vx = 0;
+		if (!hasActiveEnemies) {
+			if (state.autoMoveTargetY !== null) {
+				const relaxedSpeed = CONFIG.PLAYER_SPEED * CONFIG.ATTRACT_RELAXED_SPEED_MULTIPLIER;
+				const directionToTarget = state.autoMoveTargetY > player.y ? 1 : -1;
+				state.autoMoveDirection = directionToTarget;
+				player.vy = directionToTarget * relaxedSpeed;
+			} else {
+				state.autoMoveDirection = 0;
+				player.vy = 0;
+			}
+		} else {
+			player.vy = state.autoMoveDirection * CONFIG.PLAYER_SPEED;
+		}
 	}
 
 	player.x += player.vx;
 	player.y += player.vy;
 
 	// Bounds checking
+	const playerDrawHeight = player.height * 2;
 	player.x = Math.max(0, Math.min(player.x, CONFIG.WIDTH - player.width));
-	player.y = Math.max(0, Math.min(player.y, CONFIG.HEIGHT - player.height));
+	player.y = Math.max(
+		CONFIG.PLAYER_VERTICAL_WALL_PADDING,
+		Math.min(player.y, CONFIG.HEIGHT - playerDrawHeight - CONFIG.PLAYER_VERTICAL_WALL_PADDING),
+	);
+
+	// Relaxed attract mode: stop exactly at planned target and pause.
+	if (!state.controlsEnabled && !hasLivingEnemies(state) && state.autoMoveTargetY !== null) {
+		const remaining = state.autoMoveTargetY - player.y;
+		if (Math.abs(remaining) <= Math.abs(player.vy)) {
+			player.y = state.autoMoveTargetY;
+			player.vy = 0;
+			state.autoMoveDirection = 0;
+			state.autoMoveTargetY = null;
+			state.autoMoveDuration = CONFIG.ATTRACT_RELAXED_IDLE_MIN_MS + Math.random() * (CONFIG.ATTRACT_RELAXED_IDLE_MAX_MS - CONFIG.ATTRACT_RELAXED_IDLE_MIN_MS);
+			state.autoMoveTimer = state.autoMoveDuration;
+		}
+	}
 }
 
 function handlePlayerShooting(state: GameState, deltaTime: number): void {
 	state.lastShotTime += deltaTime;
 
-	if ((state.keys[' '] || state.keys['space']) && state.lastShotTime >= CONFIG.SHOT_COOLDOWN) {
+	const canShootManually = (state.keys[' '] || state.keys['space']) && state.lastShotTime >= CONFIG.SHOT_COOLDOWN;
+	const canShootAuto = !state.controlsEnabled && hasLivingEnemies(state) && state.lastShotTime >= state.autoShootInterval;
+
+	if (canShootManually || canShootAuto) {
 		const shot: Shot = {
 			x: state.player.x + state.player.width,
 			y: state.player.y + (state.player.height * 2) / 2 - CONFIG.SHOT_HEIGHT / 2,
@@ -139,7 +187,128 @@ function handlePlayerShooting(state: GameState, deltaTime: number): void {
 		};
 		state.shots.push(shot);
 		state.lastShotTime = 0;
+		if (!state.controlsEnabled) {
+			state.autoShootInterval = 160 + Math.random() * 260;
+		}
 	}
+}
+
+function updateAttractMode(state: GameState, deltaTime: number, hasActiveEnemies: boolean): void {
+	if (!hasActiveEnemies) {
+		// In relaxed mode, timer is only for idle; movement ends when target Y is reached.
+		if (state.autoMoveTargetY !== null) {
+			return;
+		}
+
+		state.autoMoveTimer -= deltaTime;
+		if (state.autoMoveTimer <= 0) {
+			const targetY = chooseRelaxedTargetY(state);
+			if (targetY !== null) {
+				state.autoMoveTargetY = targetY;
+				state.autoMoveDirection = targetY > state.player.y ? 1 : -1;
+				state.autoMoveDuration = 0;
+				state.autoMoveTimer = 0;
+			} else {
+				state.autoMoveDirection = 0;
+				state.autoMoveDuration = CONFIG.ATTRACT_RELAXED_IDLE_MIN_MS + Math.random() * (CONFIG.ATTRACT_RELAXED_IDLE_MAX_MS - CONFIG.ATTRACT_RELAXED_IDLE_MIN_MS);
+				state.autoMoveTimer = state.autoMoveDuration;
+			}
+		}
+		return;
+	}
+
+	state.autoMoveTimer -= deltaTime;
+
+	if (state.autoMoveTimer <= 0) {
+		if (hasActiveEnemies) {
+			const shouldIdle = Math.random() < 0.28;
+			if (shouldIdle) {
+				state.autoMoveDirection = 0;
+				state.autoMoveDuration = CONFIG.ATTRACT_IDLE_MIN_MS + Math.random() * (CONFIG.ATTRACT_IDLE_MAX_MS - CONFIG.ATTRACT_IDLE_MIN_MS);
+			} else {
+				state.autoMoveDirection = Math.random() < 0.5 ? -1 : 1;
+				state.autoMoveDuration = CONFIG.ATTRACT_MOVE_MIN_MS + Math.random() * (CONFIG.ATTRACT_MOVE_MAX_MS - CONFIG.ATTRACT_MOVE_MIN_MS);
+			}
+		} else {
+			state.autoMoveDirection = 0;
+			state.autoMoveDuration = CONFIG.ATTRACT_RELAXED_IDLE_MIN_MS + Math.random() * (CONFIG.ATTRACT_RELAXED_IDLE_MAX_MS - CONFIG.ATTRACT_RELAXED_IDLE_MIN_MS);
+		}
+		state.autoMoveTimer = state.autoMoveDuration;
+	}
+
+	const topLimit = CONFIG.PLAYER_VERTICAL_WALL_PADDING;
+	const bottomLimit = CONFIG.HEIGHT - state.player.height * 2 - CONFIG.PLAYER_VERTICAL_WALL_PADDING;
+	if (state.player.y <= topLimit) {
+		if (hasActiveEnemies) {
+			state.autoMoveDirection = 1;
+			state.autoMoveTimer = Math.min(state.autoMoveTimer, 300);
+		} else {
+			state.autoMoveDirection = 0;
+			state.autoMoveTargetY = null;
+			state.autoMoveDuration = CONFIG.ATTRACT_RELAXED_IDLE_MIN_MS + Math.random() * (CONFIG.ATTRACT_RELAXED_IDLE_MAX_MS - CONFIG.ATTRACT_RELAXED_IDLE_MIN_MS);
+			state.autoMoveTimer = state.autoMoveDuration;
+		}
+	}
+	if (state.player.y >= bottomLimit) {
+		if (hasActiveEnemies) {
+			state.autoMoveDirection = -1;
+			state.autoMoveTimer = Math.min(state.autoMoveTimer, 300);
+		} else {
+			state.autoMoveDirection = 0;
+			state.autoMoveTargetY = null;
+			state.autoMoveDuration = CONFIG.ATTRACT_RELAXED_IDLE_MIN_MS + Math.random() * (CONFIG.ATTRACT_RELAXED_IDLE_MAX_MS - CONFIG.ATTRACT_RELAXED_IDLE_MIN_MS);
+			state.autoMoveTimer = state.autoMoveDuration;
+		}
+	}
+}
+
+function chooseRelaxedTargetY(state: GameState): number | null {
+	const topLimit = CONFIG.PLAYER_VERTICAL_WALL_PADDING;
+	const bottomLimit = CONFIG.HEIGHT - state.player.height * 2 - CONFIG.PLAYER_VERTICAL_WALL_PADDING;
+	const currentY = Math.max(topLimit, Math.min(state.player.y, bottomLimit));
+	const range = bottomLimit - topLimit;
+	if (range <= 0) {
+		return null;
+	}
+
+	const distTop = currentY - topLimit;
+	const distBottom = bottomLimit - currentY;
+	const halfRange = Math.max(1, range / 2);
+	const topPressure = 1 - Math.min(1, distTop / halfRange);
+	const bottomPressure = 1 - Math.min(1, distBottom / halfRange);
+	const probMoveDown = Math.min(0.9, Math.max(0.1, 0.5 + (topPressure - bottomPressure) * 0.35));
+	const preferredDir: -1 | 1 = Math.random() < probMoveDown ? 1 : -1;
+
+	const minTravel = CONFIG.ATTRACT_RELAXED_TRAVEL_MIN_PX;
+	const maxTravel = CONFIG.ATTRACT_RELAXED_TRAVEL_MAX_PX;
+	const desiredTravel = minTravel + Math.random() * (maxTravel - minTravel);
+
+	const maxUpTravel = Math.max(0, distTop);
+	const maxDownTravel = Math.max(0, distBottom);
+	const availableInPreferred = preferredDir === -1 ? maxUpTravel : maxDownTravel;
+	const fallbackDir: -1 | 1 = preferredDir === -1 ? 1 : -1;
+	const availableInFallback = fallbackDir === -1 ? maxUpTravel : maxDownTravel;
+
+	let dir: -1 | 1 = preferredDir;
+	let available = availableInPreferred;
+	if (available < 8 && availableInFallback > availableInPreferred) {
+		dir = fallbackDir;
+		available = availableInFallback;
+	}
+	if (available < 8) {
+		return null;
+	}
+
+	const travel = Math.min(available - 2, desiredTravel);
+	if (travel <= 0) {
+		return null;
+	}
+
+	return currentY + dir * travel;
+}
+
+function hasLivingEnemies(state: GameState): boolean {
+	return state.enemies.some((enemy) => !enemy.dead);
 }
 
 function spawnEnemy(state: GameState): void {
@@ -190,11 +359,12 @@ function checkCollisions(state: GameState): void {
 	}
 
 	// Player-enemy collisions
-	if (!state.player.dead) {
+	if (!state.player.dead && state.playerInvincibilityTimer <= 0) {
 		for (const enemy of state.enemies) {
 			if (!enemy.dead && rectanglesCollide(state.player, enemy)) {
 				state.player.dead = true;
 				state.player.deathFrame = 0;
+				state.playerInvincibilityTimer = 0;
 			}
 		}
 	}

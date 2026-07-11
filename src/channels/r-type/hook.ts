@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useListenFor } from 'use-nodecg';
 import { GameState } from './game/types';
 import { createInitialState, updateGameState } from './game/logic';
 
@@ -9,23 +10,33 @@ export function useRTypeGame() {
 
 	useEffect(() => {
 		function handleKeyDown(e: KeyboardEvent) {
+			const isActivationKey = e.key === 'w' || e.key === 'W' || e.key === 's' || e.key === 'S';
 			setGameState((prev) => ({
 				...prev,
-				keys: {
-					...prev.keys,
-					[e.key]: true,
-				},
+				controlsEnabled: prev.controlsEnabled || isActivationKey,
+				keys: prev.controlsEnabled || isActivationKey
+					? {
+						...prev.keys,
+						[e.key]: true,
+					}
+					: prev.keys,
 			}));
 		}
 
 		function handleKeyUp(e: KeyboardEvent) {
-			setGameState((prev) => ({
-				...prev,
-				keys: {
-					...prev.keys,
-					[e.key]: false,
-				},
-			}));
+			setGameState((prev) => {
+				if (!prev.controlsEnabled) {
+					return prev;
+				}
+
+				return {
+					...prev,
+					keys: {
+						...prev.keys,
+						[e.key]: false,
+					},
+				};
+			});
 		}
 
 		window.addEventListener('keydown', handleKeyDown);
@@ -36,6 +47,13 @@ export function useRTypeGame() {
 			window.removeEventListener('keyup', handleKeyUp);
 		};
 	}, []);
+
+	useListenFor('donation', () => {
+		setGameState((prev) => ({
+			...prev,
+			pendingEnemyWaves: prev.pendingEnemyWaves + 1,
+		}));
+	});
 
 	useEffect(() => {
 		function gameLoop() {
