@@ -195,7 +195,7 @@ function RType(props: ChannelProps) {
 			const barWidth = barImgRef.current.width;
 			const barHeight = barImgRef.current.height;
 			const barX = (CONFIG.WIDTH - barWidth) / 2;
-			const barY = CONFIG.PLAYFIELD_HEIGHT;
+			const barY = CONFIG.PLAYFIELD_HEIGHT + 3;
 
 			ctx.drawImage(barImgRef.current, barX, barY, barWidth, barHeight);
 
