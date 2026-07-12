@@ -107,7 +107,6 @@ function RType(props: ChannelProps) {
 	// Tracks current bank frame (0=most up, 2=neutral, 4=most down) for smooth tilt animation
 	const playerAnimFrameRef = useRef<number>(2);
 
-	// Load all sprite sheets on mount
 	useEffect(() => {
 		Promise.all([
 			loadImg(bgPng),
@@ -306,7 +305,7 @@ function RType(props: ChannelProps) {
 				);
 			}
 		} else if (gameState.player.deathFrame < CONFIG.DEATH_ANIMATION_FRAMES) {
-			// Death animation: r-boom.png — 4 frames at 33×35 (134px total, Game.cpp Infos(33.5, 35))
+			// Death animation
 			if (boomImgRef.current) {
 				const BOOM_FRAME_W = 33;
 				const BOOM_FRAME_H = 35;
@@ -368,7 +367,7 @@ function RType(props: ChannelProps) {
 					);
 				}
 			} else {
-				// Death animation: r-boom.png — 4 frames at 33×35; type 3 renders at 2× size
+				// Death animation
 				if (boomImgRef.current) {
 					const BOOM_FRAME_W = 33;
 					const BOOM_FRAME_H = 35;

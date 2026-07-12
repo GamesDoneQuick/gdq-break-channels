@@ -59,11 +59,9 @@ export function updateGameState(state: GameState, deltaTime: number): GameState 
 		// Handle death animation and respawn
 		newState.player.deathFrame++;
 		
-		// If death animation is complete, start respawn timer
 		if (newState.player.deathFrame >= CONFIG.DEATH_ANIMATION_FRAMES) {
 			newState.playerRespawnTimer += deltaTime;
 			
-			// Respawn after 1 second (1000ms)
 			if (newState.playerRespawnTimer >= 1000) {
 				newState.player.x = CONFIG.PLAYER_START_X;
 				newState.player.y = CONFIG.PLAYER_START_Y;
@@ -87,7 +85,7 @@ export function updateGameState(state: GameState, deltaTime: number): GameState 
 	newState.enemies = newState.enemies.map((enemy) => {
 		if (!enemy.dead) {
 			enemy.x += enemy.vx;
-			// Sinusoidal vertical movement mirroring R-Type-main S_EnemyAI per type:
+			// Sinusoidal vertical movement
 			// type 2: amplitude 10, factor 20 → scaled to 55/80
 			// type 3: amplitude 20, factor 30 → scaled to 90/120
 			const amp = enemy.enemyType === 3 ? CONFIG.ENEMY3_SINE_AMPLITUDE : CONFIG.ENEMY2_SINE_AMPLITUDE;
@@ -142,7 +140,6 @@ function updatePlayer(state: GameState, deltaTime: number): void {
 	const player = state.player;
 
 	if (state.controlsEnabled) {
-		// Vertical movement
 		if (state.keys['w'] || state.keys['W']) {
 			player.vy = -CONFIG.PLAYER_SPEED;
 		} else if (state.keys['s'] || state.keys['S']) {
@@ -151,7 +148,6 @@ function updatePlayer(state: GameState, deltaTime: number): void {
 			player.vy = 0;
 		}
 
-		// Horizontal movement (can move left/right freely too)
 		if (state.keys['a'] || state.keys['A']) {
 			player.vx = -CONFIG.PLAYER_SPEED;
 		} else if (state.keys['d'] || state.keys['D']) {
@@ -286,7 +282,7 @@ function handlePlayerShooting(state: GameState, deltaTime: number): void {
 
 function updateAttractMode(state: GameState, deltaTime: number, hasActiveEnemies: boolean): void {
 	if (!hasActiveEnemies) {
-		// Relaxed mode: schedule vertical and horizontal movement independently.
+		// Relaxed mode: Schedule vertical and horizontal movement independently
 		if (state.autoMoveTargetY === null) {
 			state.autoMoveTimer -= deltaTime;
 			if (state.autoMoveTimer <= 0) {
@@ -530,7 +526,7 @@ function hasVisibleLivingEnemies(state: GameState): boolean {
 }
 
 function spawnEnemy(state: GameState, donationAmount: number): void {
-	// Randomly pick type 2 or 3 (matching R-Type-main's random enemy type selection)
+	// Randomly pick enemy type 2 or 3
 	const enemyType: 2 | 3 = Math.random() < 0.5 ? 2 : 3;
 	const enemyW = enemyType === 3 ? CONFIG.ENEMY3_WIDTH : CONFIG.ENEMY_WIDTH;
 	const enemyH = enemyType === 3 ? CONFIG.ENEMY3_HEIGHT : CONFIG.ENEMY_HEIGHT;

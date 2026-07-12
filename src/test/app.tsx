@@ -41,7 +41,7 @@ export function App() {
 				</Select>
 				<Button
 					onClick={() => {
-						const amount = Math.floor(Math.random() * 20000000) / 100 + 5;
+						const amount = Math.floor(Math.random() * 20000) / 100 + 5;
 						const newTotal = Math.floor((totalRep.value!.raw + amount) * 100) / 100;
 
 						nodecg.sendMessage('donation', {
