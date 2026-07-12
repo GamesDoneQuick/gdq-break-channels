@@ -34,7 +34,7 @@ export function createInitialState(): GameState {
 		autoMoveDurationX: 1100,
 		autoMoveTargetY: null,
 		autoMoveTargetX: null,
-		autoShootInterval: getRandomAutoChargeTargetMs(),
+		autoShootInterval: getRandomAutoChargeTargetMs(0),
 		chargeTimeMs: 0,
 		wasFireHeld: false,
 	};
@@ -160,10 +160,12 @@ function updatePlayer(state: GameState, deltaTime: number): void {
 			player.vx = 0;
 		}
 	} else {
-		const hasActiveEnemies = hasLivingEnemies(state);
-		updateAttractMode(state, deltaTime, hasActiveEnemies);
-		player.vx = getAttractHorizontalVelocity(state, hasActiveEnemies);
-		if (!hasActiveEnemies) {
+		const hasCombatEnemies = hasVisibleLivingEnemies(state);
+		const preserveRelaxedMovement = hasCombatEnemies && (state.autoMoveTargetY !== null || state.autoMoveTargetX !== null);
+		const useCombatMode = hasCombatEnemies && !preserveRelaxedMovement;
+		updateAttractMode(state, deltaTime, useCombatMode);
+		player.vx = getAttractHorizontalVelocity(state, useCombatMode);
+		if (!useCombatMode) {
 			if (state.autoMoveTargetY !== null) {
 				const relaxedSpeed = CONFIG.PLAYER_SPEED * CONFIG.ATTRACT_RELAXED_SPEED_MULTIPLIER;
 				const directionToTarget = state.autoMoveTargetY > player.y ? 1 : -1;
@@ -183,10 +185,21 @@ function updatePlayer(state: GameState, deltaTime: number): void {
 
 	// Bounds checking
 	const playerDrawHeight = player.height * 2;
-	const attractMaxX = state.controlsEnabled
-		? CONFIG.WIDTH - player.width
-		: (hasLivingEnemies(state) ? CONFIG.WIDTH * 0.35 : CONFIG.WIDTH * 0.5) - player.width;
-	player.x = Math.max(0, Math.min(player.x, attractMaxX));
+	const relaxedMaxX = CONFIG.WIDTH * 0.5 - player.width;
+	const combatMaxX = CONFIG.WIDTH * 0.35 - player.width;
+	if (state.controlsEnabled) {
+		player.x = Math.max(0, Math.min(player.x, CONFIG.WIDTH - player.width));
+	} else {
+		const hasCombatEnemies = hasVisibleLivingEnemies(state);
+		if (!hasCombatEnemies) {
+			player.x = Math.max(0, Math.min(player.x, relaxedMaxX));
+		} else if (player.x > combatMaxX) {
+			// Ease back into combat range instead of snapping when the mode changes.
+			player.x = Math.max(combatMaxX, player.x - CONFIG.PLAYER_SPEED);
+		} else {
+			player.x = Math.max(0, Math.min(player.x, combatMaxX));
+		}
+	}
 	player.y = Math.max(
 		CONFIG.PLAYER_VERTICAL_WALL_PADDING,
 		Math.min(player.y, CONFIG.PLAYFIELD_HEIGHT - playerDrawHeight - CONFIG.PLAYER_VERTICAL_WALL_PADDING),
@@ -260,7 +273,7 @@ function handlePlayerShooting(state: GameState, deltaTime: number): void {
 		state.lastShotTime = 0;
 		state.chargeTimeMs = 0;
 		if (!state.controlsEnabled) {
-			state.autoShootInterval = getRandomAutoChargeTargetMs();
+			state.autoShootInterval = getRandomAutoChargeTargetMs(state.pendingEnemyWaves.length);
 		}
 	}
 
@@ -476,13 +489,24 @@ function getChargeLevel(chargeTimeMs: number): 1 | 2 | 3 | 4 | 5 {
 	return 1;
 }
 
-function getRandomAutoChargeTargetMs(): number {
-	// Weighted target charge duration for attract mode, so the HUD fills naturally.
+function getRandomAutoChargeTargetMs(queueDepth: number): number {
+	// Larger queued enemy backlogs bias attract-mode shots toward higher charge levels.
+	const pressure = Math.max(0, Math.min(1, queueDepth / 8));
+	const pLevel1 = 0.6 - 0.35 * pressure;
+	const pLevel2 = 0.18 - 0.08 * pressure;
+	const pLevel3 = 0.12 + 0.06 * pressure;
+	const pLevel4 = 0.07 + 0.12 * pressure;
+
 	const roll = Math.random();
-	if (roll < 0.6) return 60 + Math.random() * Math.max(1, CONFIG.SHOT_CHARGE_LEVEL2_MS - 80);
-	if (roll < 0.78) return CONFIG.SHOT_CHARGE_LEVEL2_MS + Math.random() * Math.max(1, CONFIG.SHOT_CHARGE_LEVEL3_MS - CONFIG.SHOT_CHARGE_LEVEL2_MS - 20);
-	if (roll < 0.9) return CONFIG.SHOT_CHARGE_LEVEL3_MS + Math.random() * Math.max(1, CONFIG.SHOT_CHARGE_LEVEL4_MS - CONFIG.SHOT_CHARGE_LEVEL3_MS - 20);
-	if (roll < 0.97) return CONFIG.SHOT_CHARGE_LEVEL4_MS + Math.random() * Math.max(1, CONFIG.SHOT_CHARGE_LEVEL5_MS - CONFIG.SHOT_CHARGE_LEVEL4_MS - 20);
+	const c1 = pLevel1;
+	const c2 = c1 + pLevel2;
+	const c3 = c2 + pLevel3;
+	const c4 = c3 + pLevel4;
+
+	if (roll < c1) return 60 + Math.random() * Math.max(1, CONFIG.SHOT_CHARGE_LEVEL2_MS - 80);
+	if (roll < c2) return CONFIG.SHOT_CHARGE_LEVEL2_MS + Math.random() * Math.max(1, CONFIG.SHOT_CHARGE_LEVEL3_MS - CONFIG.SHOT_CHARGE_LEVEL2_MS - 20);
+	if (roll < c3) return CONFIG.SHOT_CHARGE_LEVEL3_MS + Math.random() * Math.max(1, CONFIG.SHOT_CHARGE_LEVEL4_MS - CONFIG.SHOT_CHARGE_LEVEL3_MS - 20);
+	if (roll < c4) return CONFIG.SHOT_CHARGE_LEVEL4_MS + Math.random() * Math.max(1, CONFIG.SHOT_CHARGE_LEVEL5_MS - CONFIG.SHOT_CHARGE_LEVEL4_MS - 20);
 	return CONFIG.SHOT_CHARGE_LEVEL5_MS + Math.random() * Math.max(1, CONFIG.SHOT_CHARGE_MAX_MS - CONFIG.SHOT_CHARGE_LEVEL5_MS);
 }
 
@@ -499,6 +523,10 @@ function getShotSize(chargeLevel: 1 | 2 | 3 | 4 | 5): { width: number; height: n
 
 function hasLivingEnemies(state: GameState): boolean {
 	return state.enemies.some((enemy) => !enemy.dead);
+}
+
+function hasVisibleLivingEnemies(state: GameState): boolean {
+	return state.enemies.some((enemy) => !enemy.dead && enemy.x < CONFIG.WIDTH && enemy.x + enemy.width > 0);
 }
 
 function spawnEnemy(state: GameState, donationAmount: number): void {
