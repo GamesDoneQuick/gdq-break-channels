@@ -33,15 +33,19 @@ import number9Png from './sprites/numbers/9.png';
 import dollarPng from './sprites/numbers/dollar.png';
 import commaPng from './sprites/numbers/comma.png';
 
-registerChannel('R-Type', 85, RType, {
+registerChannel('R-Type', 16, RType, {
 	position: 'bottomLeft',
 	site: 'GitHub',
 	handle: 'ViMaSter',
 });
 
 const Container = styled.div`
+	position: absolute;
 	width: 100%;
 	height: 100%;
+	overflow: hidden;
+	padding: 0;
+	margin: 0;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -49,6 +53,11 @@ const Container = styled.div`
 `;
 
 const Canvas = styled.canvas`
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 	display: block;
 	image-rendering: pixelated;
 	image-rendering: -moz-crisp-edges;
@@ -201,6 +210,11 @@ function RType(props: ChannelProps) {
 
 		const donationLabelScale = 2;
 		const donationLabelGap = 2;
+		const donationLabelTopMarginPx = 130;
+		ctx.save();
+		ctx.beginPath();
+		ctx.rect(0, 0, CONFIG.WIDTH, CONFIG.PLAYFIELD_HEIGHT);
+		ctx.clip();
 		for (const label of gameState.enemyGroupLabels) {
 			const donationText = formatTotalText(label.donationAmount);
 			const donationSprites = [...donationText]
@@ -228,13 +242,14 @@ function RType(props: ChannelProps) {
 				ctx.drawImage(
 					item.sprite,
 					drawX,
-					donationY - numberYOffsetSourcePx * donationLabelScale + numberYOffsetFineTunePx,
+					donationY - numberYOffsetSourcePx * donationLabelScale + numberYOffsetFineTunePx + donationLabelTopMarginPx,
 					item.sprite.width * donationLabelScale,
 					item.sprite.height * donationLabelScale,
 				);
 				drawX += item.sprite.width * donationLabelScale + donationLabelGap;
 			}
 		}
+		ctx.restore();
 
 		// Draw charge HUD in the bottom stripe at native sprite size, top-right anchored.
 		if (barImgRef.current && barFilledImgRef.current) {
