@@ -15,13 +15,15 @@ export function createInitialState(): GameState {
 		},
 		shots: [],
 		enemies: [],
+		enemyGroupLabels: [],
 		keys: {},
 		controlsEnabled: false,
 		lastShotTime: 0,
 		nextEnemySpawn: CONFIG.ENEMY_SPAWN_INTERVAL,
-		pendingEnemyWaves: 0,
+		pendingEnemyWaves: [],
 		nextShotId: 0,
 		nextEnemyId: 0,
+		nextEnemyGroupId: 0,
 		bgOffset: 0,
 		playerRespawnTimer: 0,
 		playerInvincibilityTimer: 0,
@@ -81,12 +83,6 @@ export function updateGameState(state: GameState, deltaTime: number): GameState 
 		return shot.x < CONFIG.WIDTH;
 	});
 
-	// Spawn enemies only when a donation event has queued a wave.
-	if (newState.pendingEnemyWaves > 0) {
-		spawnEnemy(newState);
-		newState.pendingEnemyWaves--;
-	}
-
 	// Update enemies
 	newState.enemies = newState.enemies.map((enemy) => {
 		if (!enemy.dead) {
@@ -104,6 +100,29 @@ export function updateGameState(state: GameState, deltaTime: number): GameState 
 		return enemy;
 	});
 
+	newState.enemyGroupLabels = newState.enemyGroupLabels.map((label) => {
+		label.x += label.vx;
+		const amp = label.enemyType === 3 ? CONFIG.ENEMY3_SINE_AMPLITUDE : CONFIG.ENEMY2_SINE_AMPLITUDE;
+		const period = label.enemyType === 3 ? CONFIG.ENEMY3_SINE_PERIOD : CONFIG.ENEMY2_SINE_PERIOD;
+		label.y = label.spawnY + amp * Math.sin(label.x / period);
+		if (!label.fullyOnScreen) {
+			const rightMostEdge = label.x + label.rightmostOffset + label.enemyWidth;
+			label.fullyOnScreen = rightMostEdge <= CONFIG.WIDTH;
+		}
+		return label;
+	});
+
+	// Spawn queued waves only when the latest spawned group has fully entered the screen.
+	if (newState.pendingEnemyWaves.length > 0) {
+		const latestGroup = newState.enemyGroupLabels[newState.enemyGroupLabels.length - 1];
+		const canSpawnNextWave = !latestGroup || latestGroup.fullyOnScreen;
+		if (canSpawnNextWave) {
+			const waveAmount = newState.pendingEnemyWaves[0] ?? 0;
+			spawnEnemy(newState, waveAmount);
+			newState.pendingEnemyWaves = newState.pendingEnemyWaves.slice(1);
+		}
+	}
+
 	// Remove off-screen and fully dead entities
 	newState.shots = newState.shots.filter((shot) => shot.x < CONFIG.WIDTH);
 	newState.enemies = newState.enemies.filter(
@@ -112,6 +131,9 @@ export function updateGameState(state: GameState, deltaTime: number): GameState 
 
 	// Collision detection
 	checkCollisions(newState);
+
+	const livingGroupIds = new Set(newState.enemies.filter((enemy) => !enemy.dead).map((enemy) => enemy.groupId));
+	newState.enemyGroupLabels = newState.enemyGroupLabels.filter((label) => livingGroupIds.has(label.id));
 
 	return newState;
 }
@@ -479,11 +501,12 @@ function hasLivingEnemies(state: GameState): boolean {
 	return state.enemies.some((enemy) => !enemy.dead);
 }
 
-function spawnEnemy(state: GameState): void {
+function spawnEnemy(state: GameState, donationAmount: number): void {
 	// Randomly pick type 2 or 3 (matching R-Type-main's random enemy type selection)
 	const enemyType: 2 | 3 = Math.random() < 0.5 ? 2 : 3;
 	const enemyW = enemyType === 3 ? CONFIG.ENEMY3_WIDTH : CONFIG.ENEMY_WIDTH;
 	const enemyH = enemyType === 3 ? CONFIG.ENEMY3_HEIGHT : CONFIG.ENEMY_HEIGHT;
+	const groupId = state.nextEnemyGroupId++;
 
 	// Restrict spawn y to the middle 50% of the screen so sine excursions stay mostly on-screen
 	const yMin = CONFIG.PLAYFIELD_HEIGHT * CONFIG.ENEMY_SPAWN_Y_MIN_FRAC;
@@ -492,12 +515,28 @@ function spawnEnemy(state: GameState): void {
 
 	// Spawn a batch staggered along x; type 3 has its own batch size constant
 	const batchSize = enemyType === 3 ? CONFIG.ENEMY3_BATCH_SIZE : CONFIG.ENEMY_BATCH_SIZE;
+	const rightmostOffset = ((batchSize - 1) * CONFIG.ENEMY_BATCH_SPACING) / 2;
+	const groupCenterX = CONFIG.WIDTH + ((batchSize - 1) * CONFIG.ENEMY_BATCH_SPACING) / 2;
+	const enemyVx = -CONFIG.ENEMY_SPEED * CONFIG.ENEMY_SPEED_MULTIPLIER;
+	state.enemyGroupLabels.push({
+		id: groupId,
+		donationAmount,
+		x: groupCenterX,
+		y,
+		vx: enemyVx,
+		spawnY: y,
+		enemyType,
+		rightmostOffset,
+		enemyWidth: enemyW,
+		fullyOnScreen: false,
+	});
+
 	for (let i = 0; i < batchSize; i++) {
 		const spawnX = CONFIG.WIDTH + i * CONFIG.ENEMY_BATCH_SPACING;
 		const enemy: Enemy = {
 			x: spawnX,
 			y,
-			vx: -CONFIG.ENEMY_SPEED * CONFIG.ENEMY_SPEED_MULTIPLIER,
+			vx: enemyVx,
 			vy: 0,
 			width: enemyW,
 			height: enemyH,
@@ -506,6 +545,8 @@ function spawnEnemy(state: GameState): void {
 			id: state.nextEnemyId++,
 			spawnY: y,
 			enemyType,
+			groupId,
+			groupDonationAmount: donationAmount,
 		};
 		state.enemies.push(enemy);
 	}

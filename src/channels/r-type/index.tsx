@@ -175,6 +175,9 @@ function RType(props: ChannelProps) {
 		const totalText = formatTotalText(total?.raw ?? 0);
 		const totalScale = 3;
 		const totalGap = 3;
+		const numberXOffsetSourcePx = 1;
+		const numberYOffsetSourcePx = 1;
+		const numberYOffsetFineTunePx = 3;
 		const totalSprites = [...totalText].map((char) => ({ char, sprite: numberImgsRef.current[char] })).filter(
 			(item): item is { char: string; sprite: HTMLImageElement } => !!item.sprite,
 		);
@@ -186,8 +189,51 @@ function RType(props: ChannelProps) {
 		const totalY = CONFIG.PLAYFIELD_HEIGHT + CONFIG.BOTTOM_STRIPE_HEIGHT - totalHeight;
 		let totalX = CONFIG.WIDTH - totalWidth;
 		for (const item of totalSprites) {
-			ctx.drawImage(item.sprite, totalX, totalY, item.sprite.width * totalScale, item.sprite.height * totalScale);
+			ctx.drawImage(
+				item.sprite,
+				totalX - numberXOffsetSourcePx * totalScale,
+				totalY - numberYOffsetSourcePx * totalScale + numberYOffsetFineTunePx,
+				item.sprite.width * totalScale,
+				item.sprite.height * totalScale,
+			);
 			totalX += item.sprite.width * totalScale + totalGap;
+		}
+
+		const donationLabelScale = 2;
+		const donationLabelGap = 2;
+		for (const label of gameState.enemyGroupLabels) {
+			const donationText = formatTotalText(label.donationAmount);
+			const donationSprites = [...donationText]
+				.map((char) => ({ char, sprite: numberImgsRef.current[char] }))
+				.filter((item): item is { char: string; sprite: HTMLImageElement } => !!item.sprite);
+
+			if (donationSprites.length === 0) {
+				continue;
+			}
+
+			const donationWidth = donationSprites.reduce(
+				(sum, item, index) => sum + item.sprite.width * donationLabelScale + (index > 0 ? donationLabelGap : 0),
+				0,
+			);
+			const donationHeight = donationSprites.reduce(
+				(maxHeight, item) => Math.max(maxHeight, item.sprite.height * donationLabelScale),
+				0,
+			);
+
+			const donationX = label.x - donationWidth / 2;
+			const donationY = label.y - donationHeight - 6;
+
+			let drawX = donationX;
+			for (const item of donationSprites) {
+				ctx.drawImage(
+					item.sprite,
+					drawX,
+					donationY - numberYOffsetSourcePx * donationLabelScale + numberYOffsetFineTunePx,
+					item.sprite.width * donationLabelScale,
+					item.sprite.height * donationLabelScale,
+				);
+				drawX += item.sprite.width * donationLabelScale + donationLabelGap;
+			}
 		}
 
 		// Draw charge HUD in the bottom stripe at native sprite size, top-right anchored.

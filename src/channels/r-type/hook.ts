@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useListenFor } from 'use-nodecg';
+import type { FormattedDonation } from '@gdq/types/tracker';
 import { GameState } from './game/types';
 import { createInitialState, updateGameState } from './game/logic';
 
@@ -48,10 +49,10 @@ export function useRTypeGame() {
 		};
 	}, []);
 
-	useListenFor('donation', () => {
+	useListenFor('donation', (donation: FormattedDonation) => {
 		setGameState((prev) => ({
 			...prev,
-			pendingEnemyWaves: prev.pendingEnemyWaves + 1,
+			pendingEnemyWaves: [...prev.pendingEnemyWaves, donation.rawAmount],
 		}));
 	});
 

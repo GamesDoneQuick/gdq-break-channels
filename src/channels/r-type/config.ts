@@ -2,7 +2,7 @@ export const CONFIG = {
 	// Canvas
 	WIDTH: 1092,
 	HEIGHT: 332,
-	BOTTOM_STRIPE_HEIGHT: 23,
+	BOTTOM_STRIPE_HEIGHT: 27,
 	PLAYFIELD_HEIGHT: 305,
 
 	// Player

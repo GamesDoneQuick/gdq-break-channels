@@ -30,19 +30,36 @@ export interface Enemy {
 	id: number;
 	spawnY: number;
 	enemyType: 2 | 3;
+	groupId: number;
+	groupDonationAmount: number;
+}
+
+export interface EnemyGroupLabel {
+	id: number;
+	donationAmount: number;
+	x: number;
+	y: number;
+	vx: number;
+	spawnY: number;
+	enemyType: 2 | 3;
+	rightmostOffset: number;
+	enemyWidth: number;
+	fullyOnScreen: boolean;
 }
 
 export interface GameState {
 	player: Player;
 	shots: Shot[];
 	enemies: Enemy[];
+	enemyGroupLabels: EnemyGroupLabel[];
 	keys: Record<string, boolean>;
 	controlsEnabled: boolean;
 	lastShotTime: number;
 	nextEnemySpawn: number;
-	pendingEnemyWaves: number;
+	pendingEnemyWaves: number[];
 	nextShotId: number;
 	nextEnemyId: number;
+	nextEnemyGroupId: number;
 	bgOffset: number;
 	playerRespawnTimer: number;
 	playerInvincibilityTimer: number;
