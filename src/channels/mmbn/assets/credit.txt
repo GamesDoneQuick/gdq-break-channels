@@ -1,0 +1,3 @@
+All origin sprites from sprites-inc.com. You guys are amazing. I took what they had and combined/spliced some together, then pieced the animations together. Using a combination of gimp and texturepacker.
+
+Font credit goes to megarock_exe. Seriously wicked work

@@ -106,3 +106,17 @@
 	font-family: Balatro;
 	src: url('fonts/balatro.ttf') format('truetype');
 }
+
+@font-face {
+	font-family: bn6speaking;
+	src: url('fonts/BN6FontThinVar.ttf') format('truetype');
+	font-weight: 100 900;
+	font-display: block;
+}
+
+@font-face {
+	font-family: bn6boss;
+	src: url('fonts/BN6FontBold.ttf') format('truetype');
+	font-weight: 100 900;
+	font-display: block;
+}
